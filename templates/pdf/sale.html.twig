@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ 'pdf.sale.title'|trans({},'messages',app.session.get('_locale')) }}</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+    <script type="module">
+        try {
+            this.print();
+        } catch (e) {
+            window.onload = window.print;
+        }
+    </script>
+</head>
+{% set setting = app.session.get('setting') %}
+<body style="font-size: '{{ setting.saleFontSize }}pt';">
+{#<body style="@font-face {
+        font-family: 'f25';
+        src: url('{{ asset('dist/fonts/F25_Bank_Printer.otf') }}') format('otf'),
+        url('{{ asset('dist/fonts/F25_Bank_Printer.ttf') }}') format('ttf');};
+        font-size: '{{ setting.saleFontSize }}pt'; font-family: 'f25', sans-serif;">#}
+<div style="width: 100% !important;">
+    <div class="row mb-4" style="margin-bottom: 40px;">
+        {% if store is not null %}
+            <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                <b>{{ store.name }}</b><br>
+                {% if store.address is not empty %}
+                    {{ store.address }}<br>
+                {% endif %}
+                {% if store.phoneNumber is not empty %}
+                    Tel: {{ store.phoneNumber }}<br>
+                {% endif %}
+                {% if store.email is not empty %}
+                    Email: {{ store.email }}<br>
+                {% endif %}
+                {% if store.webSite is not empty %}
+                    web: {{ store.webSite }}<br>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+            <table class="table">
+                <tr>
+                    <td colspan="3" class="text-center">
+                        <span>
+                            {{ 'pdf.sale.tr_sale'|trans({},'messages',app.session.get('_locale')) }}
+                            {{ sale.code }}
+                        </span>
+                    </td>
+                </tr>
+                <tr style="font-weight: bold">
+                    <td style="width: 35%">{{ 'pdf.sale.tr_product'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td style="width: 30%">
+                        {{ 'pdf.sale.tr_qty_price'|trans({},'messages',app.session.get('_locale')) }}
+                    </td>
+                    <td style="width: 35%">
+                        {{ 'pdf.sale.tr_cost'|trans({},'messages',app.session.get('_locale')) }}
+                    </td>
+                </tr>
+                {% for productSale in sale.productSales %}
+                    <tr>
+                        <td>{{ productSale.product.name }}</td>
+                        <td>
+                            {{ productSale.product.sellPrice|formated }}
+                            ({{ productSale.qty|formatedInt }})
+                        </td>
+                        <td>{{ productSale.subtotal|formated }}</td>
+                    </tr>
+                {% endfor %}
+                {% for tax in sale.taxs %}
+                    <tr>
+                        <td colspan="2">{{ tax.name }} ({{ tax.rate }}%)</td>
+                        <td>
+                            {{(tax.rate * sale.amountWithoutTax/100)|round|formated}}
+                        </td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td colspan="2">
+                        {{ 'pdf.sale.tr_amount'|trans({},'messages',app.session.get('_locale')) }}
+                    </td>
+                    <td style="font-weight: bold">
+                        {{sale.amount|formated }}
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="3" class="text-center">
+                        <span>
+                            {{ 'pdf.sale.tr_amountReceived'|trans({},'messages',app.session.get('_locale')) }}:
+                            <span>
+                                {{sale.amountReceived|formated }}
+                            </span>
+                        </span>
+                        <br>
+                        {% if sale.amountToRepay >= 0 %}
+                            <span>
+                                {{ 'pdf.sale.tr_repay'|trans({},'messages',app.session.get('_locale')) }}:
+                                {{sale.amountToRepay|formated }}
+                            </span>
+                        {% endif %}
+                        {% if sale.amountDebt > 0 %}
+                        <span>
+                            {{ 'pdf.sale.tr_rest'|trans({},'messages',app.session.get('_locale')) }}:
+                            {{sale.amountDebt|formated }}
+                        </span>
+                        {% endif %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row" style="margin-bottom: 20px; margin-top: 20px">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12 text-center">
+            <img style="width: 120px; height: 25px;" src="data:image/png;base64,{{ sale.barCode }}">
+        </div>
+    </div>
+    <div class="mb-5" style="margin-bottom: 50px;">
+        {{ 'pdf.sale.footer2'|trans({},'messages',app.session.get('_locale')) }} {{ 'now'|longDate }}
+    </div>
+    {% if store.slogan is not empty %}
+        <div class="text-center text-uppercase">
+            {{ store.slogan }}
+        </div>
+    {% endif %}
+
+</div>
+</body>
+</html>

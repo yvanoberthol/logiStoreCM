@@ -1,0 +1,15 @@
+<script>
+    {% for label, messages in app.flashes %}
+        {% for message in messages %}
+        alertify.logPosition("top right");
+        alertify.delay(8000);
+        {% if label == 'success' %}
+            alertify.success('<i class="fa fa-check-circle"></i> {{ message | raw| trans({},'messages',app.session.get('_locale')) }}');
+        {% elseif label == 'danger' %}
+            alertify.error('<i class="fa fa-close"></i> {{ message | raw| trans({},'messages',app.session.get('_locale')) }}');
+        {% elseif label == 'warning' %}
+            alertify.log('<i class="fa fa-warning"></i> {{ message | raw| trans({},'messages',app.session.get('_locale')) }}','warning');
+        {% endif %}
+        {% endfor %}
+    {% endfor %}
+</script>

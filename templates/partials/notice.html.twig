@@ -1,0 +1,14 @@
+{% for noticeEmployee in noticeEmployees %}
+    <div class="alert alert-{{ noticeEmployee.noticeBoard.statut }} alert-dismissible fade show"
+         role="alert">
+        <button type="button" class="close notice"
+                data-value="{{ noticeEmployee.id }}"
+                data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+        </button>
+        <strong>{{ noticeEmployee.noticeBoard.title }}</strong> <br>
+        {{ noticeEmployee.noticeBoard.message }}
+    </div>
+{% endfor %}
+
+

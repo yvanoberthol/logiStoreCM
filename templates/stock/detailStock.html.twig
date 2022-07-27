@@ -1,0 +1,1137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'stock.detail.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    <span class="mx-2">
+                       <a class="btn btn-light" href="#" onclick="document.getElementById('returnIndex').submit()">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                    {{ 'stock.detail.block_title'|trans }} N° {{ stock.id }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                    <span class="pull-right h6 mr-2">
+                        {% if stock.initial == false and setting.withSettlement  %}
+                            {% if stock.settled %}
+                                <span class="badge badge-success">
+                                    {{ 'stock.detail.settled'|trans }}
+                                </span>
+                            {% else %}
+                                <span class="badge badge-danger">
+                                    {{ 'stock.detail.not-settled'|trans }}
+                                </span>
+                            {% endif %}
+                        {% endif %}
+                    </span>
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered " style="width: 100%;">
+                        {% if stock.numInvoice is not empty %}
+                            <tr>
+                                <td class="font-weight-bold h6">
+                                    {{ 'stock.index.modal.detail.body.tr_numInvoice'|trans }}
+                                </td>
+                                <td>
+                                    {{ stock.numInvoice }}
+                                    &nbsp;
+                                    {% if is_granted(permission_verify,'STOCK_CHANGE_NUM_INVOICE') %}
+                                        <a href="#changeNumInvoiceModal" data-toggle="modal" class="pull-right">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if stock.numBill is not empty %}
+                            <tr>
+                                <td class="font-weight-bold h6">
+                                    {{ 'stock.index.modal.detail.body.tr_numBill'|trans }}
+                                </td>
+                                <td>
+                                    {{ stock.numBill }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'stock.index.modal.detail.body.tr_date'|trans }}</td>
+                            <td>{{ stock.addDate | mediumDate }}</td>
+                        </tr>
+                        {% if stock.deliveryDate is not empty %}
+                            <tr>
+                                <td class="font-weight-bold h6">{{ 'stock.index.modal.detail.body.tr_deliveryDate'|trans }}</td>
+                                <td>
+                                    {{ stock.deliveryDate | mediumDate }}
+                                    &nbsp;
+                                    {% if is_granted(permission_verify,'STOCK_CHANGE_DATE') %}
+                                        <a href="#changeDateModal" data-toggle="modal" class="pull-right">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'stock.index.modal.detail.body.tr_productList'|trans }}
+                                ({{ stock.productStocks|length|formatedInt }}) <br>
+                                {% if stock.status == false and stock.supplier is not null%}
+                                    {% if stock.supplier.email is not null %}
+                                        <button class="btn btn-uyblue senderMail"
+                                                data-stock="{{ stock.id }}">
+                                            <i class="fa fa-send-o"></i> {{ 'stock.index.modal.detail.body.tr_sendByMail'|trans }}
+                                        </button>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="table-responsive">
+                                <table class="table table-striped " style="width: 100%;" id="dataTable">
+                                    <thead>
+                                    <tr class="font-weight-bold">
+                                        <th style="width: 27%;">{{ 'stock.index.modal.detail.body.tr_product'|trans }}</th>
+                                        {% if setting.withExpiration %}
+                                        <th class="not-sort" style="width: 20%;">
+                                            {{ 'stock.index.modal.detail.body.tr_expirationDate'|trans }}
+                                        </th>
+                                        {% endif %}
+                                        {% if setting.withPurchasePrice  %}
+                                        <th class="not-sort" style="width: 15%;">
+                                            {{ 'stock.index.modal.detail.body.tr_unitPrice'|trans }}
+                                        </th>
+                                        {% endif %}
+                                        <th class="not-sort" style="width: 10%;">{{ 'stock.index.modal.detail.body.tr_qty'|trans }}</th>
+                                        {% if setting.withPurchasePrice  %}
+                                        <th class="not-sort" style="width: 18%;">
+                                            {{ 'stock.index.modal.detail.body.tr_subtotal'|trans }}
+                                        </th>
+                                        {% endif %}
+                                        <th class="not-sort" style="width: 10%;">
+                                            {% if stock.status == false and is_granted(permission_verify,'PRODUCT_STOCK_ADD') %}
+                                            <a href="#addModal{{ stock.id }}" data-toggle="modal"
+                                               class="btn btn-info">
+                                                <i class="fa fa-plus"></i>
+                                            </a>
+                                            {% endif %}
+                                        </th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for productStock in productStocks|sort((a,b) => a.product.name <=> b.product.name) %}
+
+                                        <tr>
+                                            <td>
+                                                <a class="text-capitalize text-uyblue-dark"
+                                                   href="{{ path('product_detail',{id:productStock.product.id}) }}">
+                                                    {{ productStock.product.name }}
+                                                </a>
+                                            </td>
+                                            {% if setting.withExpiration %}
+                                            {% if is_granted('PRODUCT_STOCK_DELETE',productStock) and
+                                                is_granted(permission_verify,'PRODUCT_STOCK_DELETE') %}
+                                                <td>
+                                                    <input type="text" name="expirationDate"
+                                                           placeholder="{{ app.session.get('setting').dateMediumPicker }}"
+                                                           data-productStock="{{ productStock.id }}"
+                                                            {% if productStock.expirationDate is not null %}
+                                                                value="{{ productStock.expirationDate|mediumDate }}"
+                                                            {% else %}
+                                                                value=""
+                                                            {% endif %}
+                                                           class="datepicker form-control input-expirationDate text-center"
+                                                           style="width: 100% !important;">
+                                                </td>
+                                            {% else %}
+                                                {% if productStock.expirationDate is not null %}
+                                                    <td>{{ productStock.expirationDate|mediumDate }}</td>
+                                                {% else %}
+                                                    <td>
+                                                        <span class="text-secondary">
+                                                            {{ 'stock.index.modal.detail.body.no_expirationDate'|trans }}
+                                                        </span>
+                                                    </td>
+                                                {% endif %}
+
+                                            {% endif %}
+                                            {% endif %}
+                                            {% if setting.withPurchasePrice  %}
+                                                {% if is_granted('PRODUCT_STOCK_DELETE',productStock) and
+                                                    is_granted(permission_verify,'PRODUCT_STOCK_DELETE') %}
+                                                    <td style="width: 20%">
+                                                        <input type="number" name="unitPrice"
+                                                               value="{{ productStock.unitPrice }}" min="1"
+                                                               data-productStock="{{ productStock.id }}"
+                                                               class="form-control input-unitPrice text-center"
+                                                               style="width: 100% !important;">
+                                                    </td>
+                                                {% else %}
+                                                    <td class="text-center">{{ productStock.unitPrice|formated }}</td>
+                                                {% endif %}
+                                            {% endif %}
+                                            {% if is_granted('PRODUCT_STOCK_DELETE',productStock) and
+                                                is_granted(permission_verify,'PRODUCT_STOCK_DELETE') %}
+                                                <td style="width: 15%">
+                                                    <input type="number" name="qty" value="{{ productStock.qty }}"
+                                                           min="1"
+                                                           data-productStock="{{ productStock.id }}"
+                                                           class="form-control input-qty text-center"
+                                                           style="width: 100% !important;">
+                                                </td>
+                                            {% else %}
+                                                <td>
+                                                    {{ productStock.qty|formatedInt }}
+                                                    (<span class="{% if productStock.qtyRemaining > 0 %}text-info{% else %}text-danger{% endif %}">
+                                                        {{ productStock.qtyRemaining|formatedInt }}
+                                                    </span>)
+                                                </td>
+                                            {% endif %}
+                                            {% if setting.withPurchasePrice %}
+                                            <td>{{ productStock.subtotal|formated }}</td>
+                                            {% endif %}
+                                            <td>
+                                                {% if is_granted('PRODUCT_STOCK_DELETE',productStock) and
+                                                    is_granted(permission_verify,'PRODUCT_STOCK_DELETE') %}
+                                                <a class="btn-danger p-1"
+                                                   href="{{ path('product_stock_delete',{'id': productStock.id}) }}">
+                                                    <i class="fa fa-minus"></i>
+                                                </a>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                    <tfoot>
+                                        <tr class="font-weight-bold">
+                                            <td></td>
+                                            {% if setting.withExpiration %}
+                                            <td></td>
+                                            {% endif %}
+                                            {% if setting.withPurchasePrice  %}
+                                            <td></td>
+                                            {% endif %}
+                                            <td class="text-center">
+                                                {% if stock.status == false %}
+                                                    <a href="#setStatusModal{{ stock.id }}" data-toggle="modal"
+                                                       class="btn btn-success">
+                                                        <i class="fa fa-check-circle"></i> {{ 'stock.index.tr_validate'|trans }}
+                                                    </a>
+                                                {% endif %}
+                                            </td>
+                                            {% if setting.withPurchasePrice  %}
+                                            <td colspan="2" class="font-weight-bold">
+                                                {{ stock.amountProductStocks|customCurrency }}
+                                            </td>
+                                            {% endif %}
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                                </div>
+                            </td>
+                        </tr>
+                        {% if setting.withStockReturn %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'stock.index.modal.detail.body.tr_product_return'|trans }}
+                                {% if is_granted(permission_verify,'STOCK_PRODUCT_RETURN_ADD') %}
+                                    <a href="#addProductReturnModal{{ stock.id }}"
+                                       data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <table class="table table-striped">
+                                    <tr class="font-weight-bold">
+                                        <td style="width: 20%;">{{ 'stock.index.modal.detail.body.tr_dateReturn'|trans }}</td>
+                                        <td style="width: 30%;">{{ 'stock.index.modal.detail.body.tr_product'|trans }}</td>
+                                        <td style="width: 10%;">{{ 'stock.index.modal.detail.body.tr_qtyReturn'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'stock.index.modal.detail.body.tr_unitPrice'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'stock.index.modal.detail.body.tr_subtotal'|trans }}</td>
+                                    </tr>
+                                    {% set totalReturn = 0 %}
+                                    {% for productStock in stock.productStocks|sort((a,b) => a.product.name <=> b.product.name)  %}
+                                        {% for productStockReturn in productStock.productStockReturns %}
+                                            <tr>
+                                                <td>{{ productStockReturn.date|mediumDate }}</td>
+                                                <td>{{ productStock.product.name }}</td>
+                                                <td>
+                                                    {{ productStockReturn.qty|formatedInt }}
+                                                </td>
+                                                <td>{{ productStockReturn.unitPrice|formated}}</td>
+                                                <td>
+                                                    {{ productStockReturn.subtotal|formated }} &nbsp;
+                                                    {% if productStockReturn.repay %}
+                                                        <span class="text-success">
+                                                            <i class="fa fa-check-circle"></i>
+                                                        </span>
+                                                    {% endif %}
+                                                </td>
+                                                <td>
+                                                    {% if is_granted(permission_verify,'STOCK_PRODUCT_RETURN_DELETE') %}
+                                                        <a class="btn-danger p-1" href="{{ path('stock_product_return_delete',{id:productStockReturn.id}) }}">
+                                                            <i class="fa fa-minus"></i>
+                                                        </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% set totalReturn = totalReturn + productStockReturn.subtotal %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% if totalReturn > 0 %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="h6 font-weight-bold">
+                                                {{ totalReturn|customCurrency }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'stock.index.modal.detail.body.tr_feeList'|trans }}
+                                ({{ stock.stockFees|length }})
+                                {% if is_granted(permission_verify,'STOCK_FEE_ADD') %}
+                                    <a href="#addFeeModal" data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if stock.stockFees|length > 0%}
+                                    <table class="table table-striped">
+                                        <tr class="font-weight-bold">
+                                            <td style="width:65%;">{{ 'stock.detail.modal.detail.body.tr_title'|trans }}</td>
+                                            <td style="width: 35%;">
+                                                {{ 'stock.detail.modal.detail.body.tr_amount'|trans }}
+                                            </td>
+                                        </tr>
+                                        {% for stockFee in stock.stockFees|sort((a,b) => a.name <=> b.name)  %}
+                                            <tr>
+                                                <td>
+                                                    {{ stockFee.name }}
+                                                </td>
+                                                <td>{{ stockFee.amount|formated }}</td>
+                                                <td>
+                                                    <a class="btn-danger p-1"
+                                                       href="{{ path('stock_fee_delete',{id:stockFee.id}) }}">
+                                                        <i class="fa fa-minus"></i>
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                        <tr>
+                                            <td>
+                                                <b>{{ 'stock.detail.modal.detail.body.tr_stockFeeCost'|trans }}</b>
+                                            </td>
+                                            <td>
+                                                <b>{{ stock.totalFees|customCurrency }}</b>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                {% else %}
+                                    {{ 'stock.detail.modal.detail.body.noDataFee'|trans }}
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        {% if setting.withSettlement %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'stock.index.modal.detail.body.tr_amountSended'|trans }}
+                            </td>
+                            <td>
+                                {% if stock.amountSended >= stock.amount %}
+                                    <span class="font-weight-bold">
+                                        {{ stock.amountSended|customCurrency }}
+                                    </span>
+                                {% else %}
+                                    <span class="font-weight-bold text-info">
+                                        {{ stock.amountTotalSended|formated }}
+                                    </span>
+                                    (
+                                    {% if stock.amountSended > 0 %}
+                                        <span data-original-title="{{ stock.addDate|mediumDate }}"
+                                              data-toggle="tooltip-smoke" data-placement="top">
+                                        {{stock.amountSended|formated}}
+                                    </span>
+                                    {% endif %}
+                                    {% for payment in stock.stockPayments %}
+                                        {% if loop.first %}
+                                            {% if stock.amountSended > 0 %},{% endif %}
+                                        {% else %}
+                                            ,
+                                        {% endif %}
+                                        <a href="#deletePaymentModal{{ payment.id }}"
+                                           data-toggle="modal">
+                                            <span data-original-title="{{ payment.addDate|mediumDate }}"
+                                                  data-toggle="tooltip-smoke" data-placement="top">
+                                                {{ payment.amount|formated }}
+                                            </span>
+                                        </a>
+                                        {% if is_granted(permission_verify,'STOCK_PAYMENT_REMOVE') %}
+                                            <!-- delete payment Modal -->
+                                            <div class="modal fade" id="deletePaymentModal{{ payment.id }}"
+                                                 tabindex="-1" role="dialog"
+                                                 aria-labelledby="deletePaymentModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog" role="document">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                                {{ 'stock.index.modal.deletePayment.title'|trans }}
+                                                            </h5>
+                                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                <span aria-hidden="true">×</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                <span>
+                                                    {{ 'stock.index.modal.deletePayment.body'|trans }}
+                                                    <span class="text-info">{{ payment.amount|customCurrency }}</span>?
+                                                </span>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                {{ 'cancel'|trans }}
+                                                            </button>
+                                                            <a href="{{ path('stock_payment_remove',{id: payment.id}) }}" class="btn btn-danger">
+                                                                <i class="fa fa-check-circle"></i>
+                                                                {{ 'delete'|trans }}
+                                                            </a>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %})
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        {% if stock.amountDebt > 0 %}
+                            <tr>
+                                <td class="font-weight-bold h6">
+                                    {{ 'stock.index.modal.detail.body.tr_rest_to_pay'|trans }}
+                                    {% if stock.status and stock.settled == false and is_granted(permission_verify,'STOCK_PAYMENT_ADD') %}
+                                        <a href="#addPaymentModal{{ stock.id }}"
+                                           data-toggle="modal"
+                                           class="badge badge-info">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-capitalize font-weight-bold text-danger">
+                                    {{stock.amountDebt|customCurrency}}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'stock.index.modal.detail.body.tr_supplier'|trans }}</td>
+                            <td class="text-capitalize">
+                                {% if stock.supplier is not null %}
+                                    {{ stock.supplier.name }}
+                                {% else %}
+                                    /
+                                {% endif %}
+
+                                &nbsp;
+                                {% if is_granted(permission_verify,'STOCK_CHANGE_SUPPLIER') %}
+                                    <a href="#changeSupplierModal" data-toggle="modal" class="pull-right">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if setting.withStockReturn %}
+    <!-- add product return Modal -->
+    <div class="modal fade addProductReturnModal" id="addProductReturnModal{{ stock.id }}"
+         tabindex="-1" role="dialog"
+         aria-labelledby="addProductReturnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'stock.index.modal.addProductReturn.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('stock_product_return_add') }}" method="post">
+                    <input type="hidden" value="{{ stock.id }}" name="stockId">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="date">
+                                {{ 'stock.index.modal.addProductReturn.form.date'|trans }}
+                            </label>
+                            <input type="text" class="form-control datepicker2" name="date"
+                                   id="date" required value="{{ 'now'|mediumDate }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="productStock">
+                                {{ 'stock.index.modal.addProductReturn.form.product'|trans }}
+                            </label>
+                            <select class="form-control"  style="width: 100% !important;"
+                                    name="productStock" id="productStock">
+                                {% for productStock in stock.productStocks|sort((a,b) => a.product.name <=> b.product.name)   %}
+                                    {% if productStock.qtyRemaining > 0 %}
+                                        <option value="{{ productStock.id }}">
+                                            {{ productStock.product.nameWithCategory }}
+                                            ({{ productStock.qtyRemaining }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="qtyReturn">
+                                {{ 'stock.index.modal.addProductReturn.form.qtyReturn'|trans }}
+                            </label>
+                            <input type="number" class="form-control" placeholder="0"
+                                   id="qtyReturn" name="qtyReturn" value="">
+                        </div>
+                        <div class="form-group">
+                            <label for="reason">
+                                {{ 'stock.index.modal.addProductReturn.form.reason'|trans }}
+                            </label>
+                            <textarea class="form-control" rows="4"
+                                      name="reason" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="repay"
+                                   id="repay">
+                            <label for="repay">
+                                {{ 'stock.index.modal.addProductReturn.form.repay'|trans }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if stock.status == false and
+        is_granted(permission_verify,'PRODUCT_STOCK_ADD') %}
+    <!-- add productStock Modal -->
+    <div class="modal fade addModal" id="addModal{{ stock.id }}"
+         tabindex="-1" role="dialog"
+         aria-labelledby="setStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'stock.detail.modal.add.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('product_stock_add') }}" method="post">
+                    <input type="hidden" value="{{ stock.id }}" name="stockId">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="productId">
+                                {{ 'stock.detail.modal.add.form.product'|trans }}
+                            </label>
+                            <select class="form-control" style="width: 100% !important;"
+                                    name="productId" id="productId" required>
+                                {% for product in products  %}
+                                    <option value="{{ product.id }}">
+                                        {{ product.nameWithCategory }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="qty">
+                                {{ 'stock.detail.modal.add.form.qty'|trans }}
+                            </label>
+                            <input type="number" class="form-control" min="1" value="1"
+                                   name="qty" id="qty" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'stock.detail.modal.add.footer.cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'stock.detail.modal.add.footer.validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Set status Modal -->
+    <div class="modal fade" id="setStatusModal{{ stock.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="setStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'stock.index.modal.setStatus.title'|trans }}
+                        <span class="text-info">
+                            {% if stock.supplier %}
+                                {{ stock.supplier.name }}
+                            {% else %}
+                                /
+                            {% endif %}
+                        </span>
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('stock_set_status') }}" method="post">
+                    <input type="hidden" value="{{ stock.id }}" name="stockId">
+                    <div class="modal-body">
+                        <div class="alert alert-info text-justify">
+                            <i class="fa fa-info-circle"></i>
+                            {{ 'stock.index.modal.infoMessage'|trans }}
+                        </div>
+                        <div class="form-group">
+                            <label for="numInvoice">
+                                {{ 'stock.index.modal.setStatus.form.numInvoice'|trans }}
+                            </label>
+
+                            <input type="text" class="form-control"
+                                   name="numInvoice" id="numInvoice"
+                                   {% if setting.withStockGenerateNumInvoice ==false %}required{% endif %}>
+                        </div>
+                        <div class="form-group">
+                            <label for="numBill">
+                                {{ 'stock.index.modal.setStatus.form.numBill'|trans }}
+                            </label>
+                            <input type="text" class="form-control"
+                                   name="numBill" id="numBill">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'stock.index.modal.setStatus.footer.cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'stock.index.modal.setStatus.footer.validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    {% if setting.withSettlement and is_granted(permission_verify,'STOCK_PAYMENT_NEW') %}
+    <!-- add payment Modal -->
+    <div class="modal fade" id="addPaymentModal{{ stock.id }}" tabindex="-1" role="dialog"
+         aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'stock.index.modal.addPayment.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('stock_payment_add') }}" method="post">
+                    <input type="hidden" value="{{ stock.id }}" name="stockId">
+                    <div class="modal-body">
+                        <div class="alert alert-info text-justify">
+                            <i class="fa fa-info-circle"></i>
+                            {{ 'stock.index.modal.addPayment.infoMessage'|trans }}
+                            <b>{{ stock.amountRemaining|customCurrency }}</b>
+                        </div>
+                        <div class="form-group">
+                            <label for="date">
+                                {{ 'stock.index.modal.addPayment.form.date'|trans }}
+                            </label>
+                            <input type="text" class="form-control datepicker2" name="date"
+                                   id="date" required value="{{ 'now'|mediumDate }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">
+                                {{ 'stock.index.modal.addPayment.form.amount'|trans }}
+                            </label>
+                            <input type="number" class="form-control" name="amount"
+                                   id="amount" value="{{ stock.amountRemaining }}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="paymentMethod">
+                                {{ 'stock.index.modal.addPayment.form.paymentMethod'|trans }}
+                            </label>
+                            <select class="form-control" name="paymentMethod" id="paymentMethod">
+                                {% for type in paymentMethods  %}
+                                    <option value="{{ type.id }}">{{ type.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if is_granted(permission_verify,'STOCK_FEE_ADD') %}
+        <!-- add productStock Modal -->
+        <div class="modal fade addFeeModal" id="addFeeModal" tabindex="-1" role="dialog"
+             aria-labelledby="addFeeModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFeeModalLabel">
+                            {{ 'stock.detail.modal.addFee.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('stock_fee_add') }}" method="post">
+                        <input type="hidden" value="{{ stock.id }}" name="stockId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'stock.detail.modal.addFee.form.name'|trans }}
+                                </label>
+                                <input type="text" class="form-control"  value=""
+                                       name="name" id="name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">
+                                    {{ 'stock.detail.modal.addFee.form.amount'|trans }}
+                                </label>
+                                <input type="number" class="form-control" min="1" value="0"
+                                       name="amount" id="amount" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-check-circle"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+
+    {% if is_granted(permission_verify,'STOCK_CHANGE_NUM_INVOICE') %}
+        <!-- change numinvoice Modal -->
+        <div class="modal fade changeNumInvoiceModal" id="changeNumInvoiceModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeNumInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeNumInvoiceModalLabel">
+                            {{ 'stock.detail.modal.changeNumInvoice.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('stock_change_num_invoice') }}" method="post">
+                        <input type="hidden" value="{{ stock.id }}" name="stockId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'stock.detail.modal.changeNumInvoice.form.numInvoice'|trans }}
+                                </label>
+                                <input type="text" class="form-control" required
+                                       name="numInvoice" id="numInvoice">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if is_granted(permission_verify,'STOCK_CHANGE_DATE') %}
+        <!-- change date Modal -->
+        <div class="modal fade changeDateModal" id="changeDateModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeDateModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFeeModalLabel">
+                            {{ 'stock.detail.modal.changeDate.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('stock_change_date') }}" method="post">
+                        <input type="hidden" value="{{ stock.id }}" name="stockId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'stock.detail.modal.changeDate.form.date'|trans }}
+                                </label>
+                                <input type="text" class="form-control changedatepicker"
+                                       value="{{ stock.addDate|mediumDate }}" name="date" id="date" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if is_granted(permission_verify,'STOCK_CHANGE_SUPPLIER') %}
+        <!-- change supplier Modal -->
+        <div class="modal fade changeSupplierModal" id="changeSupplierModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeSupplierModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeSupplierModalLabel">
+                            {{ 'stock.detail.modal.changeSupplier.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('stock_change_supplier') }}" method="post">
+                        <input type="hidden" value="{{ stock.id }}" name="stockId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'stock.detail.modal.changeSupplier.form.supplier'|trans }}
+                                </label>
+                                <select name="supplier" id="supplier" class="form-control"
+                                        style="width: 100%!important;" required>
+                                    <option value="0">
+                                        {{ 'stock.detail.modal.changeSupplier.form.withoutSupplier'|trans }}
+                                    </option>
+                                    {% for supplier in suppliers  %}
+                                        <option value="{{ supplier.id }}">
+                                            {{ supplier.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    
+    
+    <form action="{{ path('stock_index') }}" method="post" id="returnIndex">
+        <input type="hidden" name="start" value="{{ stock.addDate|mediumDate }}">
+        <input type="hidden" name="end" value="{{ stock.addDate|mediumDate }}">
+    </form>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            let product = $('#productId');
+            product.select2({
+                placeholder: "{{ 'loss.new.select_product'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addModal'),
+                language: "{{ app.session.get('_locale') }}"
+            });
+            product.val([]).trigger('change');
+
+            let productStock = $('#productStock');
+            productStock.select2({
+                placeholder: "{{ 'loss.new.select_product'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addProductReturnModal'),
+                language: "{{ app.session.get('_locale') }}"
+            });
+            productStock.val([]).trigger('change');
+        });
+    </script>
+    <script>
+        $(document).ready(function () {
+            const datepicker = $('.datepicker');
+            const changedatepicker = $('.changedatepicker');
+            const datepicker2 = $('.datepicker2');
+            datepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            changedatepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            datepicker2.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+            datepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                startDate: date,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            changedatepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                endDate: date,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            datepicker2.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                endDate: date,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            datepicker.val(date);
+            changedatepicker.val(date);
+            datepicker2.val(date);
+        });
+    </script>
+    <script>
+        getDataTable($('#dataTable'), true, 25, 'flrtip');
+
+        $('.input-qty').change(function (e) {
+            e.preventDefault();
+            const productStockId = $(this).attr('data-productStock');
+
+            if ($(this).val() === '' || $(this).val() === '0') {
+                $(this).val('1');
+                changeQty(productStockId, 1);
+            } else {
+                changeQty(productStockId, $(this).val());
+            }
+        });
+        function changeQty(id, qty = 1) {
+            let data = new FormData();
+            data.append("id", id + '');
+            data.append("qty", qty + '');
+
+            fetch('{{ path('rest_productStock_changeQty') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    if (data.stock != null) {
+                        window.location.reload('/' + data.locale + '/stock/detail/' + data.stock);
+                    }
+
+                } catch (reason) {
+                    console.log(reason);
+                }
+
+            }).catch(function (reason) {
+                console.log(reason);
+            });
+        }
+
+        {% if setting.withExpiration %}
+        $('.input-expirationDate').change(function (e) {
+            e.preventDefault();
+            const productStockId = $(this).attr('data-productStock');
+
+            if ($(this).val() === '') {
+                changeExpirationDate(productStockId);
+            } else {
+                changeExpirationDate(productStockId, $(this).val());
+            }
+        });
+        function changeExpirationDate(id, date = null) {
+            let data = new FormData();
+            data.append("id", id + '');
+            data.append("expirationDate", date+'');
+
+            fetch('{{ path('rest_productStock_changeExpirationDate') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    console.log('date successfull changed');
+
+                } catch (reason) {
+                    console.log(reason);
+                }
+
+            }).catch(function (reason) {
+                console.log(reason);
+            });
+        }
+        {% endif %}
+
+        $('.input-unitPrice').change(function (e) {
+            e.preventDefault();
+            const productStockId = $(this).attr('data-productStock');
+
+            if ($(this).val() === '' || $(this).val() === '0') {
+                $(this).val('1');
+                changeUnitPrice(productStockId, 1);
+            } else {
+                changeUnitPrice(productStockId, $(this).val());
+            }
+        });
+        function changeUnitPrice(id, unitPrice = 1) {
+            let data = new FormData();
+            data.append("id", id + '');
+            data.append("unitPrice", unitPrice + '');
+
+            fetch('{{ path('rest_productStock_changeUnitPrice') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    if (data.stock != null) {
+                        window.location.reload('/' + data.locale + '/stock/detail/' + data.stock);
+                    }
+
+                } catch (reason) {
+                    console.log(reason);
+                }
+
+            }).catch(function (reason) {
+                console.log(reason);
+            });
+        }
+
+        const body = $('body');
+        body.on('click','.senderMail',function (e) {
+            e.preventDefault();
+            const stockId = $(this).attr('data-stock');
+            console.log(stockId);
+            sendMail(stockId);
+            e.stopPropagation();
+        });
+        function sendMail(stockId) {
+            let data = new FormData();
+            data.append("id", stockId + '');
+            fetch('{{ path('rest_stock_byMail') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    if (data === true) {
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .success("<i class='fa fa-check-circle'></i> {{ 'stock.index.sendValid'|trans }}");
+                    }else{
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'stock.index.sendInvalid'|trans }}");
+                    }
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+{% endblock %}

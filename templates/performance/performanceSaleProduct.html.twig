@@ -1,0 +1,147 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+    <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+    <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+    <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+    <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+    <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+        });
+    </script>
+    {% if productStats is defined %}
+        <script>
+            let productSold = [];
+            {% for product in productStats %}
+            productSold.push({name: '{{ product.name }}',qty: {{ product.qty}}});
+            {% endfor %}
+            let elemDoughnutChart = "myDoughnutChartproductSold";
+            const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+
+            const loadDoughnut = loadDoughnutOrPieChart('doughnut',elemDoughnutChart,
+                productSold,thousandSeparator,doughnutcolors);
+        </script>
+    {% endif %}
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'performance.index.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="" method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end" value="{{ end|mediumDate }}">
+                        <select class="form-control mr-2 mb-1" name="employee" id="employee">
+                            <option value="0">{{ 'performance.index.form.select_employee'|trans }}</option>
+                            {% for employeeLigne in users  %}
+                                <option value="{{ employeeLigne.id }}" {% if (userId is defined) and employeeLigne.id == userId %}selected{% endif %}>
+                                    {{ employeeLigne.name|upper }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <button class="btn btn-outline-uyblue mb-1">
+                            <i class="fa fa-search"></i> {{ 'performance.index.form.btn_search'|trans }}
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+            {% if products is not empty %}
+                <div class="row">
+                    <div class="col-md-12 text-center h2 mb-5">
+                        <span class="text-info mt-0 header-title">
+                            {{ start | mediumDate }} - {{ end | mediumDate }}
+                        </span>
+                    </div>
+                    {% if products|length > 0 %}
+                        <div class="col-md-6 offset-md-3 mt-3 mb-5">
+                            <h6 class="text-center">{{ 'performance.index.title_pie'|trans }}</h6>
+                            <canvas id="myDoughnutChartproductSold" height="40px"></canvas>
+                        </div>
+                    {% endif %}
+                    <div class="col-md-10 offset-md-1">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%;" id="dataTable">
+                                <thead>
+                                <tr class="font-weight-bold">
+                                    <th>{{ 'performance.index.tr_product'|trans }}</th>
+                                    <th>
+                                        {{ 'performance.index.tr_sellPrice'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'performance.index.tr_qtySold'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'performance.index.tr_amount'|trans }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for product in products|sort((a,b) => a.qtySold <=> b.qtySold)|reverse   %}
+                                    <tr>
+                                        <td>
+                                            <a class="text-capitalize"
+                                               href="{{ path('product_detail',{id:product[0].id}) }}">
+                                                {{ product[0].name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ product[0].sellPrice|formated }}</td>
+                                        <td>
+                                            {{ product.qtySold|formatedInt }}
+                                        </td>
+                                        <td>
+                                            {{ product.amount|customCurrency }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 text-center alert alert-info font-weight-bold">
+                        <i class="fa fa-info-circle"></i> {{ 'performance.index.tr_nodata'|trans }}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block title %}
+    {{ 'performance.index.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}

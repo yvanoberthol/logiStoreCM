@@ -1,0 +1,7 @@
+{% if store is not null and store.imageName %}
+    <link rel="shortcut icon" href="{{ asset(storePhoto)~store.imageName }}">
+<img id="logo" src="{{ asset(storePhoto)~store.imageName }}"
+     alt="{{store.name}}" style="height: 100px">
+{% else %}
+    <link rel="shortcut icon" href="{{ asset('dist/images/logo.jpg') }}">
+{% endif %}

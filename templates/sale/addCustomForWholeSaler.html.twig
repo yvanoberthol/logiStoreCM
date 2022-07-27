@@ -1,0 +1,654 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ 'sale.add.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+
+        getDataTable($('#dataTable'),true);
+        $('#showByProduct').css('display','none');
+
+        fetch('{{ path('rest_cart_wholesaler_get') }}', {
+            method: 'GET',
+            credentials: 'include',
+        }).then( async response => {
+            try {
+                const data = await response.json();
+                $('#cart').html(data.content);
+
+                amount();
+            } catch (reason) {
+                console.log(reason);
+            }
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+
+        const product = $('#product');
+        product.select2({
+            placeholder: "{{ 'loss.new.select_product'|trans }}",
+            allowClear: true,
+            dropdownParent: $('.addModal'),
+            language: "{{ app.session.get('_locale') }}"
+        });
+        product.val([]).trigger('change');
+
+        const customer = $('#customer');
+        customer.select2({
+            placeholder: "{{ 'sale.add.select_customer_placeholder'|trans }}",
+            language: "{{ app.session.get('_locale') }}"
+        });
+
+        {% if app.session.get('customer') is defined and
+            app.session.get('customer') is not empty %}
+        customer.val({{ app.session.get('customer') }}).trigger('change');
+        {% else %}
+        customer.val([]).trigger('change');
+        {% endif %}
+
+        const body = $('body');
+
+        const thousandSeparator = "{{  app.session.get('setting').currencyThousandSeparator }}";
+
+        product.change(function (e) {
+            const id = $(this).val();
+            getStockByProduct(id);
+        });
+
+        customer.change(function (e) {
+            const id = $(this).val();
+            setCustomer(id);
+        });
+
+        body.on('change', '.input-qty', function (e) {
+            e.preventDefault();
+            if (parseInt($(this).attr('data-qty')) < parseInt($(this).val())){
+                alertify.logPosition("top right");
+                alertify.delay(2000)
+                    .error("<i class='fa fa-close'></i>{{ 'controller.cart.add.flash.error_qty'|trans }}");
+                $(this).val("1");
+            }
+
+            let qty = 0;
+            const inputQtys = document.querySelectorAll(".input-qty");
+            inputQtys.forEach(function (input) {
+                qty += parseInt(input.value);
+            });
+            $('#qtyTotal').val(qty);
+
+            $('#amountTotalTitle').text(''+$('#sellPrice').val()+' X '+$('#qtyTotal').val());
+            $('#amountTotalValue').text(formatNumber($('#sellPrice').val() * $('#qtyTotal').val(),thousandSeparator));
+        });
+
+        body.on('change', '#sellPrice', function (e) {
+            e.preventDefault();
+            $('#amountTotalTitle').text(''+$('#sellPrice').val()+' X '+$('#qtyTotal').val());
+            $('#amountTotalValue').text(formatNumber($('#sellPrice').val() * $('#qtyTotal').val(),thousandSeparator));
+        });
+
+        body.on('click', '#validLineCart', function (e) {
+            e.preventDefault();
+            const inputQtys = document.querySelectorAll(".input-qty");
+            let qty = 0;
+            inputQtys.forEach(function (input) {
+                qty += parseInt(input.value);
+            });
+            if (qty === 0){
+                alertify.logPosition("top right");
+                alertify.delay(2000)
+                    .error("<i class='fa fa-close'></i>{{ 'controller.cart.add.flash.empty_qty'|trans }}");
+            }else{
+                let productStocks = [];
+                inputQtys.forEach(function (input) {
+                    if (parseInt(input.value) > 0){
+                        let line = [input.getAttribute('data-batch'), parseInt(input.value),$('#sellPrice').val()];
+                        productStocks.push(line);
+                    }
+                });
+                addCart(product.val(),productStocks);
+            }
+        });
+        body.on('change', '.tax', function (e) {
+            e.preventDefault();
+            setTax($(this).attr('data-tax'));
+        });
+
+        body.on('change', '#product', function (e) {
+            e.preventDefault();
+            getStockByProduct(product.val());
+        });
+
+        body.on('change', '#amountReceived', function (e) {
+            e.preventDefault();
+
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            const cartAmount = parseInt($('#cart-total-input').text()) - discount;
+            const amountReceived = $(this);
+            const amountReceivedValue = (amountReceived.val() !== '') ? parseInt(amountReceived.val()): 0;
+
+            {% if setting.withPartialPayment == false %}
+            if (cartAmount > amountReceivedValue) {
+                $(this).val('0');
+                $('#amountRefund').val('0');
+
+                alertify.logPosition("top right");
+                alertify.delay(6000)
+                    .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                $('#btnValidate').hide();
+            }
+            {% endif %}
+
+            if ($(this).val() === '' || $(this).val() === '0') {
+                $(this).val('0');
+                {% if setting.withPartialPayment == false %}
+                $('#btnValidate').hide();
+                {% else %}
+                $('#btnValidate').show();
+                {% endif %}
+            } else {
+                const amountRemaining = amountReceivedValue - cartAmount;
+
+                if (!isNaN(amountRemaining) && amountRemaining >= 0) {
+                    $('#amountRefund').val(formatNumber(amountRemaining, thousandSeparator));
+                }
+                $('#btnValidate').show();
+            }
+        });
+
+        body.on('change', '#discount', function (e) {
+            e.preventDefault();
+
+            const cartTotalInput = parseInt($('#cart-total-input').text());
+
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            if (discount > cartTotalInput){
+                alertify.logPosition("top right");
+                alertify.delay(6000)
+                    .error("<i class='fa fa-close'></i> {{ 'sale.add.discount_invalid'|trans }}");
+
+                $('#discount').val('0');
+                $('#amountWithReduction').val(cartTotalInput);
+            }else{
+                const cartAmount = cartTotalInput - discount;
+                $('#amountWithReduction').val(cartAmount);
+
+                const amountReceived = $('#amountReceived');
+                const amountReceivedValue = (amountReceived.val() !== '') ? parseInt(amountReceived.val()): 0;
+                {% if setting.withPartialPayment == false %}
+                if (cartAmount > amountReceivedValue && amountReceivedValue > 0) {
+                    amountReceived.val('0');
+                    $('#amountRefund').val('0');
+
+                    alertify.logPosition("top right");
+                    alertify.delay(6000)
+                        .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                    $('#btnValidate').hide();
+                }
+                {% endif %}
+                if (amountReceivedValue === 0) {
+                    amountReceived.val('0');
+                    {% if setting.withPartialPayment == false %}
+                    $('#btnValidate').hide();
+                    {% else %}
+                    $('#btnValidate').show();
+                    {% endif %}
+                } else {
+                    const amountRemaining = amountReceivedValue - cartAmount;
+
+                    if (!isNaN(amountRemaining) && amountRemaining >= 0) {
+                        $('#amountRefund').val(formatNumber(amountRemaining, thousandSeparator));
+                    }
+                    $('#btnValidate').show();
+                }
+            }
+        });
+
+        body.on('click','.removeToCart',function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            removeToCart(productId);
+            e.stopPropagation();
+        });
+
+        body.on('click','#removeAllToCart',function (e) {
+            e.preventDefault();
+            removeAllToCart();
+            e.stopPropagation();
+        });
+
+        body.on('click','#btnValidate',function (e) {
+            e.preventDefault();
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            validateCart(
+                $('#amountReceived').val(),
+                $('#customer').val(),
+                $('#paymentMethod').val(),
+                $('.datepicker').val(),
+                discount
+            );
+            e.stopPropagation();
+        });
+
+        function amount() {
+            const inputQtys = document.querySelectorAll("input.input-qty-cart");
+            const checkBoxTaxs = document.querySelectorAll("input.tax");
+
+            let amount = 0;
+            inputQtys.forEach(function (input) {
+                amount += parseInt(input.value) * input.getAttribute('data-amount');
+            });
+
+            const totalHt = amount;
+
+            checkBoxTaxs.forEach(function (checkBox) {
+                let taxId = checkBox.getAttribute('data-tax');
+                if (checkBox.checked){
+                    const taxAmount =
+                        Math.trunc(Math.round(Math.floor(Math.floor(parseFloat(checkBox.value)/100 * totalHt))));
+                    amount += taxAmount;
+
+                    $('#tax-'+taxId).text(formatNumber(taxAmount, thousandSeparator));
+                }else{
+                    $('#tax-'+taxId).hide();
+                }
+            });
+
+            $('#cart-total').text(formatNumber(amount, thousandSeparator));
+            $('#cart-total-input').text(amount);
+
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            const discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            amount -= discount;
+            {% endif %}
+            $('#amountWithReduction').val(amount);
+        }
+
+        function addCart(id, productStocks=[]) {
+            let data = new FormData();
+            data.append( "id", id+'' );
+            for(let i = 0; i<productStocks.length;i++){
+                data.append( "productStocks[]", productStocks[i]);
+            }
+
+            fetch('{{ path('rest_cart_wholesaler_add') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+                    $('#cart').html(data.content);
+                    amount();
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeToCart(id) {
+            let data = new FormData();
+            data.append( "id", id+'' );
+
+            fetch('{{ path('rest_cart_wholesaler_remove') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+
+                    $('#cart').html(data.content);
+                    amount();
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeAllToCart() {
+
+            fetch('{{ path('rest_cart_wholesaler_removeAll') }}')
+                .then( async response => {
+                    try {
+                        const data = await response.json();
+                        $('#cart').html(data.content);
+                        amount();
+
+                        return false;
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function validateCart(amountReceived, customer, paymentMethod, saleDate = null,discount=0) {
+            let data = new FormData();
+            data.append("amountReceived", amountReceived + '');
+            data.append("discount", discount + '');
+            data.append("saleDate", saleDate + '');
+            data.append("customer", customer + '');
+            data.append("paymentMethod", paymentMethod + '');
+            data.append("userId", '{{ app.user.id }}');
+
+            fetch('{{ path('rest_cart_wholesaler_validate') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+                    alertify.logPosition("top right");
+                    if (data === null) {
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                    }else if(data === 'customer_invalid') {
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.customer_invalid'|trans }}");
+                    } else{
+                        alertify.delay(6000)
+                            .success("<i class='fa fa-check-circle'></i> {{ 'controller.sale.add.flash.success'|trans }}");
+
+                        const canPrint = $('#canPrint').is(':checked');
+
+
+                        //set the cart with her current value
+                        $('#cart').html(data.cart.content);
+                        amount();
+
+                        // print receipt if you checked
+                        if (canPrint) {
+                            let url_print = '{{ path('sale_print',{'id': 'saleId'}) }}'
+                                .replace("saleId", data.saleId);
+
+                            const wnd = window.open(url_print);
+                            wnd.print();
+                            wnd.onafterprint = function () {
+                                wnd.close();
+                            };
+                        }
+                        getProducts();
+                    }
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+
+        function setTax(id) {
+            let data = new FormData();
+            data.append("id", id + '');
+
+            fetch('{{ path('rest_cart_wholesaler_tax_set') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    amount();
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+
+        function getStockByProduct(id){
+            if (id === null){
+                $('#showByProduct').css('display','none');
+            }else{
+                let data = new FormData();
+                data.append( "id", id+'' );
+                fetch('{{ path('rest_productStock') }}', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then( async response => {
+                    try {
+                        const data = await response.json();
+
+                        if (data !== null){
+                            const productStocks = data['productStocks'];
+                            //console.log(productStocks);
+                            if (productStocks.length > 0){
+                                $('#qtyTotal').val('0');
+                                $('#showByProduct').css('display','block');
+
+                                $('#sellPrice').val(''+data['sellPrice']);
+
+                                $('#amountTotalTitle').text(''+$('#sellPrice').val()+' X '+$('#qtyTotal').val());
+                                $('#amountTotalValue').text(formatNumber($('#sellPrice').val() * $('#qtyTotal').val(),thousandSeparator));
+                                const productStock = $('#productStock');
+                                productStock.empty();
+
+                                for(let i=0; i < productStocks.length; i++){
+                                    let supplier = '';
+                                    if (productStocks[i].stock.supplier == null){
+                                        supplier = '//';
+                                    }else{
+                                        supplier = productStocks[i].stock.supplier.name;
+                                    }
+
+                                    productStock.append('<tr id="'+productStocks[i].id+'" data-value="'+productStocks[i].qtyRemaining+'">'+
+                                        '<td width="50%">'+supplier+' | '+productStocks[i].batchId+' = (<b>'+productStocks[i].qtyRemaining+'</b>)'+'</td>'+
+                                        '<td> <input class="form-control input-qty" data-qty="'+productStocks[i].qtyRemaining+'"' +
+                                        ' data-batch="'+productStocks[i].id+'" type="number" value="0"/></td>'+
+                                        '</tr>')
+                                }
+                            }else{
+                                $('#showByProduct').css('display','none');
+                            }
+                        }
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
+            }
+        }
+        function getProducts(){
+            fetch('{{ path('rest_product') }}', {
+                method: 'GET',
+                credentials: 'include'
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+
+                    console.log(data);
+                    if (data.length > 0){
+                        const products = $('#product');
+                        products.empty();
+
+                        for(let i=0; i < data.length; i++){
+                            products.append('<option value="'+data[i].id+'">'+
+                                    data[i].nameWithCategory+'&nbsp;('+data[i].stock+')'+
+                            '</option>')
+                        }
+                    }
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+
+        function setCustomer(id){
+            if (id !== null){
+                let data = new FormData();
+                data.append( "id", id+'' );
+                fetch('{{ path('rest_customer') }}', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then( async response => {
+                    try {
+                        const data = await response.json();
+
+                        if (data){
+                            window.location.href = '{{ path('sale_wholesaler_new') }}';
+                        }
+                        
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
+            }
+        }
+    </script>
+
+{% endblock %}
+
+{% block body %}
+
+    <div class="row mb-3">
+        <div class="col-lg-12 col-md-12 col-sm-12 ml-0">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mt-0 header-title text-center">
+                        {{ 'sale.add.card_title'|trans }}
+                        <span class="triangle-bsale-left pull-left"></span>
+                        <span class="triangle-bsale-right pull-right"></span>
+                        {% if app.session.get('customer') is defined and
+                            app.session.get('customer') is not empty %}
+                            <a href="#addModal" id="addToCart"
+                               data-toggle="modal"
+                               class="btn btn-outline-uyblue pull-right mr-2">
+                                <i class="fa fa-plus"></i>
+                            </a>
+                        {% endif %}
+                    </h4>
+
+                    <div class="table-responsive">
+                        <div class="form-group">
+                            <select class="form-control" name="customer"
+                                    id="customer" style="width: 100% !important;">
+                                {% for customer in customers  %}
+                                    <option value="{{ customer.id }}">
+                                        {{ customer.name }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    <div id="cart" class="table-responsive"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add productSale Modal -->
+    <div class="modal fade addModal" id="addModal" tabindex="-1" role="dialog"
+         aria-labelledby="setStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'sale.addgui.modal.form.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="productId">
+                                {{ 'sale.addgui.modal.form.product'|trans }}
+                            </label>
+                            <select class="form-control" style="width: 100% !important;"
+                                    name="product" id="product" required>
+                                {% for product in products  %}
+                                    <option value="{{ product.id }}">
+                                        {{ product.nameWithCategory }}
+                                        &nbsp;({{ product.stock }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="showByProduct">
+                            <div class="form-group">
+                                <label for="sellPrice">
+                                    {{ 'sale.addgui.modal.form.sellPrice'|trans }}
+                                </label>
+                                <input type="text" class="form-control" id="sellPrice">
+                            </div>
+                            <label>
+                                {{ 'sale.addgui.modal.form.qty'|trans }}
+                            </label>
+                            <table class="table table-striped" id="productStock">
+                            </table>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td width="50%">{{ 'sale.addgui.modal.form.qtyTotal'|trans }}</td>
+                                    <td class="font-weight-bold">
+                                        <input type="number" class="form-control font-weight-bold" id="qtyTotal" value="0" disabled>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td width="50%">
+                                        {{ 'sale.addgui.modal.form.subTotal'|trans }}
+                                    </td>
+                                    <td class="font-weight-bold">
+                                        (<span id="amountTotalTitle"></span>) =
+                                        <span id="amountTotalValue"></span> {{ app.session.get('setting').currencyName }}
+                                    </td>
+                                </tr>
+                            </table>
+                            <div class="form-group mt-2">
+                                <button class="btn btn-uyblue" id="validLineCart">
+                                    <i class="fa fa-save"></i> &nbsp; {{ 'loss.new.form.btn_save'|trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'cancel'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

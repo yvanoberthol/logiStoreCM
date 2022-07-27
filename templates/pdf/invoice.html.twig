@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ 'pdf.invoice.title'|trans({},'messages',app.session.get('_locale')) }}</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+</head>
+<body>
+{% set setting = app.session.get('setting') %}
+<div class="container-fluid" style="font-size: {{ setting.reportFontSize }}">
+    <div class="row" style="margin-bottom: 40px">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 border-dark py-2
+        rounded text-center">
+            {% if store.imageName is not null %}
+                <img id="logo" class="rounded img-responsive center-block"
+                     src="{{ storeImage }}{{ store.imageName }}"
+                     alt="{{store.name}}" style="height: 100px">
+            {% else %}
+                <img id="logo" class="rounded" src="{{ appLogo }}"
+                     alt="" style="height: 100px">
+            {% endif %}<br>
+            <b>{{ store.name }}</b><br>
+            {% if store.phoneNumber is not empty %}
+                {{ 'report.phone'|trans({},'messages',app.session.get('_locale')) }}: {{ store.phoneNumber }}
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <p>
+                <b class="text-uppercase">{{ sale.customer.name }}</b><br>
+                {{ sale.customer.email }}<br>
+                {% if sale.customer.phoneNumber is not null %}
+                    {{ sale.customer.phoneNumber }}
+                {% endif %}
+            </p>
+        </div>
+
+        <div class="col-sm-6 col-md-6 col-lg-6 col-xs-6
+        col-sm-offset-2 col-md-offset-2 col-lg-offset-2 col-xs-offset-2">
+            <table class="table table-borderless">
+                <tr>
+                    <td class="text-right font-weight-bold">
+                        {{ 'pdf.invoice.tr_code'|trans({},'messages',app.session.get('_locale')) }}:
+                    </td>
+                    <td>{{ sale.code }}</td>
+                </tr>
+                {% if sale.numInvoice %}
+                    <tr>
+                        <td class="text-right font-weight-bold">
+                            {{ 'pdf.invoice.tr_numInvoice'|trans({},'messages',app.session.get('_locale')) }}:
+                        </td>
+                        <td>{{ sale.numInvoice }}</td>
+                    </tr>
+                {% endif %}
+                <tr>
+                    <td class="text-right font-weight-bold">
+                        {{ 'pdf.invoice.tr_date'|trans({},'messages',app.session.get('_locale')) }}:
+                    </td>
+                    <td>{{ sale.addDate|longDate }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+            <table class="table table-bordered table-striped">
+                <tr class="font-weight-bold">
+                    <td>{{ 'pdf.invoice.tr_designation'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.invoice.tr_unitPrice'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.invoice.tr_qty'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.invoice.tr_amount'|trans({},'messages',app.session.get('_locale')) }}</td>
+                </tr>
+                {% for productSale in sale.productSales %}
+                    <tr>
+                        <td>{{ productSale.product.name }}</td>
+                        <td>{{ productSale.unitPrice|formated }}</td>
+                        <td>{{ productSale.qty|formatedInt }}</td>
+                        <td>{{ productSale.subtotal|formated }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="font-weight-bold">{{ 'pdf.invoice.tr_subtotal'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>
+                        {{sale.amountWithoutTax|formated}}
+                    </td>
+                </tr>
+                {% for tax in sale.taxs %}
+                    <tr>
+                        <td></td>
+                        <td></td>
+                        <td class="font-weight-bold">{{ tax.name }}({{ tax.rate }}%)</td>
+                        <td>{{ ((sale.amountWithoutTax * tax.rate)/100)|formated }}</td>
+                    </tr>
+                {% endfor %}
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td class="font-weight-bold">{{ 'pdf.invoice.tr_total'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>
+                        {{sale.amount|customCurrency}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    <div class="row" style="margin-top: 40px">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center h4">
+            {{ store.slogan }}
+        </div>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!-- Product Stock Modal -->
+<div class="modal fade" id="productStockModal" tabindex="-1"
+     role="dialog"
+     aria-labelledby="productStockModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'productStock.modal.title'|trans({},'messages',app.session.get('_locale')) }}
+                    <span class="text-info text-capitalize">
+                        {{ product.name }}
+                    </span>
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                <table class="table table-striped" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th style="width: 30%">
+                            {{ 'productStock.modal.body.tr_batch'|trans({},'messages',app.session.get('_locale')) }}
+                        </th>
+                        <th>{{ 'productStock.modal.body.tr_qty'|trans({},'messages',app.session.get('_locale')) }}</th>
+                        <th>{{ 'productStock.modal.body.tr_buyPrice'|trans({},'messages',app.session.get('_locale')) }}</th>
+                        <th>{{ 'productStock.modal.body.tr_sellPrice'|trans({},'messages',app.session.get('_locale')) }}</th>
+                        <th>{{ 'productStock.modal.body.tr_profit'|trans({},'messages',app.session.get('_locale')) }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set totalQty = 0 %}
+                    {% set totalProfit= 0 %}
+                    {% for productStock in productStocks %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('stock_detail',{'id':productStock.stockId}) }}">
+                                    {{ productStock.batch }} <br>
+                                    <span class="badge badge-uyblue">
+                                        {{ productStock.batchId }}
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                {{ productStock.qty|formatedInt }}
+                            </td>
+                            <td>
+                                {{ productStock.buyPrice|formated }}
+                            </td>
+                            <td>
+                                {{ productStock.sellPrice|formated }}
+                            </td>
+                            <td>
+                                {{ productStock.profit|formated }}
+                            </td>
+                        </tr>
+                        {% set totalQty = totalQty + productStock.qty %}
+                        {% set totalProfit = totalProfit + productStock.profit %}
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-weight-bold">
+                            <td></td>
+                            <td>{{ totalQty|formatedInt }}</td>
+                            <td></td>
+                            <td></td>
+                            <td>{{ totalProfit|formated }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    {{ 'close'|trans({},'messages',app.session.get('_locale')) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

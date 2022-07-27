@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'user.detail.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    <span class="mx-2">
+                       <a class="btn btn-light" href="{{ path('user_index') }}">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                    {{ 'user.detail.block_title'|trans }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right ml-3"></span>
+
+                </h5>
+                <div class="mb-2 table-responsive">
+                    <table class="table table-bordered" style="width: 100%;">
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'user.detail.tr_name'|trans }}
+                            </td>
+                            <td class="text-capitalize font-weight-bold">
+                                <span class="text-info">{{ user.allName }}</span>
+                                {% if user.role is not null %}({{ user.role.title|trans }}){% endif %}
+                            </td>
+                        </tr>
+                        {% if setting.withUserCategory  %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'user.detail.tr_category'|trans }} ({{ user.categories|length|formatedInt }})
+                                {% if is_granted(permission_verify,'USER_ADD_CATEGORY') %}
+                                <span  data-toggle="tooltip-info" data-original-title="{{ 'user.detail.tr_info_addcategory'|trans }}"
+                                      data-placement="top">
+                                    <a href="#addcategoryModal{{user.id}}" data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="row">
+                                    {% for category in user.categories %}
+                                        <div class="col-md-4 mt-1">
+                                                <table class="table">
+                                                    <tr>
+                                                        <td>
+                                                            <span
+                                                               class="text-capitalize">
+                                                                {{ category.name }}
+                                                            </span>
+                                                            {% if is_granted(permission_verify,'USER_REMOVE_CATEGORY') %}
+                                                                <span class="pull-right">
+                                                                    <a href="{{ path('user_remove_category',{user:user.id, category:category.id}) }}"
+                                                                       class="badge badge-danger">
+                                                                        <i class="fa fa-minus"></i>
+                                                                    </a>
+                                                                </span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-12">
+                                           <span class="text-secondary">
+                                               {{ 'user.detail.tr_nocategory'|trans }}
+                                           </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+        {% if setting.withUserCategory  %}
+            <div class="modal fade addModal"
+                 id="addcategoryModal{{user.id}}" tabindex="-1" role="dialog"
+                 aria-labelledby="addcategoryModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                {{ 'user.detail.addcategoryModal.title'|trans }}
+                                <span class="text-info text-uppercase">{{user.name}}</span>
+                            </h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ path('user_add_category') }}" method="post">
+                                <input type="hidden" value="{{ user.id }}" name="user">
+                                <div class="form-group">
+                                    <label for="category">{{ 'user.detail.addcategoryModal.form.category'|trans }}</label>
+                                    <select name="category[]" id="category" class="form-control"
+                                            style="width: 100% !important;" required multiple>
+                                        {% for category in categories %}
+                                            <option value="{{ category.id }}">{{ category.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-uyblue">
+                                        <i class="fa fa-save"></i> {{ 'user.detail.addcategoryModal.form.btn_add'|trans }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    <!-- Add Prescription Modal -->
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            let category = $('#category');
+            category.select2({
+                placeholder: "{{ 'user.detail.select_category'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addModal'),
+                language: "{{ app.request.get('_locale') }}"
+            });
+            category.val([]).trigger('change');
+
+        });
+
+
+    </script>
+
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+{% endblock %}

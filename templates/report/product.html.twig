@@ -1,0 +1,337 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'report.product.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable1'),false,10,'rtip');
+            getDataTable($('#dataTable2'),false,10,'rtip');
+            getDataTable($('#dataTable3'),false,10,'rtip');
+
+        });
+    </script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        let product = $('#product');
+
+        product.select2({
+            formatSelectionCssClass: function (data, container) {
+                return "mySelect2";
+            },
+            placeholder: "{{ 'product.printLabel.select_product'|trans }}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}",
+        });
+        product.val([]).trigger('change');
+
+        {% if product is defined %}
+        product.val({{ product.id }}).trigger('change');
+        {% else %}
+        product.val([]).trigger('change');
+        {% endif %}
+
+
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'report.product.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('report_product') }}" method="post"
+                          class="form-inline">
+                        <select class="mr-1 my-1 select2 mr-2" required style="width: 30%!important;"
+                                name="product" id="product">
+                            {% for product in products  %}
+                                <option value="{{ product.id }}">
+                                    {{ product.nameWithCategory }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" class="datepicker form-control ml-2 mr-2 mb-1"
+                               name="start" value="{{ start|mediumDate }}" style="width: 15%!important;">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|mediumDate }}" style="width: 15%!important;">
+                        <button type="submit" name="search"
+                                class="btn btn-outline-uyblue mr-2" >
+                            <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                    {% if product is defined %}
+                        {% if productSales is not empty or productStocks is not empty or losses is not empty %}
+                            <form action="{{ path('report_product') }}" method="post" target="_blank"
+                                  class="pull-right">
+                                <input type="hidden" name="start" value="{{ start|mediumDate }}">
+                                <input type="hidden" name="end" value="{{ end|mediumDate }}">
+                                <input type="hidden" name="product" value="{{ product.id }}">
+                                <button type="submit" name="print" value="print"
+                                        class="btn btn-success" >
+                                    <i class="fa fa-print"></i> {{ 'report.print'|trans }}
+                                </button>
+                            </form>
+                        {% endif %}
+                    {% endif %}
+                </div>
+            </div>
+            {% if product is defined %}
+                <div class="row title mt-5 mx-2">
+                    <div class="text-center col-sm-4 col-md-4 col-lg-4 col-xl-4 py-2 rounded">
+                        <a href="{{path('home')}}" class="logo">
+                            {{ render(path('imageLogo')) }}
+                        </a><br>
+                        <b>{{ store.name }}</b><br>
+                        {% if store.phoneNumber is not empty %}
+                            {{ 'report.phone'|trans }}: {{ store.phoneNumber }}
+                        {% endif %}
+                    </div>
+                    <div class="col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right offset-4">
+                        {{ 'report.doThe'|trans }}  {{ "now"|mediumDate }} <br>
+                        {{ 'report.agent'|trans }}: <span class="text-uppercase font-weight-bold">{{ app.user.name }}</span>
+                    </div>
+                </div>
+                <div class="row mt-3 mb-2">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                    <span class="h6 text-uppercase">
+                        {{ 'report.reportSession'|trans }} /
+                        <i>
+                            {{ 'report.product.productDetail'|trans }}
+                            <b>{{ product.nameWithCategory }}</b>
+                        </i>
+                    </span>
+                    </div>
+                </div>
+                <div class="row mt-2 text-uppercase">
+                    <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center py-2"
+                         style="border-top: #0a0c0d solid 2px;border-bottom: #0a0c0d solid 2px" >
+                    <span class="font-weight-bold">
+                        {{ start|mediumDate }} - {{ end|mediumDate }}
+                    </span>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 my-2">
+                        <ul class="nav nav-pills nav-justified" role="tablist">
+                            <li class="nav-item waves-effect waves-light">
+                                <a class="nav-link active show" data-toggle="tab"
+                                   href="#saleTab" role="tab" aria-selected="true">
+                                    {{ 'report.product.saleTab'|trans }}
+                                </a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light">
+                                <a class="nav-link" data-toggle="tab"
+                                   href="#stockTab" role="tab" aria-selected="false">
+                                    {{ 'report.product.stockTab'|trans }}
+                                </a>
+                            </li>
+                            <li class="nav-item waves-effect waves-light">
+                                <a class="nav-link" data-toggle="tab"
+                                   href="#lossTab" role="tab" aria-selected="false">
+                                    {{ 'report.product.lossTab'|trans }}
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="tab-content">
+                            <div class="tab-pane p-3 active show" id="saleTab" role="tabpanel">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table" style="width: 100%;" id="dataTable1">
+                                                <thead>
+                                                <tr>
+                                                    <th>{{ 'report.product.tr_date'|trans }}</th>
+                                                    <th>{{ 'report.product.tr_unitPrice'|trans }}</th>
+                                                    <th>{{ 'report.product.tr_qty'|trans }}</th>
+                                                    {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                                        <th>{{ 'report.product.tr_profit'|trans }}</th>
+                                                    {% endif %}
+                                                    <th>{{ 'report.product.tr_amount'|trans }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for productSale in productSales %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ productSale.addDate|mediumDate }}
+                                                        </td>
+                                                        <td>{{ productSale.unitPrice|formated  }}</td>
+                                                        <td>{{ productSale.qty|formatedInt  }}</td>
+                                                        {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                                            <td>{{ productSale.profit|formated }}</td>
+                                                        {% endif %}
+                                                        <td>{{ productSale.subtotal|formated }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                                {% if productSales is not empty %}
+                                                    <tfoot>
+                                                    <tr class="font-weight-bold">
+                                                        <td></td>
+                                                        <td></td>
+                                                        <td>{{ qtySold|formatedInt }}</td>
+                                                        {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                                            <td>{{ profitAmountSold|customCurrency }}</td>
+                                                        {% endif %}
+                                                        <td>{{ totalAmountSold|customCurrency }}</td>
+                                                    </tr>
+                                                    </tfoot>
+                                                {% endif %}
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane p-3" id="stockTab" role="tabpanel">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table" style="width: 100%;" id="dataTable2">
+                                                <thead>
+                                                <tr>
+                                                    <th>{{ 'report.product.tr_stockDate'|trans }}</th>
+                                                    {% if setting.withExpiration %}
+                                                        <th>{{ 'report.product.tr_expirationDate'|trans }}</th>
+                                                    {% endif %}
+                                                    {% if setting.withPurchasePrice  %}
+                                                        <th>{{ 'report.product.tr_unitPrice'|trans }}</th>
+                                                    {% endif %}
+                                                    <th>{{ 'report.product.tr_qty'|trans }}</th>
+                                                    {% if setting.withPurchasePrice  %}
+                                                    <th>{{ 'report.product.tr_amount'|trans }}</th>
+                                                    {% endif %}
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for productStock in productStocks %}
+                                                    <tr>
+                                                        <td>
+                                                            <a href="{{path('stock_detail',{'id': productStock.stock.id})}}">
+                                                                {{ productStock.stock.addDate|longDate }}
+                                                            </a>
+                                                        </td>
+                                                        {% if setting.withExpiration  %}
+                                                            <td>{{ productStock.expirationDate|mediumDate }}</td>
+                                                        {% endif %}
+                                                        {% if setting.withPurchasePrice  %}
+                                                            <td>{{ productStock.unitPrice|formated }}</td>
+                                                        {% endif %}
+                                                        <td>{{ productStock.qty|formated }}</td>
+                                                        {% if setting.withPurchasePrice  %}
+                                                            <td>{{ productStock.subtotal|formated }}</td>
+                                                        {% endif %}
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                                {% if productStocks is not empty %}
+                                                <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    {% if setting.withExpiration  %}
+                                                    <td></td>
+                                                    {% endif %}
+                                                    {% if setting.withPurchasePrice  %}
+                                                    <td></td>
+                                                    {% endif %}
+                                                    <td class="font-weight-bold">{{ qtyStock|formated }}</td>
+                                                    {% if setting.withPurchasePrice  %}
+                                                    <td class="font-weight-bold">
+                                                        {{ totalAmountStock|customCurrency }}
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                                </tfoot>
+                                                {% endif %}
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane p-3" id="lossTab" role="tabpanel">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <div class="table-responsive">
+                                            <table class="table " style="width: 100%;" id="dataTable3">
+                                                <thead>
+                                                <tr>
+                                                    <th>{{ 'report.product.tr_date'|trans }}</th>
+                                                    <th>{{ 'report.product.tr_type'|trans }}</th>
+                                                    <th>{{ 'report.product.tr_qty'|trans }}</th>
+                                                    <th>{{ 'report.product.tr_amount'|trans }}</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {% for loss in losses %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ loss.addDate|mediumDate }}
+                                                        </td>
+                                                        <td>
+                                                            {{ loss.type.name|trans }}
+                                                        </td>
+                                                        <td>
+                                                            {{ loss.qty|formated }}
+                                                        </td>
+                                                        <td>{{ loss.amount|formated }}</td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+                                                {% if losses is not empty %}
+                                                <tfoot>
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="font-weight-bold">{{ qtyLost|formated }}</td>
+                                                    <td class="font-weight-bold">{{ totalAmountLost|customCurrency }}</td>
+                                                </tr>
+                                                </tfoot>
+                                                {% endif %}
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

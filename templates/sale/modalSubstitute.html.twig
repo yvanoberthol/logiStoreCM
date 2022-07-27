@@ -1,0 +1,69 @@
+<!-- Substitute Modal -->
+<div class="modal fade" id="substituteModal{{product.id}}" tabindex="-1" role="dialog"
+     aria-labelledby="substituteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'product.index.modalSubstitute.title'|trans({},'messages',app.session.get('_locale')) }}
+                    <span class="text-info text-capitalize">
+                        {{ product.name }}
+                    </span>
+                    ({{ substitutes|length|formatedInt }})
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr>
+                        <th style="width: 45%">{{ 'product.index.modalSubstitute.tr_name'|trans({},'messages',app.session.get('_locale')) }}</th>
+                        <td style="width: 20%">{{ 'product.index.modalSubstitute.tr_price'|trans({},'messages',app.session.get('_locale')) }}</td>
+                        <td style="width: 15%">{{ 'product.index.modalSubstitute.tr_stock'|trans({},'messages',app.session.get('_locale')) }}</td>
+                        <td style="width: 20%">
+                            #
+                        </td>
+                    </tr>
+                    {% for substitute in substitutes|sort((a,b) => a.stock <=> b.stock)|reverse  %}
+                    <tr>
+                        <td class="text-capitalize">
+                            {{ substitute.name }}
+                        </td>
+                        <td>{{ substitute.sellPrice|formated }}</td>
+                        <td>
+                            <span class="{% if substitute.stockAlert >= substitute.stock %}bg-danger text-white p-2{% endif %}">
+                               {{ substitute.stock|formatedInt }}
+                           </span>
+                        </td>
+                        <td>
+                            {% if substitute.stock > 0 %}
+                                <button name="add" data-product="{{ substitute.id  }}"
+                                        class="addInCart btn-success mb-1 mr-1" type="button">
+                                    <i class="fa fa-shopping-basket"></i>
+                                </button>
+                            {% else %}
+                                <span class="text-danger h5">
+                                    <i class="fa fa-ban"></i>
+                                </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                        <tr>
+                            <td class="text-center text-info" colspan="4">
+                                <i class="fa fa-info-circle"></i>
+                                {{ 'product.index.modalSubstitute.noData'|trans({},'messages',app.session.get('_locale')) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    {{ 'product.index.modalSubstitute.footer.cancel'|trans({},'messages',app.session.get('_locale')) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

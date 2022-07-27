@@ -1,0 +1,265 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {% if is_granted(permission_verify,'FILE_SALE_EMPLOYEE')  %}
+                <span class="mx-2">
+                   <a class="btn btn-light" href="{{ path('file_sale_employee') }}">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </span>
+                {% endif %}
+                {{ 'file.sale.index.block_title'|trans }}
+                <span class="text-info">{{ employee.allName }}</span>
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                {% if is_granted(permission_verify,'FILE_SALE_EMPLOYEE')  %}
+                <div class="col-md-12">
+                    <form action="" method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="date" value="{{ date|mediumDate }}">
+                        <button class="btn btn-outline-uyblue mb-1">
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+                {% endif %}
+            </div>
+            {% if file is not null %}
+                <div class="row">
+                    <div class="col-md-12 text-center h2 mb-5">
+                        <span class="text-info mt-0 header-title">
+                            {{ date | mediumDate }}
+                        </span>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%;" id="dataTable">
+                                <thead>
+                                <tr class="font-weight-bold">
+                                    <th>{{ 'file.sale.index.tr_product'|trans }}</th>
+                                    {% if setting.withPackaging %}
+                                    <th>{{ 'Pack'|trans }}</th>
+                                    {% endif %}
+                                    <th class="not-sort">
+                                        {{ 'file.sale.index.tr_unitPrice'|trans }}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'file.sale.index.tr_qtySold'|trans }}
+                                        {% if setting.withSaleReturn %}
+                                            {{ 'file.sale.index.tr_qtySold_resend'|trans }}
+                                        {% endif %}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'file.sale.index.tr_amountSold'|trans }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for ligneFile in file %}
+                                    <tr>
+                                        <td>
+                                            <a class="text-capitalize text-uyblue-dark"
+                                               href="{{ path('product_detail',{id:ligneFile.id}) }}">
+                                                {{ ligneFile.product }}
+                                            </a>
+                                        </td>
+                                        {% if setting.withPackaging %}
+                                        <td>{{ ligneFile.packagingQty|formatedInt }}</td>
+                                        {% endif %}
+                                        <td>{{ ligneFile.unitPrice|formated }}</td>
+                                        <td>
+                                            {{ ligneFile.qtySold|formatedInt }}
+                                            {% if ligneFile.qtySaleReturn > 0 %}
+                                                ({{ ligneFile.qtySaleReturn|formatedInt }})
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ ligneFile.amountSold|formated }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                                {% if is_granted(permission_verify,'FILE_SALE_EMPLOYEE')  %}
+                                    <tfoot>
+                                    <tr>
+                                        <td></td>
+                                        {% if setting.withPackaging %}
+                                            <td></td>
+                                        {% endif %}
+                                        <td></td>
+                                        <td><b>{{ totalQtySold|formatedInt }}</b></td>
+                                        <td><b>{{ totalAmountSold|customCurrency }}</b></td>
+                                    </tr>
+                                    </tfoot>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 mt-3">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td colspan="2" class="h6 text-center">
+                                    <b>{{ 'file.sale.index.tab.credits'|trans }}</b>
+                                </td>
+                            </tr>
+                            {% for customer in customers  %}
+                                <tr>
+                                    <td class="text-uppercase">
+                                        <a href="{{ path('performance_customer',{id:customer.id}) }}">
+                                            {{ customer.name }}
+                                        </a>
+                                    </td>
+                                    <td>{{ customer.amount|formated }}</td>
+                                </tr>
+                            {% endfor %}
+                            <tr>
+                                <td></td>
+                                <td><b>{{ totalCredits|formated }}</b></td>
+                            </tr>
+                        </table>
+                    </div>
+                    {% if is_granted(permission_verify,'FILE_SALE_EMPLOYEE')  %}
+                        <div class="col-md-6 mt-3">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.colSeller'|trans }}</td>
+                                    <td><b>{{ employee.allName }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col1'|trans }}</td>
+                                    <td><b>{{ totalAmountSold|formated }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col2'|trans }}</td>
+                                    <td><b>{{ totalCredits|formated }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col3'|trans }}</td>
+                                    <td><b>{{ totalToDeposit|formated }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col6'|trans }}</td>
+                                    <td>
+                                        <b>{{ totalInitialBalance|formated }}</b>
+                                        {% if is_granted(permission_verify,'FILE_SALE_EDIT_INITIAL_BALANCE') %}
+                                            <a class="text-uyblue-dark ml-2" href="#"
+                                               onclick="document.getElementById('formEditInitialBalance').submit()">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col4'|trans }}</td>
+                                    <td>
+                                        <b>{{ totalEncashment|formated }}</b>
+                                        {% if is_granted(permission_verify,'FILE_SALE_EDIT_ENCASHMENT') %}
+                                            <a class="text-uyblue-dark ml-2" href="#"
+                                               onclick="document.getElementById('formEditEncashment').submit()">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% if totalEncashment > 0%}
+                                    <tr>
+                                        <td>{{ 'file.sale.index.tab2.col5'|trans }}</td>
+                                        <td>
+                                            <b class="text-{% if totalGap >= 0 %}info{% else %}danger{% endif %}">
+                                                {{ totalGap|formated }}
+                                            </b>
+                                        </td>
+                                    </tr>
+                                {% endif %}
+
+                            </table>
+                        </div>
+                    {% elseif is_granted(permission_verify,'FILE_SALE_EDIT_ENCASHMENT') %}
+                        <div class="col-md-6 mt-3">
+                            <table class="table table-bordered">
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col2'|trans }}</td>
+                                    <td><b>{{ totalCredits|formated }}</b></td>
+                                </tr>
+                                <tr>
+                                    <td>{{ 'file.sale.index.tab2.col4'|trans }}</td>
+                                    <td>
+                                        <b>{{ totalEncashment|formated }}</b>
+                                        {% if is_granted(permission_verify,'FILE_SALE_EDIT_ENCASHMENT') %}
+                                            <a class="text-uyblue-dark ml-2" href="#"
+                                               onclick="document.getElementById('formEditEncashment').submit()">
+                                                <i class="fa fa-pencil"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    {% endif %}
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 text-center alert alert-info font-weight-bold">
+                        <i class="fa fa-info-circle"></i> {{ 'file.sale.index.tr_nodata'|trans }}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+    <form action="{{ path('file_sale_edit_encashment',{id:employee.id})}}" method="post" id="formEditEncashment">
+        <input type="hidden" name="date" value="{{ date|mediumDate }}">
+    </form>
+    <form action="{{ path('file_sale_edit_initial_balance',{id:employee.id})}}" method="post" id="formEditInitialBalance">
+        <input type="hidden" name="date" value="{{ date|mediumDate }}">
+    </form>
+{% endblock %}
+
+{% block title %}
+    {{ 'file.sale.index.title'|trans({},'messages',app.session.get('_locale')) }} {{ date | mediumDate }}
+{% endblock %}

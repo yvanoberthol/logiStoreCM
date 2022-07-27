@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Print Label Barcode {{ product.nameWithCategory }}</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+</head>
+<body>
+<div class="container-fluid">
+    <div class="row">
+        <table>
+            {% set l = 0 %}
+            {% for i in 1..size %}
+            <tr>
+                {% for j in 1..5 %}
+                <td class="p-2 text-center"
+                    style="padding:.5rem!important;border-top: dashed;border-left: dashed;
+                        {% if loop.last %}border-right: dashed;{% endif %}
+                        {% if (size - 5) <= (i * j) %}border-bottom: dashed;{% endif %}">
+                    <img style="width: 125px; height: 50px;" alt="{{ product.qrCode }}"
+                         src="data:image/png;base64,{{ product.barCode }}">
+                    <span style="font-size: 8px; font-weight: bold;margin-top: 0">
+                        {{ product.qrCode }}
+                    </span>
+                </td>
+                    {% set l = i * j %}
+                {% endfor %}
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+</body>
+</html>

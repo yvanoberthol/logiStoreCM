@@ -1,0 +1,108 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'performance.performancePaymentMethod.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | longDate }} - {{ end | longDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datetimepicker({
+                format: '{{ app.session.get('setting').dateLongPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'performance.performancePaymentMethod.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('performance_payment_method') }}"
+                          method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|longDate}}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|longDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue" >
+                            <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center h3 mb-5">
+                    <span class="text-info mt-0 header-title">
+                        {{ start | longDate }} - {{ end | longDate }}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                {% for i,type in paymentMethods %}
+                <div class="col-md-4 col-xl-4 mb-2">
+                    <div class="mini-stat clearfix bg-{{ colors[i] }}">
+                        <div class="text-center text-light">
+                            <div class="mb-3">
+                               <span class="text-white h5">
+                                {{ type.paymentMethod.name }}
+                            </span>
+                            </div>
+                            <div>
+                                <table class="table table-bordered" style="font-size: 14px">
+                                    <tr class="text-white">
+                                        <td>
+                                            {{ 'performance.performancePaymentMethod.tr_nbSales'|trans }}
+                                        </td>
+                                        <td>
+                                            {{ 'performance.performancePaymentMethod.tr_amountSettled'|trans }}
+                                        </td>
+                                        <td>
+                                            {{ 'performance.performancePaymentMethod.tr_amountDebt'|trans }}
+                                        </td>
+                                    </tr>
+                                    <tr class="text-white">
+                                        <td>{{ type.sales|length|formatedInt }}</td>
+                                        <td>{{ type.amountReceived|formated }}</td>
+                                        <td>{{ type.amountDebt|formated }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

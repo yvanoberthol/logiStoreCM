@@ -1,0 +1,179 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'stock.import.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $('#supplier').select2({
+            placeholder: "{{ 'stock.import.select_supplier'|trans }}",
+            allowClear: true,
+            language: "{{ app.request.get('_locale') }}"
+        });
+        $('#supplier').val([]).trigger('change');
+        getDataTable($('#dataTable'),true);
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'stock.import.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row">
+                {% if products is not defined %}
+                    <form class="col-md-12" action="" method="post" enctype="multipart/form-data">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+
+                                <h6># {{ 'stock.import.step1'|trans }}</h6>
+                                <div class="form-inline">
+                                    <input type="file" name="file" id="file"
+                                           accept=".csv,.xls,.xlsx"
+                                           class="form-control mb-2 mr-4" required>
+                                    <input class="form-control mr-1" type="checkbox" name="hasFirstRow"
+                                           id="hasFirstRow">
+                                    <label for="hasFirstRow">{{ 'stock.import.removeFirstRow'|trans }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <h6 class="col-md-12"># {{ 'stock.import.setp2'|trans }}</h6>
+                            {% for i,key in keys %}
+                                <div class="col-md-3">
+                                    <div class="form-inline mb-2">
+                                        <label for=""
+                                               class="mr-2 mb-2"> {{ 'stock.import.column'|trans }} {{ i+1 }}</label>
+                                        <select class="form-control" name="fields[{{ i }}]" id="fields">
+                                            <option value="empty">{{ 'stock.import.empty'|trans }}</option>
+                                            {% for key in keys %}
+                                                <option value="{{ key }}">{{ key|trans }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-uyblue form-control"
+                                        name="display" value="display">
+                                    <i class="fa fa-eye"></i> {{ 'stock.import.display'|trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <form class="col-md-12" action="" method="post">
+                        <div class="row mb-4">
+                            <div class="col-md-12 w-100 form-inline">
+                                <input type="text" class="form-control mr-2"
+                                       name="numInvoice" id="numInvoice"
+                                       placeholder="{{ 'stock.import.form.numInvoice'|trans }}">
+                                <input type="text" class="form-control mr-2" name="numBill" id="numBill"
+                                       placeholder="{{ 'stock.import.form.numBill'|trans }}">
+                                <select class="form-control mr-2" name="statut" id="statut" >
+                                    <option value="0" selected>
+                                        {{ 'stock.import.form.status.pending'|trans }}
+                                    </option>
+                                    <option value="1">
+                                        {{ 'stock.import.form.status.delivered'|trans }}
+                                    </option>
+                                </select>
+                                <select class="form-control" name="supplier" id="supplier"
+                                    style="width: 30% !important;">
+                                    <option value="0" selected>
+                                        {{ 'stock.import.select_noSupplier'|trans}}
+                                    </option>
+                                    {% for supplier in suppliers %}
+                                        <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                    {% endfor %}
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <h6># {{ 'stock.import.step3'|trans }}
+                                        (<span class="text-info">{{ products|length|formatedInt }}</span>)
+                                    </h6>
+                                    <table class="table " style="width: 100%;" id="dataTable">
+                                        <thead class="font-weight-bold">
+                                            <tr>
+                                                {% if nameExist is defined %}
+                                                    <th>{{ 'stock.import.tr_name'|trans }}</th>
+                                                {% endif %}
+                                                {% if qtyExist is defined %}
+                                                    <th>{{ 'stock.import.tr_qty'|trans }}</th>
+                                                {% endif %}
+                                                {% if buyPriceExist is defined and setting.withPurchasePrice %}
+                                                    <th>{{ 'stock.import.tr_buyPrice'|trans }}</th>
+                                                    <th>{{ 'stock.import.tr_subtotal'|trans }}</th>
+                                                {% endif %}
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% set amountOrder = 0 %}
+                                        {% for product in products %}
+                                            <tr>
+                                                {% if nameExist is defined %}
+                                                    <td>{{ product.name }}</td>
+                                                {% endif %}
+                                                {% if qtyExist is defined %}
+                                                    <td>{{ product.qty|formatedInt }}</td>
+                                                {% endif %}
+                                                {% if buyPriceExist is defined and setting.withPurchasePrice %}
+                                                    <td>{{ product.buyPrice|formated }}</td>
+                                                    <td>{{ (product.buyPrice * product.qty)|formated }}</td>
+                                                {% endif %}
+                                                {% set amountOrder = amountOrder + (product.buyPrice * product.qty) %}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                        {% if buyPriceExist is defined and setting.withPurchasePrice %}
+                                        <tfooter>
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="font-weight-bold h6">{{ amountOrder|customCurrency }}</td>
+                                            </tr>
+                                        </tfooter>
+                                        {% endif %}
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <form action="" method="post">
+                                    <button type="submit" class="btn btn-success" name="validImport" value="valid">
+                                        <i class="fa fa-check-circle"></i> {{ 'stock.import.validate'|trans }}
+                                    </button>
+                                    <button type="submit" class="btn btn-danger" name="cancel" value="cancel">
+                                        <i class="fa fa-close"></i> {{ 'stock.import.cancel'|trans }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

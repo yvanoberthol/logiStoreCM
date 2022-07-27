@@ -1,0 +1,799 @@
+{% if app.user %}
+    {% set user = app.user %}
+<!-- ========== Left Sidebar Start ========== -->
+<div class="left side-menu">
+    <button type="button" class="button-menu-mobile button-menu-mobile-topbar
+    open-left waves-effect">
+        <i class="ion-close"></i>
+    </button>
+
+    <!-- LOGO -->
+    <div class="topbar-left mb-4 mt-2">
+        <div class="text-center">
+            <a href="{{path('home')}}" class="logo">
+                {{ render(path('imageLogo')) }}
+            </a>
+        </div>
+    </div>
+    <div class="sidebar-inner slimscrollleft">
+        <div id="sidebar-menu">
+            <ul>
+                {% if is_granted(permission_verify,'HOME') %}
+                    <li >
+                        <a href="{{path('home')}}">
+                            <i class="ti-dashboard"></i> {{ 'partials.sidebar.dashBoard'|trans }}
+                        </a>
+                    </li>
+                {% endif %}
+                {% if is_granted(permission_verify,'STORE_VALUE') %}
+                    <li >
+                        <a href="{{path('store_value')}}">
+                            <i class="ti-home"></i> {{ 'partials.sidebar.store'|trans }}
+                        </a>
+                    </li>
+                {% endif %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="fa fa-search"></i>
+                            <span> {{ 'partials.sidebar.search.title'|trans }} </span>
+                            <span class="pull-right">
+                                    <i class="mdi mdi-chevron-right"></i>
+                                </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'SEARCH_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('search_product') }}">
+                                        {{ 'partials.sidebar.search.product'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'SEARCH_SALE') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('search_sale') }}">
+                                        {{ 'partials.sidebar.search.sale'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'SEARCH_STOCK') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('search_stock') }}">
+                                        {{ 'partials.sidebar.search.stock'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% if is_granted(permission_verify,'INVENTORY_INDEX') %}
+                    <li >
+                        <a href="{{path('inventory_index')}}">
+                            <i class="ti-clipboard"></i> {{ 'partials.sidebar.inventory'|trans }}
+                        </a>
+                    </li>
+                {% endif %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="fa fa-bar-chart"></i>
+                            <span> {{ 'partials.sidebar.performance.title'|trans }} </span>
+                            <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'PERFORMANCE_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_index') }}">
+                                        {{ 'partials.sidebar.performance.sale'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PERFORMANCE_PURCHASE') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_purchase') }}">
+                                        {{ 'partials.sidebar.performance.stock'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PERFORMANCE_PROFIT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_profit') }}">
+                                        {{ 'partials.sidebar.performance.profit'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PERFORMANCE_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_product') }}">
+                                        {{ 'partials.sidebar.performance.products'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PERFORMANCE_PRODUCT_CATEGORY') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_product_category') }}">
+                                        {{ 'partials.sidebar.performance.categories'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PERFORMANCE_PAYMENT_METHOD') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('performance_payment_method') }}">
+                                        {{ 'partials.sidebar.performance.paymentMethod'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="ti-book"></i>
+                            <span> {{ 'partials.sidebar.report.title'|trans }} </span>
+                            <span class="pull-right">
+                                    <i class="mdi mdi-chevron-right"></i>
+                                </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'REPORT_FILE_SALE') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_file_sale') }}">
+                                        {{ 'partials.sidebar.report.fileSale'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_ACTIVITY') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_activity') }}">
+                                        {{ 'partials.sidebar.report.activity'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_PRODUCT_CATEGORY') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_product_category') }}">
+                                        {{ 'partials.sidebar.report.productCategory'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_SALE_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_sale_product') }}">
+                                        {{ 'partials.sidebar.report.saleByProduct'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_CUSTOMER_SALE_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_customer_sale_product') }}">
+                                        {{ 'partials.sidebar.report.saleByProductCustomer'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_SALE_PRODUCT_RETURN')
+                                and setting.withSaleReturn %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_sale_product_return') }}">
+                                        {{ 'partials.sidebar.report.productSaleReturn'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_ADJUSTMENT_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_adjustment_product') }}">
+                                        {{ 'partials.sidebar.report.adjustment'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_EMPLOYEE') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_employee') }}">
+                                        {{ 'partials.sidebar.report.saleByEmployee'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_SUPPLIER') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_supplier') }}">
+                                        {{ 'partials.sidebar.report.supplier'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_STOCK') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_stock') }}">
+                                        {{ 'partials.sidebar.report.stock'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_STOCK_PRODUCT_RETURN') and setting.withStockReturn %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_stock_product_return') }}">
+                                        {{ 'partials.sidebar.report.productStockReturn'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_EXPENSE') and setting.withExpense%}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_expense') }}">
+                                        {{ 'partials.sidebar.report.expense'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_LOSS') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_loss') }}">
+                                        {{ 'partials.sidebar.report.loss'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_PRODUCT') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_product') }}">
+                                        {{ 'partials.sidebar.report.product'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'REPORT_TRANSACTION')
+                                and setting.withAccounting and moduleExists(acc_man) %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_transaction') }}">
+                                        {{ 'partials.sidebar.report.transaction'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if setting.withHrm  and is_granted(permission_verify,'REPORT_SALARY')
+                                and moduleExists(hrm)%}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_salary') }}">
+                                        {{ 'partials.sidebar.report.salary'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if setting.withHrm  and is_granted(permission_verify,'REPORT_ATTENDANCE')
+                                and moduleExists(hrm) %}
+                                <li class="nav-item">
+                                    <a href="{{ path('report_attendance') }}">
+                                        {{ 'partials.sidebar.report.attendance'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="fa fa-product-hunt"></i>
+                            <span> {{ 'partials.sidebar.products.title'|trans }} </span>
+                            <span class="pull-right">
+                                <i class="mdi mdi-chevron-right"></i>
+                            </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'PRODUCT_CATEGORY_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('product_category_index') }}">
+                                        {{ 'partials.sidebar.productCategories.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_PACKAGING_INDEX') and setting.withPackaging %}
+                                <li class="nav-item">
+                                    <a href="{{ path('product_packaging_index') }}">
+                                        {{ 'partials.sidebar.productPackagings.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_IMPORT') %}
+                            <li class="nav-item">
+                                <a href="{{ path('product_import') }}">
+                                    {{ 'partials.sidebar.products.import'|trans }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('product_new') }}">
+                                    {{ 'partials.sidebar.products.new'|trans }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('product_index') }}">
+                                    {{ 'partials.sidebar.products.list'|trans }}
+                                </a>
+                            </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_PRICE') and setting.withBatchPrice %}
+                                <li class="nav-item">
+                                    <a href="{{ path('product_price') }}">
+                                        {{ 'partials.sidebar.products.price'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_PRINT_LABEL') and setting.withBarcode %}
+                                <li class="nav-item">
+                                    <a href="{{ path('product_print_label') }}">
+                                        {{ 'partials.sidebar.products.printLabel'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_EXPIRY_DATE') and setting.withExpiration %}
+                            <li class="nav-item">
+                                <a href="{{ path('product_expiry_date') }}">
+                                    {{ 'partials.sidebar.products.expiration'|trans }}
+                                </a>
+                            </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-adjust"></i>
+                        <span> {{ 'partials.sidebar.adjustments.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'ADJUSTMENT_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('adjustment_new') }}">
+                                    {{ 'partials.sidebar.adjustments.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'ADJUSTMENT_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('adjustment_index') }}">
+                                    {{ 'partials.sidebar.adjustments.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-shopping-cart"></i>
+                        <span> {{ 'partials.sidebar.sales.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'SALE_CHOICE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_choice') }}">
+                                    {{ 'partials.sidebar.sales.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+
+                        {% if is_granted(permission_verify,'SALE_CHOICE') == false and
+                            is_granted(permission_verify,'SALE_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_new') }}">
+                                    {{ 'partials.sidebar.sales.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'FILE_SALE_EMPLOYEE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('file_sale_employee') }}">
+                                    {{ 'partials.sidebar.sales.file'|trans }}
+                                </a>
+                            </li>
+                        {% elseif(is_granted(permission_verify,'FILE_SALE_INDEX')) %}
+                            <li class="nav-item">
+                                <a href="{{ path('file_sale_index',{id:app.user.id}) }}">
+                                    {{ 'partials.sidebar.sales.file'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SALE_MINE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_mine') }}">
+                                    {{ 'partials.sidebar.sales.mine'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SALE_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_index') }}">
+                                    {{ 'partials.sidebar.sales.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SALE_INDEX_UNSETTLED') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_index_unsettled') }}">
+                                    {{ 'partials.sidebar.sales.unsettledlist'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SALE_INDEX_DELETED') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_index_deleted') }}">
+                                    {{ 'partials.sidebar.sales.deletedlist'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SALE_PAYMENT_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('sale_payment_index') }}">
+                                    {{ 'partials.sidebar.sales.salePayments'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <span class="mr-2">
+                            <img class="mdi text-white" src="{{ asset('dist/images/order.svg') }}"
+                                 height="20px"
+                                 width="22px" />
+                        </span>
+                        <span> {{ 'partials.sidebar.orders.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'STOCK_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('stock_new') }}">
+                                    {{ 'partials.sidebar.orders.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'STOCK_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('stock_index') }}">
+                                    {{ 'partials.sidebar.orders.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if setting.withSettlement and is_granted(permission_verify,'STOCK_PAYMENT_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('stock_payment_index') }}">
+                                    {{ 'partials.sidebar.orders.stockPayments'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% if setting.withExpense %}
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="mdi mdi-receipt"></i>
+                            <span> {{ 'partials.sidebar.expenses.title'|trans }} </span>
+                            <span class="pull-right">
+                                <i class="mdi mdi-chevron-right"></i>
+                            </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'EXPENSE_TYPE_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('expense_type_index') }}">
+                                        {{ 'partials.sidebar.expenseTypes.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'EXPENSE_NEW') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('expense_new') }}">
+                                        {{ 'partials.sidebar.expenses.new'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'EXPENSE_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('expense_index') }}">
+                                        {{ 'partials.sidebar.expenses.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-minus-circle"></i>
+                        <span> {{ 'partials.sidebar.losses.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'LOSS_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('loss_new') }}">
+                                    {{ 'partials.sidebar.losses.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'LOSS_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('loss_index') }}">
+                                    {{ 'partials.sidebar.losses.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'LOSS_TYPE_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('loss_type_index') }}">
+                                    {{ 'partials.sidebar.lossTypes.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% if setting.withAccounting  and moduleExists(acc_man)%}
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="fa fa-bank"></i>
+                            <span> {{ 'partials.sidebar.banks.title'|trans }} </span>
+                            <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'BANK_NEW') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('bank_new') }}">
+                                        {{ 'partials.sidebar.banks.new'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'BANK_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('bank_index') }}">
+                                        {{ 'partials.sidebar.banks.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                    <li class="has_sub">
+                        <a href="javascript:void(0);" class="waves-effect">
+                            <i class="fa fa-exchange"></i>
+                            <span> {{ 'partials.sidebar.transactions.title'|trans }} </span>
+                            <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                        </a>
+                        <ul class="list-unstyled">
+                            {% if is_granted(permission_verify,'TRANSACTION_NEW') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('transaction_new') }}">
+                                        {{ 'partials.sidebar.transactions.new'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'TRANSACTION_INDEX') %}
+                                <li class="nav-item">
+                                    <a href="{{ path('transaction_index') }}">
+                                        {{ 'partials.sidebar.transactions.list'|trans }}
+                                    </a>
+                                </li>
+                            {% endif %}
+                        </ul>
+                    </li>
+                {% endif %}
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="ti-wallet"></i>
+                        <span> {{ 'partials.sidebar.paymentMethods.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'PAYMENT_METHOD_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('payment_method_new') }}">
+                                    {{ 'partials.sidebar.paymentMethods.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'PAYMENT_METHOD_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('payment_method_index') }}">
+                                    {{ 'partials.sidebar.paymentMethods.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-percent"></i>
+                        <span> {{ 'partials.sidebar.taxs.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'TAX_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('tax_new') }}">
+                                    {{ 'partials.sidebar.taxs.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'TAX_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('tax_index') }}">
+                                    {{ 'partials.sidebar.taxs.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% if setting.withSettlement  %}
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-money"></i>
+                        <span class="w-100 text-justify"> {{ 'partials.sidebar.stockPayments.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'STOCK_PAYMENT_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('stock_payment_index') }}">
+                                    {{ 'partials.sidebar.stockPayments.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% endif %}
+                {% if setting.withHrm and moduleExists(hrm)%}
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-users"></i>
+                        <span> {{ 'partials.sidebar.hrm.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'EMPLOYEE_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('employee_index') }}">
+                                    {{ 'partials.sidebar.employees.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'EMPLOYEE_FEE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('employee_fee') }}">
+                                    {{ 'partials.sidebar.hrm.fee'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'EMPLOYEE_ATTENDANCE') %}
+                            <li class="nav-item">
+                                <a href="{{ path('employee_attendance') }}">
+                                    {{ 'partials.sidebar.hrm.attendance'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'EMPLOYEE_SALARY') %}
+                            <li class="nav-item">
+                                <a href="{{ path('employee_salary') }}">
+                                    {{ 'partials.sidebar.hrm.salary'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                {% endif %}
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="ti-user"></i>
+                        <span> {{ 'partials.sidebar.customers.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'CUSTOMER_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('customer_new') }}">
+                                    {{ 'partials.sidebar.customers.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'CUSTOMER_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('customer_index') }}">
+                                    {{ 'partials.sidebar.customers.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="ti-user"></i>
+                        <span> {{ 'partials.sidebar.suppliers.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'SUPPLIER_NEW') %}
+                            <li class="nav-item">
+                                <a href="{{ path('supplier_new') }}">
+                                    {{ 'partials.sidebar.suppliers.new'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'SUPPLIER_INDEX') %}
+                            <li class="nav-item">
+                                <a href="{{ path('supplier_index') }}">
+                                    {{ 'partials.sidebar.suppliers.list'|trans }}
+                                </a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-user-circle"></i>
+                        <span> {{ 'partials.sidebar.users.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'USER_NEW') %}
+                        <li class="nav-item">
+                            <a href="{{ path('user_new') }}">
+                                {{ 'partials.sidebar.users.new'|trans }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'USER_INDEX') %}
+                        <li class="nav-item">
+                            <a href="{{ path('user_index') }}">
+                                {{ 'partials.sidebar.users.list'|trans }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
+                <li class="has_sub">
+                    <a href="javascript:void(0);" class="waves-effect">
+                        <i class="fa fa-lock"></i>
+                        <span> {{ 'partials.sidebar.roles.title'|trans }} </span>
+                        <span class="pull-right">
+                            <i class="mdi mdi-chevron-right"></i>
+                        </span>
+                    </a>
+                    <ul class="list-unstyled">
+                        {% if is_granted(permission_verify,'ROLE_NEW') %}
+                        <li class="nav-item">
+                            <a href="{{ path('role_new') }}">
+                                {{ 'partials.sidebar.roles.new'|trans }}
+                            </a>
+                        </li>
+                        {% endif %}
+                        {% if is_granted(permission_verify,'ROLE_INDEX') %}
+                        <li class="nav-item">
+                            <a href="{{ path('role_index') }}">
+                                {{ 'partials.sidebar.roles.list'|trans }}
+                            </a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <div class="clearfix mt-3"></div>
+    </div> <!-- end sidebarinner -->
+</div>
+<!-- Left Sidebar End -->
+{% endif %}

@@ -1,0 +1,134 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'user.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'user.index.block_title'|trans }} ({{ users|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'USER_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('user_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-export not-sort">ID</th>
+                        <th class="not-sort">{{ 'user.index.tr_username'|trans }}</th>
+                        <th class="not-sort">{{ 'user.index.tr_email'|trans }}</th>
+                        <th class="not-sort">{{ 'user.index.tr_password'|trans }}</th>
+                        <th class="not-sort">{{ 'user.index.tr_role'|trans }}</th>
+                        <th class="not-export" data-sort="false">
+                            {{ 'user.index.tr_state'|trans }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for user in users %}
+                        <tr>
+                            <td>{{user.id}}</td>
+                            <td class="text-uppercase">
+                                {% if setting.withUserCategory %}
+                                    <a href="{{ path('user_detail',{id:user.id}) }}">
+                                        {{user.allName}}
+                                    </a>
+                                {% else %}
+                                    {{user.allName}}
+                                {% endif %}
+                            </td>
+                            <td>{{user.email}}</td>
+                            <td>
+                                {% if user.role.rank < 3 and app.user.role.rank == 3 %}
+                                    {{user.plainPassword}}
+                                {% else %}
+                                    **********
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="text-info" href="#changeRoleModal{{user.id}}" data-toggle="modal">
+                                    {{user.role.title|trans}}
+                                </span>
+                                    {% if user.role.rank < 3 and is_granted(permission_verify,'USER_CHANGE_ROLE') %}
+                                        <div class="modal fade addModal"
+                                             id="changeRoleModal{{user.id}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="changeRoleModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">
+                                                            {{ 'role.index.changeRole.title'|trans }}
+                                                            <span class="text-info text-uppercase">{{user.allName}}</span>
+                                                        </h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <form action="{{ path('user_change_role') }}" method="post">
+                                                            <input type="hidden" value="{{ user.id }}" name="user">
+                                                            <div class="form-group">
+                                                                <label for="role">{{ 'role.index.changeRole.form.role.libelle'|trans }}</label>
+                                                                <select name="role" id="role" class="form-control"
+                                                                        style="width: 100% !important;" required>
+                                                                    {% for role in roles %}
+                                                                        <option value="{{ role.id }}"
+                                                                                {% if user.role.id == role.id %}selected{% endif %}>
+                                                                            {{ role.title|trans }}
+                                                                        </option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <button class="btn btn-uyblue">
+                                                                    <i class="fa fa-save"></i> {{ 'role.index.changeRole.form.btn_add'|trans }}
+                                                                </button>
+                                                            </div>
+                                                        </form>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                            </td>
+
+                            <td class="not-export">
+                                {% if user.role.rank < 3 and user.role != app.user.role and is_granted(permission_verify,'USER_UPDATE_STATUS')%}
+                                    <a href="{{ path('user_update_status',{'id': user.id}) }}"
+                                       class="badge badge-{% if user.enabled %}success{% else %}danger{% endif %} p-2">
+                                        {% if user.enabled %}<i>ON</i>{% else %}<i>OFF</i>{% endif %}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

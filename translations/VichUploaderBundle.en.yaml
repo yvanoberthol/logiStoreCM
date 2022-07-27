@@ -1,0 +1,17 @@
+form:
+  register:
+    imageFile:
+      title: Photo
+      placeholder: Choose an image
+  user:
+    imageFile:
+      title: Photo
+      placeholder: Choose an image
+  store:
+    imageFile:
+      title: Photo
+      placeholder: Choose an image
+  product:
+    imageFile:
+      title: Photo
+      placeholder: Choose an image

@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'expense.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+        });
+
+    </script>
+
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'expense.index.block_title'|trans }} ({{ expenses|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'EXPENSE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('expense_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="" method="post" class="form-inline pull-right">
+                        <select name="type" class="form-control m-2" id="type">
+                            <option value="0">
+                                {{ 'expense.index.form.all_type'|trans }}
+                            </option>
+                            {% for type in types  %}
+                                <option value="{{ type.id }}"
+                                        {% if typeSearch is defined and type.id == typeSearch%}selected{% endif %}>
+                                    {{ type.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|mediumDate }}">
+                        <button class="btn btn-outline-uyblue mb-1">
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                <thead>
+                    <tr>
+                        <th class="not-sort">{{ 'expense.index.tr_name'|trans }}</th>
+                        <th class="not-sort">{{ 'expense.index.tr_date'|trans }}</th>
+                        <th class="not-sort">{{ 'expense.index.tr_amount'|trans }}</th>
+                        <th>{{ 'expense.index.tr_type'|trans }}</th>
+                        <th>{{ 'expense.index.tr_paymentMethod'|trans }}</th>
+                        <th class="not-export not-sort">{{ 'expense.index.tr_actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for expense in expenses %}
+                    <tr>
+                        <td class="text-capitalize">
+                            {{ expense.name }}
+                            <span class="badge badge-info">
+                                <i class="fa fa-info-circle"></i>
+                            </span>
+                        </td>
+                        <td>
+                            {{ expense.date|mediumDate }}
+                        </td>
+                        <td>
+                            {{ expense.amount|formated }}
+                        </td>
+                        <td>
+                            {{ expense.type.name }}
+                        </td>
+                        <td>
+                            {{ expense.paymentMethod.name }}
+                        </td>
+                        <td>
+                            {% if expense.type.status and is_granted(permission_verify,'EXPENSE_EDIT') %}
+                            <a href="{{ path('expense_edit',{'id': expense.id}) }}" class="p-2 badge badge-uyblue">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {% endif %}
+                            {% if expense.type.status and is_granted(permission_verify,'EXPENSE_DELETE') %}
+                            <a href="#deleteModal{{expense.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{expense.id}}" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">{{ 'expense.index.modal.title'|trans }}</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ 'expense.index.modal.body'|trans }}
+                                            <span class="text-info">{{ expense.name }}</span>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                {{ 'cancel'|trans }}
+                                            </button>
+                                            <a class="btn btn-danger" href="{{path('expense_delete',{'id':expense.id})}}">
+                                                <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

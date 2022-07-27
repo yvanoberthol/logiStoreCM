@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.outOfDate.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        let table = getDataTable($('#dataTable'), true);
+        table.on('draw',function () {
+            $('[data-toggle="tooltip-danger"]').tooltip({
+                template: '<div class="tooltip tooltip-danger" role="tooltip"><div class="arrow"></div><div class="tooltip-inner"></div></div>'
+            });
+        });
+        $('#dataTable tbody').on('click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        });
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'product.outOfDate.block_title'|trans }}
+                ({{ productStocks|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="float-right mb-5">
+                <form class="form-inline" action="{{ path('product_out_of_date') }}" method="get">
+                    <select name="status" class="form-control mr-1 my-2">
+                        <option value="current" {% if search == 'current' %}selected{% endif %}>
+                            {{ 'product.outOfDate.form_current'|trans }}
+                        </option>
+                        <option value="withdraw" {% if search == 'withdraw' %}selected{% endif %}>
+                            {{ 'product.outOfDate.form_withdraw'|trans }}
+                        </option>
+                    </select>
+                    <button class="btn btn-outline-uyblue">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-sort" style="width: 20%;">{{ 'product.outOfDate.tr_expirationDate'|trans }}</th>
+                        <th style="width: 10%;">{{ 'product.outOfDate.tr_batchId'|trans }}</th>
+                        <th style="width: 30%;">{{ 'product.outOfDate.tr_name'|trans }}</th>
+                        {% if setting.withPurchasePrice  %}
+                        <th style="width: 10%;">{{ 'product.outOfDate.tr_buyPrice'|trans }}</th>
+                        {% endif %}
+                        <th style="width: 10%;">
+                            {% if search == 'withdraw' %}
+                                {{ 'product.outOfDate.tr_qtyOutOfDate'|trans }}
+                            {% else %}
+                                {{ 'product.outOfDate.tr_qtyRemaining'|trans }}
+                            {% endif %}
+                        </th>
+                        <th style="width: 20%;">{{ 'product.outOfDate.tr_supplier'|trans }}</th>
+                        <th style="width: 20%;" class="not-export not-sort">
+                            {% if search == 'withdraw' %}
+                                {{ 'product.outOfDate.tr_status'|trans }}
+                            {% else %}
+                                {{ 'product.outOfDate.tr_withDraw'|trans }}
+                            {% endif %}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set totalAmount = 0 %}
+                    {% for productStock in productStocks|sort((a,b) => a.expirationDate <=> b.expirationDate) %}
+                        <tr
+                            {% if productStock.outOfDate %}
+                                data-original-title="{{ 'product.detail.tr_outOfDate'|trans }}: {{ productStock.interval|abs }} {{ 'product.detail.tr_days'|trans }}"
+                                data-toggle="tooltip-danger" data-placement="left"
+                            {% endif %}
+                        >
+                            <td>
+                                {{ productStock.expirationDate|mediumDate }}
+                            </td>
+                            <td>
+                                {{ productStock.batchId }}
+                            </td>
+                            <td>
+                                <a class="text-capitalize text-uyblue-dark"
+                                   href="{{ path('product_detail',{id:productStock.product.id}) }}">
+                                    {{ productStock.product.name }}
+                                    ({% if productStock.product.category %}
+                                        {{ productStock.product.category.name }}
+                                    {% else %}
+                                        {{ 'product.outOfDate.tr_noCategory'|trans }}
+                                    {% endif %})
+                                </a>
+                            </td>
+                            {% if setting.withPurchasePrice  %}
+                            <td>{{ productStock.unitPrice|formated }}</td>
+                            {% endif %}
+                            <td>
+                                {% if productStock.outOfDate and productStock.withdraw == false %}
+                                    {{ productStock.qtyRemaining|formatedInt }}
+                                {% else %}
+                                    {{ productStock.qtyOutOfDate|formatedInt }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if productStock.stock.supplier is not null %}
+
+                                    {{ productStock.stock.supplier.name }}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if productStock.outOfDate and productStock.withdraw == false %}
+                                    {% if is_granted(permission_verify,'PRODUCT_STOCK_WITHDRAW')  %}
+                                        <a href="#withdrawModal{{productStock.id}}" data-toggle="modal" class="btn btn-danger">
+                                            {{ 'product.outOfDate.tr_valueWithDraw'|trans }}
+                                        </a>
+
+                                        <!-- withdraw Modal -->
+                                        <div class="modal fade" id="withdrawModal{{productStock.id}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="withdrawModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <form class="modal-content" method="post"
+                                                      action="{{path('product_stock_withdraw',{'id':productStock.id})}}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">{{ 'product.outOfDate.modal.title'|trans }}</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <input type="hidden" name="route" value="outOfDate">
+                                                        <input type="hidden" name="qtyRemaining" value="{{ productStock.qtyRemaining }}">
+                                                        {{ 'product.outOfDate.modal.body'|trans }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'product.outOfDate.modal.footer.cancel'|trans }}
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="fa fa-close"></i> {{ 'product.outOfDate.tr_valueWithDraw'|trans }}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% else %}
+                                    <h6>
+                                        <span class="badge badge-danger">
+                                            {{ 'product.outOfDate.tr_valueRemove'|trans }}
+                                        </span>
+                                    </h6>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% set totalAmount = totalAmount + (productStock.unitPrice * productStock.qtyOutOfDate) %}
+                    {% endfor %}
+                    </tbody>
+                    {% if search == 'withdraw' and totalAmount > 0 %}
+                        <tfooter>
+                            <tr>
+                                <td colspan="7" class="text-center">
+                                    <h5>
+                                        {{ 'product.detail.tr_totalAmountLoss'|trans }}:
+                                        <span class="text-danger">{{ totalAmount|formated }}</span>
+                                        {{ app.session.get('setting').currencyName }}
+                                    </h5>
+                                </td>
+                            </tr>
+                        </tfooter>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

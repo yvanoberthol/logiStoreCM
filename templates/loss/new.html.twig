@@ -1,0 +1,180 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'loss.new.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            const datepicker = $('.datepicker');
+            datepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+
+            const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+            datepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                endDate: date,
+                calendarWeeks: true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+            datepicker.val(date);
+        });
+    </script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        let product = $('#product');
+        let type = $('#type');
+
+        $('#showByProduct').css('display','none');
+
+        product.select2({
+            placeholder: "{{ 'loss.new.select_product'|trans }}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        product.val([]).trigger('change');
+
+        type.select2({
+            placeholder: "{{ 'loss.new.select_type'|trans }}",
+            allowClear: true,
+            language: "{{ app.request.get('_locale') }}"
+        });
+        type.val([]).trigger('change');
+
+        product.change(function (e) {
+            const id = $(this).val();
+            console.log(id);
+            getStockByProduct(id);
+        });
+
+        function getStockByProduct(id){
+            if (id === null){
+                $('#showByProduct').css('display','none');
+            }else{
+                let data = new FormData();
+                data.append( "id", id+'' );
+                fetch('{{ path('rest_productStock') }}', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then( async response => {
+                    try {
+                        const data = await response.json();
+                        const productStocks = data['productStocks'];
+                        if (productStocks.length > 0){
+                            $('#showByProduct').css('display','block');
+
+                            const productStock = $('#productStock');
+                            productStock.empty();
+
+                            for(let i=0; i < productStocks.length; i++){
+                                let supplier = '';
+                                if (productStocks[i].stock.supplier == null){
+                                    supplier = '//';
+                                }else{
+                                    supplier = productStocks[i].stock.supplier.name;
+                                }
+
+                                let dateDelivery =
+                                    dayjs(new Date(productStocks[i].stock.deliveryDate.slice(0,10)))
+                                        .format("{{ app.session.get('setting').mediumDateJs }}");
+
+                                productStock.append('<option id="'+productStocks[i].id+'" value="'+productStocks[i].id+'_'+productStocks[i].qtyRemaining+'">'+
+                                    supplier+' | '+productStocks[i].batchId+' = ('+productStocks[i].qtyRemaining+')'+
+                                    '</option>')
+                            }
+                        }else{
+                            $('#showByProduct').css('display','none');
+                        }
+                        console.log(data);
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
+            }
+        }
+
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-8 offset-md-2 col-xl-8 offset-xl-2">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    {{ 'loss.new.block_title'|trans }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                </h5>
+                <form action="{{ path('loss_new') }}" method="post">
+                    <div class="form-group">
+                        <label for="type">{{ 'materialLoss.new.form.txt_date'|trans }}</label>
+                        <input type="text" class="datepicker form-control"
+                               name="date" id="date" value="{{ date()|mediumDate }}" required>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" name="type" id="type">
+                            {% for type in types  %}
+                                <option value="{{ type.id }}">
+                                    {{ type.name|trans }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" name="product" id="product">
+                            {% for product in products  %}
+                                <option value="{{ product.id }}">
+                                    {{ product.nameWithCategory }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div id="showByProduct">
+                        <div class="form-group">
+                            <label for="productStock">{{ 'loss.new.form.txt_stock'|trans }}</label>
+                            <select class="form-control" name="productStock" id="productStock">
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="type">{{ 'loss.new.form.txt_qty'|trans }}</label>
+                            <input type="number" class="form-control" value="1"
+                                   name="qty" id="qty" required>
+                        </div>
+                        {#<div class="form-group">
+                            <input type="checkbox"
+                                   name="valuable" id="valuable">
+                            <label for="valuable">{{ 'loss.new.form.txt_valuable'|trans }}</label>
+
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox"
+                                   name="affectOrder" id="affectOrder">
+                            <label for="affectOrder">{{ 'loss.new.form.txt_affectOrder'|trans }}</label>
+                        </div>#}
+                        <div class="form-group mt-2">
+                            <button class="btn btn-uyblue">
+                                <i class="fa fa-save"></i> &nbsp; {{ 'loss.new.form.btn_save'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

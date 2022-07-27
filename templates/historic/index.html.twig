@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+        });
+
+        getDataTable($('#dataTable'));
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'historic.index.block_title'|trans }} {{ start |mediumDate }} - {{ end |mediumDate }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="" method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end" value="{{ end|mediumDate }}">
+                        <button class="btn btn-outline-uyblue mb-1">
+                            <i class="fa fa-search"></i> {{ 'historic.index.form.btn_search'|trans }}
+                        </button>
+                    </form>
+
+                </div>
+            </div>
+            {% if connections is not null %}
+                <div class="row">
+                    <div class="col-md-12 text-center h2 mb-5">
+                        <span class="text-info mt-0 header-title">
+                            {{ start |mediumDate }} - {{ end | mediumDate }}
+                        </span>
+                    </div>
+                    <div class="col-md-10 offset-md-1">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%;" id="dataTable">
+                                <thead>
+                                <tr>
+                                    <th class="not-sort">{{ 'historic.index.tr_date'|trans }}</th>
+                                    <th>
+                                        {{ 'historic.index.tr_user'|trans }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for connection in connections %}
+                                    <tr>
+                                        <td>{{ connection.addDate|longDate }}</td>
+                                        <td class="text-capitalize">
+                                            {{ connection.user.name }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 text-center alert alert-info font-weight-bold">
+                        <i class="fa fa-info-circle"></i> {{ 'historic.index.tr_nodata'|trans }}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block title %}
+    {{ 'historic.index.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}

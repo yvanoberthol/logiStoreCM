@@ -1,0 +1,206 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'noticeBoard.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+        });
+
+    </script>
+
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'noticeBoard.index.block_title'|trans }} ({{ noticeBoards|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'NOTICE_BOARD_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('notice_board_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                <thead>
+                    <tr>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_title'|trans }}</th>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_message'|trans }}</th>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_start'|trans }}</th>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_end'|trans }}</th>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_status'|trans }}</th>
+                        <th class="not-sort">{{ 'noticeBoard.index.tr_recorder'|trans }}</th>
+                        <th class="not-export not-sort">{{ 'noticeBoard.index.tr_actions'|trans }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for noticeBoard in noticeBoards %}
+                    <tr>
+                        <td>
+                            {{ noticeBoard.title }}
+                        </td>
+                        <td>
+                            {{ noticeBoard.message }}
+                        </td>
+                        <td>
+                            {{ noticeBoard.start|mediumDate }}
+                        </td>
+                        <td>
+                            {{ noticeBoard.end|mediumDate }}
+                        </td>
+                        <td>
+                            <span class="badge badge-{{ noticeBoard.statut }} p-2">
+                                {{ noticeBoard.statut|trans }}
+                            </span>
+                        </td>
+                        <td>
+                            {{ noticeBoard.recorder.name }}
+                        </td>
+                        <td>
+                            {% if is_granted(permission_verify,'NOTICE_BOARD_ADD_USER') %}
+                                <a href="#addUserModal{{noticeBoard.id}}" data-toggle="modal" class="p-2 badge badge-info">
+                                    <i class="fa fa-user"></i>
+                                </a>
+                                <!-- Add user Modal -->
+                                <div class="modal fade" id="addUserModal{{noticeBoard.id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="addUserModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">{{ 'noticeBoard.index.addUser.modal.title'|trans }}</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                <form action="{{ path('notice_board_add_user') }}" method="post">
+                                                    <input type="hidden" value="{{ noticeBoard.id }}" name="noticeBoard">
+
+                                                    <div class="form-group">
+                                                        <label for="employee{{ noticeBoard.id }}">
+                                                            {{ 'noticeBoard.index.addUser.form.listuser'|trans }}
+                                                        </label>
+                                                        <ul class="list-group" id="employee{{ noticeBoard.id }}">
+                                                            {% for noticeBoardEmployee in noticeBoard.noticeBoardEmployees %}
+                                                                <li class="list-group-item">
+                                                                    {{ noticeBoardEmployee.employee.name }}
+                                                                    {% if noticeBoardEmployee.seen %}
+                                                                        &nbsp;<i class="fa fa-eye"></i>
+                                                                    {% endif %}
+                                                                    {% if is_granted(permission_verify,'NOTICE_BOARD_DELETE_USER') %}
+                                                                        <a class="badge badge-danger pull-right"
+                                                                           href="{{ path('notice_board_delete_user',{id:noticeBoardEmployee.id}) }}">
+                                                                            <i class="fa fa-minus"></i>
+                                                                        </a>
+                                                                    {% endif %}
+                                                                </li>
+                                                            {% endfor %}
+                                                        </ul>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <label for="user{{ noticeBoard.id }}">{{ 'noticeBoard.index.addUser.form.user.libelle'|trans }}</label>
+                                                        <select name="user[]" id="user{{ noticeBoard.id }}" class="form-control"
+                                                                style="width: 100% !important;" multiple required>
+                                                            {% for user in users %}
+                                                                {% if user.id != app.user.id%}
+                                                                    <option value="{{ user.id }}">{{ user.name }}</option>
+                                                                {% endif %}
+                                                            {% endfor %}
+                                                        </select>
+                                                    </div>
+                                                    <div class="form-group">
+                                                        <button class="btn btn-uyblue">
+                                                            <i class="fa fa-save"></i> {{ 'noticeBoard.index.addUser.form.btn_add'|trans }}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                    {{ 'cancel'|trans }}
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'NOTICE_BOARD_EDIT') %}
+                            <a href="{{ path('notice_board_edit',{'id': noticeBoard.id}) }}" class="btn btn-uyblue">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'NOTICE_BOARD_DELETE') %}
+                            <a href="#deleteModal{{noticeBoard.id}}" data-toggle="modal" class="btn btn-danger">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{noticeBoard.id}}" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">{{ 'noticeBoard.index.modal.title'|trans }}</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ 'noticeBoard.index.modal.body'|trans }}
+                                            <span class="text-info">{{ noticeBoard.title }}</span>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                {{ 'cancel'|trans }}
+                                            </button>
+                                            <a class="btn btn-danger" href="{{path('notice_board_delete',{'id':noticeBoard.id})}}">
+                                                <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

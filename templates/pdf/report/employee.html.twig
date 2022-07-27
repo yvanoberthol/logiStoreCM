@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="{{ app.session.get('_locale') }}">
+<head>
+    <title>{{ 'report.saleByEmployee.title'|trans({},'messages',app.session.get('_locale')) }}</title>
+    <style type="text/css" rel="stylesheet" media="screen">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+</head>
+<body>
+{% set setting = app.session.get('setting') %}
+<div class="container-fluid" style="font-size: {{ setting.reportFontSize }}">
+    <div class="row title mx-2">
+        <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4 border-dark py-2
+        rounded text-center">
+            {% if store.imageName %}
+                <img id="logo" class="rounded"
+                     src="{{ storeImage }}{{ store.imageName }}"
+                     alt="{{store.name}}" style="height: 100px"><br>
+            {% else %}
+                <img id="logo" class="rounded" src="{{ appLogo }}"
+                     alt="" style="height: 100px"><br>
+            {% endif %}
+            <b>{{ store.name }}</b><br>
+            {% if store.phoneNumber is not empty %}
+                {{ 'report.phone'|trans({},'messages',app.session.get('_locale')) }}: {{ store.phoneNumber }}
+            {% endif %}
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4">
+        </div>
+        <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4 text-right">
+            {{ 'report.doThe'|trans({},'messages',app.session.get('_locale')) }} {{ "now"|mediumDate }} <br>
+            {{ 'report.agent'|trans({},'messages',app.session.get('_locale')) }}:
+            <span class="text-uppercase font-weight-bold">{{ app.user.name }}</span>
+        </div>
+    </div>
+    <div class="row mt-5 mb-2">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12 text-center">
+            <span class="h6 text-uppercase">
+                {{ 'report.reportSession'|trans({},'messages',app.session.get('_locale')) }} /
+                <i>{{ 'report.saleByEmployee.saleList'|trans({},'messages',app.session.get('_locale')) }}</i>
+            </span>
+        </div>
+    </div>
+    <div class="row my-4 mx-2 text-uppercase">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12 text-center py-2"
+             style="border-top: #0a0c0d solid 2px;border-bottom: #0a0c0d solid 2px" >
+                <span class="font-weight-bold">
+                    {{ start|longDate }} - {{ end|longDate }}
+                </span>
+        </div>
+    </div>
+    <div >
+        <table class="table table-bordered">
+            <tr style="font-weight: bold">
+                <td>{{ 'report.saleByEmployee.tr_name'|trans({},'messages',app.session.get('_locale')) }}</td>
+                <td>{{ 'report.saleByEmployee.tr_qty'|trans({},'messages',app.session.get('_locale'))}}</td>
+                <td>{{ 'report.saleByEmployee.tr_profit'|trans({},'messages',app.session.get('_locale'))}}</td>
+                <td>{{ 'report.saleByEmployee.tr_amount'|trans({},'messages',app.session.get('_locale')) }}</td>
+            </tr>
+            {% set nbSales = 0 %}
+            {% set profit = 0 %}
+            {% set amount = 0 %}
+            {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.name }}</td>
+                    <td>{{ employee.nbSales|formatedInt }}</td>
+                    <td>{{ employee.profit|formated }}</td>
+                    <td>{{ employee.amount|formated }}</td>
+                </tr>
+                {% set nbSales = nbSales + employee.nbSales %}
+                {% set profit = profit + employee.profit %}
+                {% set amount = amount + employee.amount %}
+            {% endfor %}
+            <tr style="font-weight: bold">
+                <td></td>
+                <td>{{ nbSales|formatedInt }}</td>
+                <td>{{ profit|formated }}</td>
+                <td>{{ amount|formated }}</td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>

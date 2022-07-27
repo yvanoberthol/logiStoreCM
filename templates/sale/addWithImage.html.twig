@@ -1,0 +1,599 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ 'sale.add.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/content-paginatorjs/flexible.pagination.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+
+        const search_input = $("input#search");
+        $(document).ready(function () {
+            const search_input = $("input#search");
+            search_input.focus();
+            search_input.keyup(function (e) {
+                if ((!isNaN(search_input.val()) && search_input.val() != '')
+                    || isNumber(search_input.val())
+                    || e.keyCode == 13) {
+                    getProductBarcode(search_input.val());
+                }
+            } );
+        });
+
+        $('div.pagination').flexiblePagination({
+            displayedPages: 5,
+            showGotoFirst:false,
+            showGotoLast:false,
+            showPrevious:true,
+            showNext:true,
+
+            itemsPerPage : 12,
+            itemSelector : 'div.result:visible',
+            pagingControlsContainer : '#pagingControls',
+            showingInfoSelector : '#showingInfo',
+            css: {
+                btnNumberingClass: 'btn btn-sm btn-uyblue',
+                btnActiveClass:"btn btn-sm btn-uyblue-dark",
+                btnFirstClass: 'btn btn-sm btn-uyblue',
+                btnLastClass: 'btn btn-sm btn-uyblue',
+                btnNextClass: 'btn btn-sm btn-uyblue',
+                btnPreviousClass: 'btn btn-sm btn-uyblue'
+            }
+        });
+
+        function isNumber(value)
+        {
+            return typeof value === 'number' && isFinite(value);
+        }
+
+        function clearFocus(){
+            const search_input = $("input#search");
+            search_input.val('');
+            search_input.focus();
+        }
+
+        const customer = $('#customer');
+        customer.select2({
+            placeholder: "{{ 'sale.add.select_customer'|trans({},'messages',app.session.get('_locale')) }}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        customer.val([]).trigger('change');
+
+        //load cart when page is displaying
+        fetch('{{ path('rest_cart_get') }}', {
+            method: 'GET',
+            credentials: 'include',
+        }).then(async response => {
+            try {
+                const data = await response.json();
+                $('#cart').html(data.content);
+                {% if setting.withPartialPayment == false or
+                    is_granted(permission_verify,'SALE_WITH_PARTIAL_PAYMENT') == false %}
+                $('#btnValidate').hide();
+                {% endif %}
+                amount();
+
+                return false;
+            } catch (reason) {
+                console.log(reason);
+            }
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+
+        const body = $('body');
+
+        const thousandSeparator = "{{ setting.currencyThousandSeparator }}";
+
+        body.on('click', '.list-substitute', function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            const link = '{{ path('rest_product_modal_substitute') }}';
+            modalProduct(productId,link);
+        });
+        body.on('change', '.input-qty', function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            if ($(this).val() === '' || $(this).val() === '0') {
+                $(this).val('1');
+                changeCart(productId, 1, $(this));
+            } else {
+                changeCart(productId, $(this).val(), $(this));
+            }
+        });
+
+        body.on('change', '.tax', function (e) {
+            e.preventDefault();
+            setTax($(this).attr('data-tax'));
+
+            $('#amountReceived').val('0');
+            $('#amountRefund').val('0');
+            $('#btnValidate').hide();
+        });
+        body.on('click', '.addInCart', function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            addCart(productId, 1, $(this));
+        });
+        body.on('click', '.removeToCart', function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+
+            removeToCart(productId);
+        });
+        body.on('click', '#removeAllToCart', function (e) {
+            e.preventDefault();
+            removeAllToCart();
+        });
+        body.on('click', '#btnValidate', function (e) {
+            e.preventDefault();
+            const amountReceived = ($('#amountReceived').val() !== '') ? parseInt($('#amountReceived').val()): 0;
+
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT') %}
+                discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            let saleDate = null;
+            {% if is_granted(permission_verify,'SALE_CHANGE_DATE') %}
+            saleDate = $('.datepicker').val();
+            {% endif %}
+
+            validateCart(amountReceived,
+                $('#customer').val(),
+                $('#paymentMethod').val(),
+                saleDate, discount,
+                $('#numInvoice').val());
+        });
+        body.on('change', '#amountReceived', function (e) {
+            e.preventDefault();
+
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            const cartAmount = parseInt($('#cart-total-input').text()) - discount;
+            const amountReceived = $(this);
+            const amountReceivedValue = (amountReceived.val() !== '') ? parseInt(amountReceived.val()): 0;
+            {% if setting.withPartialPayment == false or
+                is_granted(permission_verify,'SALE_WITH_PARTIAL_PAYMENT') == false %}
+            if (cartAmount > amountReceivedValue) {
+                $(this).val('0');
+                $('#amountRefund').val('0');
+
+                alertify.logPosition("top right");
+                alertify.delay(6000)
+                    .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                $('#btnValidate').hide();
+            }
+            {% endif %}
+            if (amountReceivedValue === 0) {
+                $(this).val('0');
+                {% if setting.withPartialPayment == false or
+                    is_granted(permission_verify,'SALE_WITH_PARTIAL_PAYMENT') == false%}
+                    $('#btnValidate').hide();
+                {% else %}
+                    $('#btnValidate').show();
+                {% endif %}
+            } else {
+                const amountRemaining = amountReceivedValue - cartAmount;
+
+                if (!isNaN(amountRemaining) && amountRemaining >= 0) {
+                    $('#amountRefund').val(formatNumber(amountRemaining, thousandSeparator));
+                }
+                $('#btnValidate').show();
+            }
+        });
+
+        body.on('change', '#discount', function (e) {
+            e.preventDefault();
+
+            const cartTotalInput = parseInt($('#cart-total-input').text());
+
+            let discount = 0;
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+                discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            {% endif %}
+
+            if (discount > cartTotalInput){
+                alertify.logPosition("top right");
+                alertify.delay(6000)
+                    .error("<i class='fa fa-close'></i> {{ 'sale.add.discount_invalid'|trans }}");
+
+                $('#discount').val('0');
+                $('#amountWithReduction').val(cartTotalInput);
+            }else{
+                const cartAmount = cartTotalInput - discount;
+                $('#amountWithReduction').val(cartAmount);
+
+                const amountReceived = $('#amountReceived');
+                const amountReceivedValue = (amountReceived.val() !== '') ? parseInt(amountReceived.val()): 0;
+                {% if setting.withPartialPayment == false or
+                    is_granted(permission_verify,'SALE_WITH_PARTIAL_PAYMENT') == false %}
+                if (cartAmount > amountReceivedValue && amountReceivedValue > 0) {
+                    amountReceived.val('0');
+                    $('#amountRefund').val('0');
+
+                    alertify.logPosition("top right");
+                    alertify.delay(6000)
+                        .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                    $('#btnValidate').hide();
+                }
+                {% endif %}
+                if (amountReceivedValue === 0) {
+                    amountReceived.val('0');
+                    {% if setting.withPartialPayment == false or
+                        is_granted(permission_verify,'SALE_WITH_PARTIAL_PAYMENT') == false %}
+                    $('#btnValidate').hide();
+                    {% else %}
+                    $('#btnValidate').show();
+                    {% endif %}
+                } else {
+                    const amountRemaining = amountReceivedValue - cartAmount;
+
+                    if (!isNaN(amountRemaining) && amountRemaining >= 0) {
+                        $('#amountRefund').val(formatNumber(amountRemaining, thousandSeparator));
+                    }
+                    $('#btnValidate').show();
+                }
+            }
+        });
+
+        function modalProduct(productId,link) {
+            let data = new FormData();
+            data.append("id", productId + '');
+            data.append("withStock", true + '');
+
+            $('#modal').html("");
+            fetch(link, {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+
+                    $('#modal').html(data.content);
+                    $('.modal').modal('show');
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function amount() {
+            const inputQtys = document.querySelectorAll("input.input-qty");
+            const checkBoxTaxs = document.querySelectorAll("input.tax");
+            let amount = 0;
+            inputQtys.forEach(function (input) {
+                let qty = input.value;
+                if (qty === '' || qty === '0') {
+                    qty = '1';
+                }
+                amount += parseInt(qty) * input.getAttribute('data-amount');
+            });
+
+            const totalHt = amount;
+
+            checkBoxTaxs.forEach(function (checkBox) {
+                let taxId = checkBox.getAttribute('data-tax');
+                if (checkBox.checked){
+                    const taxAmount =
+                        Math.trunc(Math.round(Math.floor(Math.floor(parseFloat(checkBox.value)/100 * totalHt))));
+                    amount += taxAmount;
+
+                    $('#tax-'+taxId).text(formatNumber(taxAmount, thousandSeparator));
+                }else{
+                    $('#tax-'+taxId).hide();
+                }
+            });
+
+            $('#cart-total').text(formatNumber(amount, thousandSeparator));
+            $('#cart-total-input').text(amount);
+
+            {% if setting.withDiscount and is_granted(permission_verify,'SALE_WITH_DISCOUNT')%}
+            const discount = ($('#discount').val() !== '') ? parseInt($('#discount').val()): 0;
+            amount -= discount;
+            {% endif %}
+
+            $('#amountWithReduction').val(amount);
+        }
+        function addCart(id, qty = 1, elem) {
+            let data = new FormData();
+            data.append("id", id + '');
+            data.append("qty", qty + '');
+
+            fetch('{{ path('rest_cart_add') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+
+                    if (data == null) {
+                        elem.val('1');
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.stock_insufficient'|trans }}");
+                    }else{
+                        $('#cart').html(data.content);
+                    }
+
+                    clearFocus();
+                    amount();
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function changeCart(id, qty = 1, elem) {
+            let data = new FormData();
+            data.append("id", id + '');
+            data.append("qty", qty + '');
+
+            fetch('{{ path('rest_cart_change') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+
+                    if (data == null) {
+                        elem.val('1');
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.stock_insufficient'|trans }}");
+                    }else{
+                        $('#cart').html(data.content);
+                    }
+
+                    clearFocus();
+                    amount();
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeToCart(id) {
+            let data = new FormData();
+            data.append("id", id + '');
+
+            fetch('{{ path('rest_cart_remove') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+
+                    $('#cart').html(data.content);
+                    amount();
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeAllToCart() {
+            fetch('{{ path('rest_cart_removeAll') }}')
+                .then(async response => {
+                    try {
+                        const data = await response.json();
+
+                        $('#cart').html(data.content);
+                        amount();
+
+                        return false;
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function validateCart(amountReceived, customer, paymentMethod,
+                              saleDate = null, discount=0, numInvoice=null) {
+            let form = new FormData();
+            form.append("discount", discount + '');
+            form.append("amountReceived", amountReceived + '');
+            {% if is_granted(permission_verify,'SALE_CHANGE_DATE') %}
+            form.append("saleDate", saleDate + '');
+            {% endif %}
+            form.append("customer", customer + '');
+            form.append("paymentMethod", paymentMethod + '');
+            {% if setting.withSaleNumInvoice and
+                is_granted(permission_verify,'SALE_CHANGE_NUM_INVOICE') %}
+            form.append("numInvoice", numInvoice + '');
+            {% endif %}
+            form.append("userId", '{{ app.user.id }}');
+
+            fetch('{{ path('rest_cart_validate') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: form,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    alertify.logPosition("top right");
+
+                    if (data == null) {
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.amountReceived_lower'|trans }}");
+                    }else if(data === 'num_invoice_invalid') {
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.num_invoice_invalid'|trans }}");
+                    }else if(data === 'customer_invalid') {
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'sale.add.customer_invalid'|trans }}");
+                    }  else {
+                        alertify.delay(6000)
+                            .success("<i class='fa fa-check-circle'></i> {{ 'controller.sale.add.flash.success'|trans }}");
+
+                        const canPrint = $('#canPrint').is(':checked');
+
+                        //set the cart with her current value
+                        $('#cart').html(data.cart.content);
+                        amount();
+
+                        const dataArray = data.products;
+
+                        for (let i=0;i < dataArray.length;i++){
+
+                            const product = dataArray[i];
+
+                            const productItem = $('#product'+product.id);
+                            const spanProductItem = $('#product'+product.id+'>span');
+
+                            if (parseInt(product.stockAlert) >= parseInt(product.stock)){
+                                productItem.removeClass('bg-success');
+                                if (!productItem.hasClass('bg-danger')) {
+                                    productItem.addClass('bg-danger');
+                                }
+                            }else{
+                                productItem.removeClass('bg-danger');
+                                if (!productItem.hasClass('bg-success')) {
+                                    productItem.addClass('bg-success');
+                                }
+                            }
+
+                            spanProductItem.html(product.stock);
+                        }
+
+                        // print receipt if you checked
+                        if (canPrint) {
+                            let url_print = '{{ path('sale_print',{'id': 'saleId'}) }}'
+                                .replace("saleId", data.saleId);
+
+                            const wnd = window.open(url_print);
+                            wnd.print();
+                            wnd.onafterprint = function () {
+                                wnd.close();
+                            };
+                        }
+                    }
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function setTax(id) {
+            let data = new FormData();
+            data.append("id", id + '');
+
+            fetch('{{ path('rest_cart_tax_set') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    amount();
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+
+        function getProductBarcode(code) {
+            let data = new FormData();
+            data.append("barcode", code + '');
+
+            fetch('{{ path('rest_product_barcode') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    console.log(data);
+
+                    if (data !== null){
+                        addCart(data.id,1,$(this));
+                    }
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+{% endblock %}
+{% block body %}
+    <input type="hidden" id="productByBarcode"/>
+    <div class="row mb-3">
+        <div class="col-md-6 col-sm-6 mb-2">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        {{ include('partials/productWithImages.html.twig') }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-sm-6">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mt-0 header-title">
+                        <i class="fa fa-shopping-basket"></i>
+                        {{ 'sale.add.card_title'|trans }}
+                        <span class="triangle-border-left pull-left"></span>
+                        <span class="triangle-border-right pull-right"></span>
+                    </h4>
+                    <div class="form-group">
+                        <select class="form-control" name="customer" id="customer">
+                            {% for customer in customers  %}
+                                <option value="{{ customer.id }}">{{ customer.name }}</option>
+                            {% endfor %}
+                        </select>
+                        {% if setting.withSaleNumInvoice and
+                            is_granted(permission_verify,'SALE_CHANGE_NUM_INVOICE') %}
+                            <input type="text" class="form-control mt-2"
+                                   id="numInvoice" name="numInvoice"
+                                   placeholder="{{ 'sale.add.form.numInvoice'|trans }}">
+                        {% endif %}
+                    </div>
+                    <div class="table-responsive" id="cart"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="modal"></div>
+{% endblock %}

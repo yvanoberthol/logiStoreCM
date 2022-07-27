@@ -1,0 +1,86 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'employee.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'employee.salary.block_title2'|trans }} ({{ employees|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'EMPLOYEE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('employee_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-export not-sort">ID</th>
+                        <th class="not-sort">{{ 'employee.index.tr_employeename'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_email'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_phone'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_salary'|trans }}</th>
+                        <th class="not-export" data-sort="false">
+                            {{ 'employee.index.tr_actions'|trans }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td>{{employee.id}}</td>
+                            <td class="text-uppercase">{{employee.allName}}</td>
+                            <td>
+                                {% if employee.email is not empty %}
+                                    {{employee.email}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if employee.phone is not empty %}
+                                    {{employee.phone}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if employee.salary > 0 %}
+                                    {{employee.salary|formated}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td class="not-export">
+                                {% if employee.salary > 0 and is_granted(permission_verify,'EMPLOYEE_SALARY_INDEX')%}
+                                    <a class="btn btn-outline-uyblue" href="{{ path('employee_salary_index',{'id': employee.id}) }}">
+                                        <i class="fa fa-history"></i> {{ 'employee.index.tr_payment_history'|trans }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

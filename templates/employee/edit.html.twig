@@ -1,0 +1,61 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'employee.edit.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+
+{% block body %}
+    <div class="col-md-8 offset-md-2 col-xl-8 offset-xl-2">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    {{ 'employee.edit.block_title'|trans }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                </h5>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="form-group mt-2">
+                    <button class="btn btn-uyblue">
+                        <i class="fa fa-edit"></i> &nbsp; {{ 'employee.edit.btn_add'|trans }}
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsFile.html.twig' %}
+    <script src="{{asset('dist/plugins/bootstrap-fileinput/js/locales/'~app.session.get('_locale')~'.js')}}"></script>
+
+    <script type="application/javascript">
+        const file = $("#employee_imageFile_file");
+        $(".custom-file-label").hide();
+        file.fileinput({
+            theme: 'fa5',
+            language: '{{ app.session.get('_locale') }}',
+            allowedFileTypes: ['image'],
+            allowedFileExtensions: ["jpg", "jpeg", "png"],
+            maxImageWidth: 250,
+            maxFileCount: 1,
+            enableResumableUpload: false,
+            showUpload:false,
+            showCancel:false,
+            showPause:false,
+            showClose:true,
+            showUploadStats:true,
+            showPreview:false,
+            showRemove:true,
+            removeIcon: '<i class="fa fa-trash"></i>',
+            browseIcon: '<i class="fa fa-folder"></i>',
+            uploadIcon: '<i class="fa fa-upload"></i>',
+            showBrowse:true,
+            showCaption:true,
+            initialCaption: '{{ 'select_image'|trans }}',
+            previewFileType:'any',
+            captionClass:'',
+            previewClass:'',
+            mainClass:'',
+            inputGroupClass:'',
+        });
+    </script>
+{% endblock %}

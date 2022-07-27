@@ -1,0 +1,146 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'report.salary.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            getDataTable($('#dataTable'),false,10,'rtip');
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'report.salary.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('report_salary') }}" method="post"
+                          class="form-inline">
+                        <select name="month" id="month" class="form-control mr-1 mb-1">
+                            {% for key,month in months %}
+                                <option value="{{ key }}" {% if key == monthNow %}selected{% endif %}>
+                                    {{month|trans({},'month')}}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input name="year" id="year" class="form-control mr-1 mb-1" value="{{ year }}">
+                        <button type="submit" name="search"
+                                class="btn btn-outline-uyblue mr-2" >
+                            <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                    {% if salaries|length > 0 %}
+                        <form action="{{ path('report_salary') }}" method="post" target="_blank"
+                              class="pull-right">
+                            <input type="hidden" name="month" value="{{ monthNow}}">
+                            <input type="hidden" name="year" value="{{ year }}">
+                            <button type="submit" name="print" value="print"
+                                    class="btn btn-success" >
+                                <i class="fa fa-print"></i> {{ 'report.print'|trans }}
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row title mt-5 mx-2">
+                <div class="text-center col-sm-4 col-md-4 col-lg-4 col-xl-4 py-2 rounded">
+                    <a href="{{path('home')}}" class="logo">
+                        {{ render(path('imageLogo')) }}
+                    </a><br>
+                    <b>{{ store.name }}</b><br>
+                    {% if store.phoneNumber is not empty %}
+                        {{ 'report.phone'|trans }}: {{ store.phoneNumber }}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right offset-4">
+                    {{ 'report.doThe'|trans }}  {{ "now"|mediumDate }} <br>
+                    {{ 'report.agent'|trans }}: <span class="text-uppercase font-weight-bold">{{ app.user.name }}</span>
+                </div>
+            </div>
+            <div class="row mt-3 mb-2">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                    <span class="h6 text-uppercase">
+                        {{ 'report.reportSession'|trans }} /
+                        <i>{{ 'report.salary.salaryList'|trans }}</i>
+                    </span>
+                </div>
+            </div>
+            <div class="row mt-2 text-uppercase">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center py-2"
+                     style="border-top: #0a0c0d solid 2px;border-bottom: #0a0c0d solid 2px" >
+                    <span class="font-weight-bold">
+                        {{ months[monthNow]|trans({},'month')}} {{ year }}
+                    </span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>{{ 'report.salary.tr_employee'|trans }}</th>
+                            <th>{{ 'report.salary.tr_salary'|trans }}</th>
+                            <th>{{ 'report.salary.tr_amountSettled'|trans }}</th>
+                            <th>{{ 'report.salary.tr_amountRemaining'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for salary in salaries %}
+                        <tr>
+                            <td>
+                                <a href="{{path('employee_salary_index',{'id': salary[0].id})}}">
+                                    {{ salary[0].name }}
+                                </a>
+                            </td>
+                            <td>
+                                {% if salary.salary > 0 %}
+                                    {{ salary.salary|formated }}
+                                {% else %}
+                                    {{ salary[0].salary|formated }}
+                                {% endif %}
+
+                            </td>
+                            <td>{{ salary.amount|formated }}</td>
+                            <td>
+                                {% if salary.salary > 0 %}
+                                    {{ salary.amountRemaining|formated }}
+                                {% else %}
+                                    {{ salary[0].salary|formated }}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td class="font-weight-bold">
+                                {{ totalSalary|customCurrency }}
+                            </td>
+                            <td class="font-weight-bold">
+                                {{ totalAmount|customCurrency }}
+                            </td>
+                            <td class="font-weight-bold">
+                                {{ totalAmountRemaining|customCurrency }}
+                            </td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

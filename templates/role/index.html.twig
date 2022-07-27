@@ -1,0 +1,215 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'role.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        {% for role in roles %}
+            getDataTable($('#dataTable{{ role.id }}'),false,25);
+            let permission{{ role.id }} = $('#permission{{ role.id }}');
+            permission{{ role.id }}.select2({
+                placeholder: "{{ 'role.index.select_permission'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addModal{{role.id}}'),
+                language: "{{ app.session.get('_locale') }}"
+            });
+            permission{{ role.id }}.val([]).trigger('change');
+        {% endfor %}
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'role.index.block_title'|trans }} ({{ roles|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'ROLE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('role_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;">
+                <thead>
+                <tr>
+                    <th>{{ 'role.index.tr_name'|trans }}</th>
+                    <th class="not-sort">{{ 'role.index.tr_permission'|trans }}</th>
+                    <th class="not-export not-sort">{{ 'role.index.tr_actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for role in roles %}
+                    <tr>
+                        <td class="text-capitalize">
+                            {{ role.title|trans }}
+                        </td>
+                        <td>
+                            <a href="#permissionModal{{role.id}}" data-toggle="modal">
+                                <i class="fa fa-lock"></i> {{ 'role.index.permission'|trans }}
+                            </a>
+                            {% if is_granted(permission_verify,'ROLE_ADD_PERMISSION') %}
+                            <a href="#addPermissionModal{{role.id}}" data-toggle="modal" class="badge badge-success">
+                                <i class="fa fa-plus"></i>
+                            </a>
+                            <div class="modal fade addModal{{role.id}}"
+                                 id="addPermissionModal{{role.id}}" tabindex="-1" role="dialog"
+                                 aria-labelledby="addPermissionModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                {{ 'role.index.addPermission.title'|trans }}
+                                                <span class="text-info text-uppercase">{{role.title}}</span>
+                                            </h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form action="{{ path('role_add_permission') }}" method="post">
+                                                <input type="hidden" value="{{ role.id }}" name="role">
+                                                <div class="form-group">
+                                                    <label for="permission{{ role.id }}">{{ 'role.index.addPermission.form.permission.libelle'|trans }}</label>
+                                                    <select name="permission[]" id="permission{{ role.id }}" class="form-control"
+                                                            style="width: 100% !important;" multiple required>
+                                                        {% for permission in permissions %}
+                                                            {% if permission.roles.contains(role) == false %}
+                                                                <option value="{{ permission.id }}">{{ permission.code|trans({},'permission') }}</option>
+                                                            {% endif %}
+                                                        {% endfor %}
+                                                    </select>
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-uyblue">
+                                                        <i class="fa fa-save"></i> {{ 'role.index.addPermission.form.btn_add'|trans }}
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                {{ 'product.detail.addSubstituteModal.footer.cancel'|trans }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <!-- List Permission Modal -->
+                            <div class="modal fade" id="permissionModal{{role.id}}" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog modal-lg" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">
+                                                {{ 'role.index.description.modal.title'|trans }} ({{ role.permissions|length|formatedInt }})
+                                            </h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="table-responsive">
+                                           <table class="table table-bordered " style="width: 100%;" id="dataTable{{ role.id }}">
+                                               <thead>
+                                                   <tr>
+                                                       <th class="not-sort" style="width: 25% !important;">{{ 'role.index.description.modal.permission.tr_name'|trans }}</th>
+                                                       <th class="not-sort" style="width: 65% !important;">{{ 'role.index.description.modal.permission.tr_desc'|trans }}</th>
+                                                       <th class="not-sort" style="width: 10% !important;">{{ 'role.index.description.modal.permission.tr_action'|trans }}</th>
+                                                   </tr>
+                                               </thead>
+                                                <tbody>
+                                                {% for permission in role.permissions  %}
+                                                    <tr>
+                                                        <td>
+                                                            {{ permission.code }}
+                                                        </td>
+                                                        <td>
+                                                            {{ permission.code|trans({},'permission') }}
+                                                        </td>
+                                                        <td>
+                                                            {% if is_granted(permission_verify,'ROLE_REMOVE_PERMISSION') %}
+                                                            <a href="{{ path('role_remove_permission',{role: role.id, permission: permission.id}) }}" class="btn btn-danger">
+                                                                <i class="fa fa-remove"></i>
+                                                            </a>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                {% endfor %}
+                                                </tbody>
+
+                                           </table>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                {{ 'role.index.description.modal.footer.cancel'|trans }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if role.updatable %}
+                                {% if is_granted(permission_verify,'ROLE_EDIT') %}
+                                    <a href="{{ path('role_edit',{'id': role.id}) }}" class="p-2 badge badge-uyblue">
+                                        <i class="fa fa-pencil"></i>
+                                    </a>
+                                {% endif %}
+                                {% if is_granted(permission_verify,'ROLE_DELETE') %}
+                                    <a href="#deleteModal{{role.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{role.id}}" tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'role.index.modal.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'role.index.modal.body'|trans }}
+                                                    <span class="text-info">{{ role.name }}</span>?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'role.index.modal.footer.cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-danger" href="{{path('role_delete',{'id':role.id})}}">
+                                                        <i class="fa fa-trash"></i> {{ 'role.index.modal.footer.delete'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

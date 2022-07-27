@@ -1,0 +1,391 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ 'stock.add.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+
+        getDataTable($('#dataTable'),true);
+
+        fetch('{{ path('rest_order_get') }}', {
+            method: 'GET',
+            credentials: 'include',
+        }).then( async response => {
+            try {
+                const data = await response.json();
+                $('#order').html(data.content);
+
+                amount();
+            } catch (reason) {
+                console.log(reason);
+            }
+        }).catch(function (reason) {
+            console.log(reason);
+        });
+
+        const product = $('#product');
+        product.select2({
+            placeholder: "{{ 'loss.new.select_product'|trans }}",
+            allowClear: true,
+            dropdownParent: $('.addModal'),
+            language: "{{ app.session.get('_locale') }}"
+        });
+        product.val([]).trigger('change');
+
+        const body = $('body');
+
+        // manage change quantity in cart
+        const thousandSeparator = "{{  app.session.get('setting').currencyThousandSeparator }}";
+
+        body.on('change', '.tax', function (e) {
+            e.preventDefault();
+
+            setTax($(this).attr('data-tax'));
+        });
+
+        body.on('change', '#product', function (e) {
+            e.preventDefault();
+            getProduct(product.val());
+        });
+
+        body.on('click','#addInOrder',function (e) {
+            e.preventDefault();
+            const productId = product.val();
+            if (productId !== null) {
+                const qty = $('#qty').val();
+                const price = $('#price').val();
+                addOrder(productId,qty,price);
+            }
+            e.stopPropagation();
+        });
+
+        body.on('click','.removeToOrder',function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            removeToOrder(productId);
+            e.stopPropagation();
+        });
+
+        body.on('click','#removeAllToOrder',function (e) {
+            e.preventDefault();
+            removeAllToOrder();
+            e.stopPropagation();
+        });
+
+        body.on('click','#btnValidate',function (e) {
+            e.preventDefault();
+            validateOrder($('#supplier').val());
+            e.stopPropagation();
+        });
+
+        body.on('change','#qty',function (e) {
+            e.preventDefault();
+            const pack =
+                parseInt( $('#qty').val()) / parseInt($('#packagingQty').val());
+
+            let packagingString = Math.floor(pack)+' Pack(s) ('+$('#packagingQty').val()+')';
+
+            const rest =
+                parseInt( $('#qty').val()) % parseInt($('#packagingQty').val());
+
+            if (rest > 0)
+                packagingString+=' + '+rest;
+
+            $('#packagingString').text(packagingString);
+            e.stopPropagation();
+        });
+
+        function amount() {
+            const inputQtys = document.querySelectorAll(".input-qty");
+            const checkBoxTaxs = document.querySelectorAll("input.tax");
+
+            let amount = 0;
+            inputQtys.forEach(function (input) {
+                amount += parseInt(input.getAttribute('data-value')) * input.getAttribute('data-amount');
+            });
+
+            const totalHt = amount;
+
+            checkBoxTaxs.forEach(function (checkBox) {
+                let taxId = checkBox.getAttribute('data-tax');
+                if (checkBox.checked){
+                    const taxAmount =
+                        Math.trunc(Math.round(Math.floor(Math.floor(parseFloat(checkBox.value)/100 * totalHt))));
+                    amount += taxAmount;
+
+                    $('#tax-'+taxId).text(formatNumber(taxAmount, thousandSeparator));
+                }else{
+                    $('#tax-'+taxId).hide();
+                }
+            });
+
+            $('#cart-total').text(formatNumber(amount,thousandSeparator));
+        }
+
+        function addOrder(id, qty=1,price='null') {
+            let data = new FormData();
+            data.append( "id", id+'' );
+            data.append( "qty", qty+'' );
+            data.append( "price", price );
+
+            fetch('{{ path('rest_order_add') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+
+                    if (data === null){
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'controller.stock.add.flash.danger'|trans }}");
+                    }else{
+                        $('#order').html(data.content);
+                        amount();
+                    }
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeToOrder(id) {
+            let data = new FormData();
+            data.append( "id", id+'' );
+
+            fetch('{{ path('rest_order_remove') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+
+                    $('#order').html(data.content);
+                    amount();
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function removeAllToOrder() {
+
+            fetch('{{ path('rest_order_removeAll') }}')
+                .then( async response => {
+                    try {
+                        const data = await response.json();
+                        $('#order').html(data.content);
+
+                        amount();
+
+                        return false;
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function validateOrder(supplier) {
+            const amountSended = ($('#amountSended').val() === '')?0:$('#amountSended').val();
+
+            let data = new FormData();
+            data.append( "supplier", supplier+'' );
+            data.append("userId", '{{ app.user.id }}');
+            data.append("stockDate", $('.datepicker').val() + '');
+            {% if setting.withSettlement %}
+                data.append("amountSended", amountSended + '');
+            {% endif %}
+
+
+            fetch('{{ path('rest_order_validate') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+                    alertify.logPosition("top right");
+                    alertify.delay(6000)
+                        .success("<i class='fa fa-check-circle'></i> {{ 'controller.stock.add.flash.success'|trans }}");
+
+                    $('#order').html(data.content);
+                    amount();
+
+                    window.location.href = "{{ path('stock_index')}}";
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+
+        function setTax(id) {
+            let data = new FormData();
+            data.append("id", id + '');
+
+            fetch('{{ path('rest_order_tax_set') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    amount();
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+        function getProduct(id) {
+            let data = new FormData();
+            data.append( "id", id+'' );
+
+            fetch('{{ path('rest_stock_product') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then( async response => {
+                try {
+                    const data = await response.json();
+                    $('#price').val(data.product.buyPrice);
+
+                    {% if setting.withPackaging %}
+                    $('#packagingQty').val(data.product.packagingQty);
+                    {% endif %}
+
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+
+{% endblock %}
+
+{% block body %}
+    <div class="row mb-3">
+        <div class="col-lg-12 col-md-12 col-sm-12 ml-0">
+            <div class="card">
+                <div class="card-body">
+                    <h4 class="mt-0 header-title text-center">
+                        {{ 'stock.add.card_title'|trans }}
+
+                        <span class="triangle-border-left pull-left"></span>
+                        <span class="triangle-border-right pull-right"></span>
+                        <a href="{{ path('stock_import') }}" class="btn btn-uyblue pull-right mr-2">
+                            <i class="fa fa-upload"></i> {{ 'stock.add.import'|trans }}
+                        </a>
+                        <a href="#addModal"
+                           data-toggle="modal"
+                           class="btn btn-outline-uyblue pull-right mr-2">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </h4>
+                    <div id="order" class=""></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add productStock Modal -->
+    <div class="modal fade addModal" id="addModal" tabindex="-1" role="dialog"
+         aria-labelledby="setStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'stock.detail.modal.add.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="" method="post">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="productId">
+                                {{ 'stock.detail.modal.add.form.product'|trans }}
+                            </label>
+                            <select class="form-control" style="width: 100% !important;"
+                                    name="product" id="product" required>
+                                {% for product in products  %}
+                                    <option value="{{ product.id }}">
+                                        {{ product.nameWithCategory }}
+                                        &nbsp;
+                                        ({{ product.stock }})
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        {% if setting.withPackaging %}
+                            <div class="form-group">
+                                <label for="packagingQty">
+                                    {{ 'Pack'|trans}}
+                                </label>
+                                <input type="number" class="form-control" value="1"
+                                       name="packagingQty" id="packagingQty" disabled>
+                            </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <label for="qty">
+                                {{ 'stock.detail.modal.add.form.qty'|trans }}
+                            </label>
+                            <input type="number" class="form-control" min="1" value="1"
+                                   name="qty" id="qty" required>
+                            <span id="packagingString" class="text-info"></span>
+                        </div>
+                        {% if setting.withPurchasePrice  %}
+                        <div class="form-group">
+                            <label for="price">
+                                {{ 'stock.add.tr_price'|trans}}
+                            </label>
+                            <input type="number" class="form-control" min="1" value="1"
+                                   name="price" id="price" required>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'stock.detail.modal.add.footer.cancel'|trans }}
+                        </button>
+                        <button type="submit" id="addInOrder" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'stock.detail.modal.add.footer.validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

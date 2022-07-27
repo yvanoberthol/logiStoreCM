@@ -1,0 +1,171 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sale.deleted.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | longDate }} - {{ end | longDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datetimepicker({
+                format: '{{ app.session.get('setting').dateLongPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'sale.deleted.block_title'|trans }} ({{ sales|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'SALE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('sale_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('sale_index_deleted') }}" method="post" class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|longDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|longDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue" >
+                           <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>{{ 'sale.deleted.tr_date'|trans }}</th>
+                            <th>{{ 'sale.deleted.tr_amount'|trans }}</th>
+                            <th>{{ 'sale.deleted.tr_reason'|trans }}</th>
+                            <th>{{ 'sale.deleted.tr_recorder'|trans }}</th>
+                            <th class="not-export not-sort">{{ 'sale.deleted.tr_actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td>
+                                <a href="{{path('sale_detail',{'id': sale.id})}}">
+                                    {{ sale.addDate|longDate }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ sale.amount|formated }}
+                                {% if sale.amountDebt > 0 %}
+                                    <span class="h6 text-danger font-weight-bold">**</span>
+                                {% endif %}
+
+                            </td>
+                            <td>{{ sale.reason }}</td>
+                            <td class="text-capitalize">
+                                {{ sale.recorder.name }}
+                            </td>
+                            <td>
+                                {% if is_granted(permission_verify,'SALE_RESTORE') %}
+                                    <a href="#restoreModal{{sale.id}}" data-toggle="modal" class="p-2 badge badge-uyblue">
+                                        <i class="fa fa-window-restore"></i>
+                                    </a>
+                                    <!-- restore Modal -->
+                                    <div class="modal fade" id="restoreModal{{sale.id}}"
+                                         tabindex="-1" role="dialog"
+                                         aria-labelledby="restoreModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.deleted.modal.restore.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'sale.deleted.modal.restore.body'|trans }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-uyblue" href="{{path('sale_restore',{'id':sale.id})}}">
+                                                        <i class="fa fa-window-restore"></i> {{ 'restore'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                                {% if is_granted('SALE_DELETE',sale) %}
+                                    <a href="#deleteModal{{sale.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{sale.id}}"
+                                         tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.deleted.modal.delete.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'sale.deleted.modal.delete.body'|trans }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-danger" href="{{path('sale_delete',{'id':sale.id})}}">
+                                                        <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

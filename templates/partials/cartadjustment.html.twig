@@ -1,0 +1,60 @@
+{% set setting = app.session.get('setting') %}
+{% if items|length > 0 %}
+    <table class="table table-bordered table-striped">
+        <tr class="font-weight-bold">
+            <td style="width: 45%">
+                {{ 'adjustment.add.tr_name'|trans({},'messages',app.session.get('_locale')) }}
+            </td>
+            <td style="width: 15%">
+                {{ 'adjustment.add.tr_qtyBeforeAdjust'|trans({},'messages',app.session.get('_locale')) }}
+            </td>
+            <td style="width: 15%">
+                {{ 'adjustment.add.tr_qty'|trans({},'messages',app.session.get('_locale')) }}
+            </td>
+            <td style="width: 15%">
+                {{ 'adjustment.add.tr_qtyAdjust'|trans({},'messages',app.session.get('_locale')) }}
+            </td>
+            <td style="width: 10%">
+                {{ 'adjustment.add.tr_actions'|trans({},'messages',app.session.get('_locale')) }}
+            </td>
+        </tr>
+        {% for item in items  %}
+            <tr>
+                <td style="width: 55%">{{ item.product.nameWithCategory }}</td>
+                <td style="width: 15%">
+                  {{ item.qtyStock|formated }}
+                </td>
+                <td style="width: 15%">
+                    {{ item.qty|formated }}
+                </td>
+                <td style="width: 15%">
+                    {{ item.qtyAdjust|formated }}
+                </td>
+                <td style="width: 10%">
+                    <button name="remove" data-product="{{ item.product.id  }}"
+                            class="removeToCart btn-danger mb-1 mr-1" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="5">
+                <div class="card card-body">
+                    <div class="form-inline text-center">
+                        <button class="btn btn-danger mr-2" id="removeAllToCart">
+                            <i class="fa fa-trash"></i> {{ 'adjustment.add.btn_cleanBag'|trans({},'messages',app.session.get('_locale')) }}
+                        </button>
+                        <button type="submit" class="btn btn-success" id="btnValidate">
+                            <i class="fa fa-check-circle"></i> {{ 'sale.add.btn_valid'|trans({},'messages',app.session.get('_locale')) }}
+                        </button>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+{% else %}
+    <p class="text-center alert alert-info font-weight-bold">
+        {{ 'adjustment.add.bag_nodata'|trans({},'messages',app.session.get('_locale')) }}
+    </p>
+{% endif %}

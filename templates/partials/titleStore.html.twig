@@ -1,0 +1,7 @@
+{% if store is not null and store.name %}
+    <b>{{ store.name }}</b> ©  {{ 'now' | date('Y') }} / Powered by
+    <b>{{ organization }}</b>
+{% else %}
+    <b>{{ appname }}</b>
+    ©  {{ 'now' | date('Y') }} / Powered by <b>{{ webmaster }}</b>
+{% endif %}

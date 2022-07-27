@@ -1,0 +1,76 @@
+{% extends 'base.html.twig' %}
+{% block title %}{{ 'search.product.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'search.product.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="mb-5">
+                <form class="form-inline" action="{{ path('search_product') }}"
+                      method="post">
+                    <label for="name" class="mr-2">{{ 'search.product.label'|trans }}</label>
+                    <input type="text" class="form-control mr-2" id="name" name="name"
+                           placeholder="{{ 'search.product.placeholder'|trans }}" required>
+                    <button class="btn btn-outline-uyblue">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            {% if products is defined %}
+                <div class="table-responsive">
+                    <table class="table " style="width: 100%;">
+                        <thead>
+                        <tr>
+                            <th>{{ 'search.product.tr_name'|trans }}</th>
+                            <th>{{ 'search.product.tr_category'|trans }}</th>
+                            {% if setting.withPurchasePrice  %}
+                            <th>{{ 'search.product.tr_buyPrice'|trans }}</th>
+                            {% endif %}
+                            <th>{{ 'search.product.tr_sellPrice'|trans }}</th>
+                            <th>{{ 'search.product.tr_stock'|trans }}</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products %}
+                            <tr>
+                                <td>
+                                    <a class="text-capitalize"
+                                       href="{{ path('product_detail',{id:product.id}) }}">
+                                        {{ product.name }}
+                                    </a>
+                                    {% if product.new %}
+                                        <span class="badge badge-warning">
+                                    <i class="fa fa-star"></i> {{ 'search.product.tr_new'|trans }}
+                                </span>
+                                    {% endif %}
+
+                                </td>
+                                <td>
+                                    {% if product.category %}
+                                        {{ product.category.name }}
+                                    {% else %}
+                                        <span class="text-warning"><i class="fa fa-warning"></i></span>{{ 'search.product.tr_noCategory'|trans }}
+                                    {% endif %}
+                                </td>
+                                {% if setting.withPurchasePrice  %}
+                                <td>{{ product.buyPrice|formated }}</td>
+                                {% endif %}
+                                <td>{{ product.sellPrice|formated }}</td>
+                                <td>
+                                   <span class="{% if product.stockAlert >= product.stock %}bg-danger text-white p-2{% endif %}">
+                                       {{ product.stock|formatedInt }}
+                                   </span>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

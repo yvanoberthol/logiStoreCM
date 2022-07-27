@@ -1,0 +1,7 @@
+{% if store is not null and store.imageName %}
+<img id="logo" class="rounded" src="{{ asset(storePhoto)~store.imageName }}"
+     alt="{{store.name}}" style="height: {{ height }}px">
+{% else %}
+    <img id="logo" class="rounded" src="{{ asset(images)~logo }}"
+         alt="" style="height: {{ height }}px">
+{% endif %}

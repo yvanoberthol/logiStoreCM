@@ -1,0 +1,24 @@
+# Loco yaml export: Simple YAML object
+# Project: security.fr.xlf conversion
+# Release: Working copy
+# Locale: fr, French
+# Exported by: yvano berthol
+# Exported at: Wed, 16 Oct 2019 00:03:15 +0100
+   
+an authentication exception occurred: Une exception d'authentification s'est produite.
+authentication credentials could not be found: Les identifiants d'authentification n'ont pas pu être trouvés.
+authentication request could not be processed due to a system problem: La requête d'authentification n'a pas pu être executée à cause d'un problème système.
+invalid credentials: Identifiants invalides.
+cookie has already been used by someone else: Le cookie a déjà été utilisé par quelqu'un d'autre.
+not privileged to request the resource: Privilèges insuffisants pour accéder à la ressource.
+invalid csrf token: Jeton CSRF invalide.
+no authentication provider found to support the authentication token: Aucun supplier d'authentification n'a été trouvé pour supporter le jeton d'authentification.
+no session available it either timed out or cookies are not enabled: Aucune session disponible, celle-ci a expiré ou les cookies ne sont pas activés.
+no token could be found: Aucun jeton n'a pu être trouvé.
+username could not be found: Le nom d'utilisateur n'a pas pu être trouvé.
+account has expired: Le compte a expiré.
+credentials have expired: Les identifiants ont expiré.
+account is disabled: Le compte est désactivé.
+account is locked: Le compte est bloqué.
+no permission for this user: Privilèges insuffisants pour accéder à l'application
+hide_user_not_found: Aucun compte trouvé avec ce nom ou cette adresse email

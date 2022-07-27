@@ -1,0 +1,317 @@
+ACCOUNT_PROFILE: Consulter et modifier son profil
+ACCOUNT_LOGOUT: Se déconnecter
+ACCOUNT_RESET_PASSWORD: Modifier son mot de passe
+ACTIVATION: Activer l'application
+ORDER_ADD: Ajouter un produit dans le panier de la commande
+ORDER_REMOVE: Retirer un produit du panier de la commande
+ORDER_REMOVE_ALL: Retirer tous les produits du panier de la commande
+USER_INDEX: Consulter la liste des comptes utilisateur
+USER_NEW: Ajouter un nouveau compte utilisateur
+USER_UPDATE_STATUS: Activer ou désactiver un compte utilisateur
+PRODUCT_CATEGORY_INDEX: Consulter la liste des catégories de produit
+PRODUCT_CATEGORY_NEW: Enregistrer une catégorie de produit
+PRODUCT_CATEGORY_EDIT: Editer une catégorie de produit
+PRODUCT_CATEGORY_DELETE: Supprimer une catégorie de produit
+SUPPLIER_INDEX: Consulter la liste des fournisseurs
+SUPPLIER_NEW: Enregistrer un nouveau fournisseur
+SUPPLIER_EDIT: Editer un fournisseur
+SUPPLIER_DELETE: Supprimer un fournisseur
+HOME: Accéder à la page d'accueil
+INVENTORY_INDEX : Accéder à l'inventaire
+PRODUCT_INDEX: Consulter la liste des produits
+PRODUCT_EXPIRY_DATE: Consulter la liste des produits proche de la péremption
+PRODUCT_OUT_OF_DATE: Consulter la liste des produits périmés
+PRODUCT_NEW: Enregistrer un nouveau produit
+PRODUCT_EDIT: Editer un produit
+PRODUCT_DELETE: Supprimer un produit
+PRODUCT_DETAIL: Consulter les détails d'un produit
+PRODUCT_ADD_SUBSTITUTE: Associer un produit remplaçant à un produit
+PRODUCT_REMOVE_SUBSTITUTE: Dissocier un produit remplaçant à un produit
+PRODUCT_IMPORT: Importer une liste de produits
+STORE_INDEX: Consulter et modifier les détails de l'entreprise
+PERFORMANCE_INDEX: Accéder aux statistiques de l'entreprise
+PERFORMANCE_PRODUCT: Accéder aux statistiques sur les produits vendus
+PERFORMANCE_EMPLOYEE: Accéder à la fiche de chaque employé
+PERFORMANCE_PROFIT: Accéder aux statistiques sur les bénéfices
+PERFORMANCE_PAYMENT_METHOD: Accéder aux statistiques sur les modes de paiement
+LOSS_INDEX: Consulter la liste des pertes
+LOSS_NEW: Enregistrer une nouvelle perte
+LOSS_DELETE: Supprimer une perte
+STOCK_INDEX: Consulter la liste des stocks
+STOCK_DETAIL: Accéder aux détails d'un stock
+STOCK_NEW: Enregistrer un nouvel approvisonnement
+STOCK_ADD: Valider un approvisionnement
+STOCK_SET_STATUS: Modifier l'état d'un approvisionnement
+STOCK_PRINT: Imprimer les détails d'un approvisionnement
+STOCK_DELETE: Supprimer un approvisionnement
+PRODUCT_STOCK_DELETE: Supprimer une ligne d'approvisionnement
+PRODUCT_STOCK_ADD: Ajouter une ligne d'approvisonnement
+PRODUCT_STOCK_WITHDRAW: Retirer un produit du stock
+LOSS_TYPE_INDEX: Consulter la liste des types de perte
+LOSS_TYPE_NEW: Enregistrer une nouvelle perte
+LOSS_TYPE_EDIT: Editer un type de perte
+LOSS_TYPE_DELETE: Supprimer un type de perte
+SALE_INDEX: Consulter la liste des ventes
+SALE_MINE: Consulter la liste de ses ventes
+SALE_DETAIL: Consulter les détails d'une vente
+SALE_NEW: Enregistrer une nouvelle vente
+SALE_PRINT: Imprimer une vente
+SALE_DELETE: Supprimer une vente
+ROLE_INDEX: Consulter la liste des rôles
+ROLE_NEW: Enregistrer un nouveau rôle
+ROLE_EDIT: Editer un rôle
+ROLE_DELETE: Supprimer un rôle
+ROLE_ADD_PERMISSION: Ajouter une permission à un rôle
+ROLE_REMOVE_PERMISSION: Retirer une permission à un rôle
+HISTORIC_INDEX: Consulter l'historique de connexion
+USER_CHANGE_ROLE: Changer le rôle d'un utilisateur
+ACCOUNT_CHANGE_LANGUAGE: Changer la langue de l'application
+ACCOUNT_DELETE_LANGUAGE: Supprimer une langue de l'application
+ACCOUNT_IMPORT_LANGUAGE: Importer une langue dans l'application
+DATABASE_BACKUP: Liste des backups de la base de données
+DATABASE_REMOVE: Supprimer un point de restauration de la base de données
+DATABASE_DOWNLOAD: Télécharger un point de restauration de la base de données
+DATABASE_ADD: Créer un point de restauration de la base de données
+PRODUCT_PRINT_LABEL: Imprimer les étiquettes codes-barre de produit
+REPORT_SALE: Consulter et imprimer le rapport périodique de vente
+REPORT_STOCK: Consulter et imprimer le rapport périodique de commande
+REPORT_LOSS: Consulter et imprimer le rapport périodique de perte
+REPORT_PRODUCT: Consulter et imprimer le rapport périodique d'un produit
+REPORT_TRANSACTION: Consulter le rapport périodique de transactions d'un compte
+REPORT_SALE_PRODUCT: Consulter le rapport périodique des ventes par produit
+REPORT_EMPLOYEE: Consulter le rapport périodique des ventes par employé
+SEARCH_PRODUCT: Rechercher un produit pour consulter ses détails
+SEARCH_STOCK: Rechercher une commande pour consulter ses détails
+SEARCH_SALE: Rechercher une vente pour consulter ses détails
+BANK_INDEX: Consulter la liste des comptes bancaires
+BANK_NEW: Enregistrer un nouveau compte bancaire
+BANK_EDIT: Editer un compte bancaire
+BANK_DELETE: Supprimer un compte bancaire
+CUSTOMER_INDEX: Consulter la liste des clients
+CUSTOMER_NEW: Enregistrer un nouveau client
+CUSTOMER_EDIT: Editer un client
+CUSTOMER_DELETE: Supprimer un client
+TRANSACTION_INDEX: Consulter la liste des transactions
+TRANSACTION_NEW: Enregistrer une nouvelle transaction
+TRANSACTION_EDIT: Editer une transaction
+TRANSACTION_DELETE: Supprimer une transaction
+EXPENSE_TYPE_INDEX: Consulter la liste des types de dépenses
+EXPENSE_TYPE_NEW: Enregistrer un type de dépense
+EXPENSE_TYPE_EDIT: Editer un type de dépense
+EXPENSE_TYPE_DELETE: Supprimer un type de dépense
+EXPENSE_INDEX: Consulter la liste des dépenses
+EXPENSE_NEW: Enregistrer une nouvelle dépense
+EXPENSE_EDIT: Editer une dépense
+EXPENSE_DELETE: Supprimer une dépense
+PAYMENT_METHOD_INDEX: Consulter la liste des méthodes de paiement
+PAYMENT_METHOD_NEW: Enregistrer une méthode de paiement
+PAYMENT_METHOD_EDIT: Editer une méthode de paiement
+PAYMENT_METHOD_DELETE: Supprimer une méthode de paiement
+STOCK_PAYMENT_INDEX: Consulter la liste des réglements de commande
+STOCK_PAYMENT_REMOVE: Supprimer un règlement de commande
+STOCK_PAYMENT_DELETE: Supprimer un règlement
+STOCK_PAYMENT_NEW: Enregistrer un nouveau règlement de commande
+STOCK_PAYMENT_ADD: Enregistrer un règlement pour une commande
+SUPPLIER_STOCK_PAYMENT_ADD: Enregistrer un règlement pour une commande de fournisseur
+SETTING_INDEX: Accèder aux paramètres
+SETTING_UPDATE: Mettre à jour les paramètres
+TAX_INDEX: Consulter la liste des taxes
+TAX_NEW: Enregistrer une nouvelle taxe
+TAX_EDIT: Editer une taxe
+TAX_DELETE: Supprimer une taxe
+TAX_UPDATE_STATUS: Activer ou désactiver une taxe
+BANK_UPDATE_STATUS: Changer l'état d'un compte financier
+SETTING_FORMAT_DELETE: Supprimer un format de papier pour l'impression
+SETTING_FORMAT_ADD: Enregistrer un format de papier pour l'impression
+SALE_PAYMENT_ADD: Enregistrer un paiement pour une vente
+SALE_PAYMENT_REMOVE: Supprimer le paiement d'une vente
+STOCK_IMPORT: Importer un approvisionnement
+EXPENSE_TYPE_STATUS: Modifier le statut d'un type de dépense
+PAYMENT_METHOD_STATUS: Modifier le statut d'un type de paiement
+EMPLOYEE_ATTENDANCE: Consulter le registre de présence pour tous les employés
+EMPLOYEE_ATTENDANCE_INDEX: Consulter le registre de présence d'un employé
+EMPLOYEE_ATTENDANCE_ADD: Enregistrer un état de présence pour un employé
+EMPLOYEE_ATTENDANCE_DELETE: Supprimer l'état de présence d'un employé
+EMPLOYEE_SALARY: Consulter la page de salaire de tous les employés
+EMPLOYEE_SALARY_INDEX: Consulter l'historique de paiement d'un employé
+EMPLOYEE_SALARY_ADD: Enregistrer un paiement pour un employé
+EMPLOYEE_SALARY_DELETE: Supprimer un paiement pour un employé
+EMPLOYEE_INDEX: Consulter la liste des employés
+EMPLOYEE_NEW: Enregistrer un employé
+EMPLOYEE_EDIT: Editer un employé
+EMPLOYEE_DELETE: Supprimer un employé
+SALE_INDEX_DELETED: Consulter la liste des ventes supprimées
+SALE_INDEX_UNSETTLED: Consulter la liste des ventes non réglées
+SALE_SOFT_DELETE: Supprimer temporairement une vente
+SALE_RESTORE: Restaurer les ventes supprimées
+NOTICE_BOARD_INDEX: Consulter la liste des préavis
+NOTICE_BOARD_NEW: Enregistrer un préavis
+NOTICE_BOARD_EDIT: Editer un préavis
+NOTICE_BOARD_DELETE: Supprimer un préavis
+NOTICE_BOARD_ADD_USER: Lier un utilisateur à un préavis
+NOTICE_BOARD_DELETE_USER: Délier un utilisateur d'un préavis
+RAW_MATERIAL_INDEX: Consulter la liste des matières premières
+RAW_MATERIAL_EDIT: Editer une matière première
+RAW_MATERIAL_NEW: Enregistrer une matière première
+RAW_MATERIAL_DELETE: Supprimer une matière première
+RAW_MATERIAL_OUT_OF_DATE: Consulter la liste des matières premières périmées
+RAW_MATERIAL_INVENTORY: Consulter l'inventaire des matières premières
+RAW_MATERIAL_IMPORT: Importer une fiche de matières premières
+RAW_MATERIAL_EXPIRY_DATE: Consulter la liste des matières premières proche de la péremption
+RAW_MATERIAL_DETAIL: Consulter les détails d'une matières premières
+MATERIAL_LOSS_DELETE: Supprimer une perte de matière première
+MATERIAL_LOSS_INDEX: Consulter la liste des pertes de matières premières
+MATERIAL_LOSS_NEW: Enregistrer une perte de matière première
+PRODUCTION_DELETE: Supprimer une production
+PRODUCTION_DETAIL: Consulter les détails d'une production
+PRODUCTION_INDEX: Consulter la liste des productions
+PRODUCTION_NEW: Enregistrer une nouvelle production
+PRODUCTION_PRINT: Imprimer une production
+PRODUCTION_PRODUCT_STOCK_ADD: Ajouter un produit fini à une production
+PRODUCTION_PRODUCT_STOCK_DELETE: Supprimer un produit fini d'une production
+PRODUCTION_STOCK_STATUS: Changer l'état des produits finis d'une production
+REPORT_SUPPLY: Consulter le rapport périodique des approvisionnements
+REPORT_SALARY: Consulter le rapport périodique des salaires
+REPORT_PRODUCTION: Consulter le rapport périodique des productions
+REPORT_EXPENSE: Consulter le rapport périodique des dépenses
+REPORT_ATTENDANCE: Consulter le rapport périodique des présences
+SALE_WHOLESALER_NEW: Enregistrer une vente pour revendeur
+SALE_CHOICE: Choix du type de vente
+SUPPLY_ADD: Enregistrer un approvisionnement de matières premières
+SUPPLY_DELETE: Supprimer un approvisionnement de matières premières
+SUPPLY_DETAIL:  Consulter les détails d'un approvisionnement de matières p.
+SUPPLY_IMPORT: Importer une fiche d'approvisionnement de matières p.
+SUPPLY_INDEX: Consulter la liste des approvisionnements de matières p.
+SUPPLY_NEW: Enregistrer un approvisionnement de matières p.
+SUPPLY_PRINT: Imprimer un approvisionnement de matières p.
+SUPPLY_RAW_ADD: Enregistrer une ligne d'approvisionnement
+SUPPLY_RAW_DELETE: Supprimer une ligne d'approvisionnement
+SUPPLY_RAW_WITHDRAW: Retirer une matière p. de l'approvisionnement
+SUPPLY_SET_STATUS: Modifier l'état d'un approvisionnement
+PERMISSION_INDEX: Consulter la liste des permissions
+PERMISSION_PDF: Imprimer la fiche des permissions
+PRODUCT_ADD_PRICE: Enregistrer un prix de gros pour un produit
+PRODUCT_REMOVE_PRICE: Supprimer un prix de gros pour un produit
+PRODUCT_PRICE: Liste des produits avec prix de gros
+PRODUCT_PRICE_IMPORT: Importer une fiche de prix de gros par produit
+PRODUCT_UPDATE_IMPORT: Importer des produits mis à jour
+ADDONS_NEW: Ajouter un nouveau module
+ADDONS_UPDATE_STATUS: Changer l'état d'un module
+SALE_PROFIT: Consulter le profit des ventes
+REPORT_CUSTOMER_SALE_PRODUCT: Consulter le rapport périodique des produits achetés par client
+REPORT_EMPLOYEE_SALE_PRODUCT: Consulter le rapport périodique des produits vendus par employé
+PERFORMANCE_CUSTOMER: Consulter la fiche d'un client
+PERFORMANCE_SUPPLIER: Consulter la fiche d'un fournisseur
+SALE_INVOICE_PRINT: Imprimer la facture A4 d'achat d'un client
+REPORT_ACTIVITY: Consulter le rapport périodique sur l'activité de l'entreprise
+STORE_VALUE: Consulter l'état actuelle du magasin et sa valeur prévisionnelle
+SALE_SENDBYMAIL: Envoyer le reçu d'achat au client par mail
+PERFORMANCE_PRODUCT_CATEGORY: Accéder aux statistiques sur les catégories de produit
+PERFORMANCE_PURCHASE: Accéder aux statistiques sur les approvisionnements
+REPORT_CATEGORY_SALE_PRODUCT: Consulter le rapport périodique des produits vendus par catégorie
+REPORT_PRODUCT_CATEGORY: Consulter le rapport périodique des catégories de produit
+REPORT_SUPPLIER: Consulter le rapport périodique des fournisseurs
+REPORT_SUPPLIER_STOCK_PRODUCT: Consulter le rapport périodique des produits achetés par fournisseur
+PRODUCT_ADD_CUSTOMER_PRICE: Enregistrer un prix spécial revendeur
+PRODUCT_REMOVE_CUSTOMER_PRICE: Supprimer un prix spécial revendeur
+PRODUCT_REMOVE_CUSTOMER_PRICE_ALL: Supprimer une liste de prix spécials revendeur
+SALE_DELETE_ALL: Supprimer n'importe quelle vente
+SETTING_THEME_ADD: Ajouter un nouveau thème
+SETTING_THEME_DELETE: Supprimer un thème
+SALE_WITH_DISCOUNT: gérer des réductions sur la vente pour client de passage
+SALE_PRODUCT_RETURN_ADD: Enregistrer un retour de produit
+SALE_PRODUCT_RETURN_DELETE: Supprimer un retour de produit
+REPORT_SALE_PRODUCT_RETURN: Consulter le rapport périodique des retours de produits vendus
+STOCK_PRODUCT_RETURN_ADD: Enregistrer un renvoi de produit
+STOCK_PRODUCT_RETURN_DELETE: Supprimer un renvoi de produit
+REPORT_STOCK_PRODUCT_RETURN: Consulter le rapport périodique des renvois de produits commandés
+PRODUCT_PACKAGING_INDEX: Consulter la liste des conditionnements de produit
+PRODUCT_PACKAGING_NEW: Enregistrer un conditionnement de produit
+PRODUCT_PACKAGING_EDIT: Editer un conditionnement de produit
+PRODUCT_PACKAGING_DELETE: Supprimer un conditionnement de produit
+EMPLOYEE_FEE: Consulter la liste des frais généraux pour employé
+EMPLOYEE_FEE_ADD: Enregistrer un frais général
+EMPLOYEE_FEE_DELETE: Supprimer un frais général pour employé
+EMPLOYEE_FEE_INDEX: Consulter la liste des frais généraux pour employé
+EMPLOYEE_UPDATE_CUSTOMER: Modifier l'état d'un employé en client
+FILE_SALE_EDIT: Editer une fiche de vente
+FILE_SALE_EDIT_ENCASHMENT: Editer un encaissement d'une fiche de vente
+FILE_SALE_EDIT_RETURN: Editer des retours d'une fiche de vente
+FILE_SALE_EDIT_SF: Editer des stocks finaux d'une fiche de vente
+FILE_SALE_INDEX: Consulter une fiche de vente
+FILE_SALE_UPDATE: Mettre à jour une fiche de vente
+PERFORMANCE_PRODUCTION: Statistique sur la production
+PRODUCT_COEF_DELETE: Supprimer un coefficient de produit fini
+PRODUCT_COEF_INDEX: Consulter la liste des coefficients de produit fini
+PRODUCT_COEF_NEW: Enregistrer un coefficient de produit fini
+PRODUCTION_CHANGE_DATE: Changer la date de production
+PRODUCTION_CHANGE_MANAGER: Changer le pétrisseur de la production
+PRODUCTION_FEE_ADD: Enregistrer une charge de production
+PRODUCTION_FEE_DELETE: Supprimer une charge de production
+SALE_FOR_EMPLOYEE: Enregistrer une vente pour employé
+SALE_PAYMENT_DELETE: Supprimer le règlement d'une vente
+SALE_PAYMENT_INDEX: Liste des règlements de vente
+SALE_WITH_PARTIAL_PAYMENT: Autoriser le paiement partiel
+SALE_WHOLE_WITH_PARTIAL_PAYMENT: Autoriser le paiement partiel pour revendeur
+SUPPLY_CHANGE_DATE: Changer la date d'approvisionnement de matières P.
+USER_UPDATE_CUSTOMER: Modifier l'état d'un employé en client
+PRODUCTION_STORAGE_INDEX: Consulter la liste des sous magasins
+PRODUCTION_STORAGE_NEW: Enregistrer un sous magasin
+PRODUCTION_STORAGE_EDIT: Editer un sous magasin
+PRODUCTION_STORAGE_DELETE: Supprimer un sous magasin
+PRODUCTION_STORAGE_DETAIL: Consulter les détails d'un sous magasin
+PRODUCTION_STORAGE_INVENTORY: Consulter l'inventaire d'un sous magasin
+PRODUCT_CHANGE_STATUS: Changer l'état d'un produit
+PASTE_NEW: Enregistrer un type de pâte
+PASTE_EDIT: Editer un type de pâte
+PASTE_DELETE: Supprimer un type de pâte
+PASTE_INDEX: Liste des types de pâte
+PASTE_DETAIL: Détail sur le type de pâte
+PASTE_ADD_PRODUCT: Ajouter un produit fini à un type de pâte
+PASTE_DELETE_PRODUCT: Supprimer un produit fini à un type de pâte
+PRODUCTION_CHANGE_PASTE: Changer le type de pâte d'une production
+FILE_SALE_EMPLOYEE: Sélectionnez un employé pour consulter sa fiche
+USER_DETAIL: Détail sur l'utilisateur
+USER_ADD_CATEGORY: Ajouter une catégorie de produit à un utilisateur
+USER_DELETE_CATEGORY: Supprimer une catégorie de produit à un utilisateur
+PRODUCTION_WITH_GAP: Consulter les écarts de production
+SALE_PAYMENT_NEW: Enregistrer un paiement pour une vente
+CUSTOMER_SALE_PAYMENT_ADD: Enregistrer un paiement pour une vente
+REPORT_SALE_EMPLOYEE: Consulter et imprimer le rapport périodique de vente par employé
+PRODUCTION_PASTE_RESERVE_INDEX: Liste des réserves de pâtes
+PRODUCTION_PASTE_RESERVE_ADD: Enregistrer une réserve de pâtes
+PRODUCTION_PASTE_RESERVE_DELETE: Supprimer une réserve de pâtes
+PRODUCTION_PASTE_RESERVE_OUT_ADD: Enregistrer une sortie de réserve de pâtes
+PRODUCTION_PASTE_RESERVE_OUT_DELETE: Supprimer une sortie de réserve de pâtes
+PRODUCT_RESERVE_INDEX: Liste des réserves de produits finis
+PRODUCTION_PRODUCT_RESERVE_ADD: Enregistrer une réserve de produits finis
+PRODUCTION_PRODUCT_RESERVE_DELETE: Supprimer une réserve de produits finis
+PRODUCTION_PRODUCT_RESERVE_OUT_ADD: Enregistrer une sortie de réserve de produits finis
+PRODUCTION_PRODUCT_RESERVE_OUT_DELETE: Supprimer une sortie de réserve de produits finis
+PRODUCTION_CHANGE_PERIOD: Changer la période d'une production
+SUPPLY_PRODUCTION_INDEX: Liste des approvisionnements de sous magasin
+SUPPLY_PRODUCTION_ADD: Enregistrer un approvisionnement de sous magasin
+SUPPLY_PRODUCTION_NEW: Valider un approvisionnement de sous magasin
+SUPPLY_PRODUCTION_DELETE: Supprimer un approvisionnement de sous magasin
+REPORT_PRODUCTION_STORAGE: Consulter le rapport périodique de production des sous magasins
+REPORT_PRODUCTION_STORAGE_DETAIL: Consulter et imprimer le rapport périodique détaillé de production d'un sous magasin
+SUPPLY_CHOICE: Choix du type d'approvisionnement
+USER_REMOVE_CATEGORY: Retirer une catégorie de produits à un employé
+DASHBOARD_PRODUCTION: Tableau de bord de production
+SALE_CHANGE_NUM_INVOICE: Changer le numéro de facture d'une vente
+SALE_WITH_DISCOUNT_WHOLESALE: gérer les réductions sur la vente pour revendeur
+SALE_CHANGE_DATE: changer la date d'une vente
+SALE_CHANGE_CUSTOMER: changer le client d'une vente
+FILE_SALE_EDIT_INITIAL_BALANCE: Editer la balance initiale d'une fiche de vente
+REPORT_FILE_SALE: Consulter le rapport périodique des encaissements
+SHORTCUT_INDEX: Liste des raccourcis
+SHORTCUT_NEW: Enregistrer un raccourci
+SHORTCUT_DELETE: Supprimer un raccourci
+STOCK_CHANGE_NUM_INVOICE: Changer le numéro de facture d'une commande
+STOCK_CHANGE_DATE: changer la date d'une commande
+STOCK_CHANGE_SUPPLIER: changer le fournisseur d'une commande
+ADJUSTMENT_INDEX: Consulter la liste des ajustements
+ADJUSTMENT_DETAIL: Détail sur un ajustement
+ADJUSTMENT_NEW: Enregister un nouvel ajustement
+ADJUSTMENT_PRINT: Imprimer un ajustement effectué
+ADJUSTMENT_DELETE: Supprimer un ajustement

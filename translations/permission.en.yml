@@ -1,0 +1,239 @@
+ACCOUNT_PROFILE: Consult and modify your profile
+ACCOUNT_LOGOUT: Logout
+ACCOUNT_RESET_PASSWORD: Change password
+ACTIVATION: Activate the app
+ORDER_ADD: Add a product to the order basket
+ORDER_REMOVE: Remove a product from the basket of the order
+ORDER_REMOVE_ALL: Remove all products from the cart from the order
+USER_INDEX: Consult the list of user accounts
+USER_NEW: Add a new user account
+USER_UPDATE_STATUS: Activate or deactivate a user account
+PRODUCT_CATEGORY_INDEX: Consult the list of product categories
+PRODUCT_CATEGORY_NEW: Register a category of product
+PRODUCT_CATEGORY_EDIT: Edit a product category
+PRODUCT_CATEGORY_DELETE: Remove a category of product
+SUPPLIER_INDEX: Consult the list of suppliers
+SUPPLIER_NEW: Register a new supplier
+SUPPLIER_EDIT: Edit a supplier
+SUPPLIER_DELETE: Delete a supplier
+HOME: Go to the home page
+INVENTORY_INDEX: Access inventory
+PRODUCT_INDEX: Consult the product list
+PRODUCT_EXPIRY_DATE: Consult the list of drugs close to expiration
+PRODUCT_OUT_OF_DATE: Consult the list of expired drugs
+PRODUCT_NEW: Register a new drug
+PRODUCT_EDIT: Edit a drug
+PRODUCT_DELETE: Delete a drug
+PRODUCT_DETAIL: View drug details
+PRODUCT_ADD_SUBSTITUTE: Combine a replacement drug with a drug
+PRODUCT_REMOVE_SUBSTITUTE: Dissociate a substitute drug from a drug
+PRODUCT_IMPORT: Import a product list
+STORE_INDEX: View and edit pharmacy details
+PERFORMANCE_INDEX: Access pharmacy statistics
+PERFORMANCE_PRODUCT: Access statistics on drugs sold
+PERFORMANCE_EMPLOYEE: Access each employee's file
+PERFORMANCE_PROFIT: Access profit statistics
+PERFORMANCE_PAYMENT_METHOD: Access statistics on payment methods
+LOSS_INDEX: Consult the list of losses
+LOSS_NEW: Record a new loss
+LOSS_DELETE: Delete a loss
+STOCK_INDEX: Consult the list of orders
+STOCK_DETAIL: Access order details
+STOCK_NEW: Register a new order
+STOCK_ADD: Validate an order
+STOCK_SET_STATUS: Change the order state
+STOCK_PRINT: Print the details of an order
+STOCK_DELETE: Delete an order
+PRODUCT_STOCK_DELETE: Delete an order line
+PRODUCT_STOCK_ADD: Add an order line
+PRODUCT_STOCK_WITHDRAW: Withdraw a product from order
+LOSS_TYPE_INDEX: Consult the list of types of loss
+LOSS_TYPE_NEW: Record a new loss
+LOSS_TYPE_EDIT: Edit a loss type
+LOSS_TYPE_DELETE: Delete a type of loss
+SALE_INDEX: Consult the sales list
+SALE_MINE: Consult the list of her sales
+SALE_DETAIL: View the details of a sale
+SALE_NEW: Register a new sale
+SALE_PRINT: Print a sale
+SALE_DELETE: Delete a sale
+ROLE_INDEX: Consult the list of roles
+ROLE_NEW: Register a new role
+ROLE_EDIT: Edit a role
+ROLE_DELETE: Delete a role
+ROLE_ADD_PERMISSION: Add permission to a role
+ROLE_REMOVE_PERMISSION: Remove permission from a role
+HISTORIC_INDEX: View connection history
+USER_CHANGE_ROLE: Change the role of a user account
+ACCOUNT_CHANGE_LANGUAGE: Change the language of the application
+ACCOUNT_DELETE_LANGUAGE: Delete a language of the application
+ACCOUNT_IMPORT_LANGUAGE: Import a language in the application
+DATABASE_BACKUP: List of database backups
+DATABASE_REMOVE: Delete a database backup
+DATABASE_DOWNLOAD: Download a database backup
+PRODUCT_PRINT_LABEL: Print drug barcode labels
+DATABASE_ADD: Create a database restore point
+SEARCH_PRODUCT: Search for a drug to view its details
+SEARCH_STOCK: Search for an order to view its details
+SEARCH_SALE: Search for a sale to view its details
+REPORT_SALE: View and print the periodic sales report
+REPORT_STOCK: Consult and print the periodic order report
+REPORT_LOSS: Consult and print the periodic loss report
+REPORT_PRODUCT: Consult and print the periodic report of a product
+REPORT_TRANSACTION: Consult the periodic transaction report for an account
+REPORT_SALE_PRODUCT: Consult the periodic sale report by product
+REPORT_EMPLOYEE: Consult the periodic sale report by employee
+BANK_INDEX: Consult the list of bank accounts
+BANK_NEW: Register a new bank account
+BANK_EDIT: Edit a bank account
+BANK_DELETE: Delete a bank account
+CUSTOMER_INDEX: Consult the list of clients
+CUSTOMER_NEW: Register a new customer
+CUSTOMER_EDIT: Edit a customer
+CUSTOMER_DELETE: Delete a customer
+TRANSACTION_INDEX: Consult the list of transactions
+TRANSACTION_NEW: Record a new transaction
+TRANSACTION_EDIT: Edit a transaction
+TRANSACTION_DELETE: Delete a transaction
+EXPENSE_TYPE_INDEX: Consult the list of expense types
+EXPENSE_TYPE_NEW: Record an expense type
+EXPENSE_TYPE_EDIT: Edit an expense type
+EXPENSE_TYPE_DELETE: Delete an expense type
+EXPENSE_INDEX: Consult the list of expenses
+EXPENSE_NEW: Record a new expense
+EXPENSE_EDIT: Edit an expense
+EXPENSE_DELETE: Delete an expense
+PAYMENT_METHOD_INDEX: Consult the list of payment methods
+PAYMENT_METHOD_NEW: Register a payment method
+PAYMENT_METHOD_EDIT: Edit a payment method
+PAYMENT_METHOD_DELETE: Delete a payment method
+STOCK_PAYMENT_INDEX: Consult the list of ordering settlements
+STOCK_PAYMENT_REMOVE: Delete a settlement
+STOCK_PAYMENT_ADD: Record a payment for an order
+SETTING_INDEX: Access the settings
+SETTING_UPDATE: Update settings
+TAX_INDEX: Consult the list of taxes
+TAX_NEW: Register a new tax
+TAX_EDIT: Edit a tax
+TAX_DELETE: Remove a tax
+TAX_UPDATE_STATUS: Enable or disable a tax
+BANK_UPDATE_STATUS: Change the state of a financial account
+SETTING_FORMAT_DELETE: delete a format paper for printing function
+SETTING_FORMAT_ADD: add a format paper for printing function
+SALE_PAYMENT_ADD: add a payment for a sale
+SALE_PAYMENT_REMOVE: delete a sale payment
+STOCK_IMPORT: Import an order
+EXPENSE_TYPE_STATUS: Edit the status of a expense type
+PAYMENT_METHOD_STATUS: Edit the status of a payment method
+EMPLOYEE_ATTENDANCE: Consult the attendace book for all employees
+EMPLOYEE_ATTENDANCE_DELETE: Delete the state of a employee attendance
+EMPLOYEE_ATTENDANCE_INDEX: Consult the employee attendace book
+EMPLOYEE_ATTENDANCE_ADD: Add the state of employee attendance
+EMPLOYEE_SALARY: Consult the salary page for all employees
+EMPLOYEE_SALARY_INDEX: Consult the salary payment history of a employee
+EMPLOYEE_SALARY_ADD: Add a payment for a employee
+EMPLOYEE_SALARY_DELETE: Delete a payment for a employee
+EMPLOYEE_INDEX: Consult the employee list
+EMPLOYEE_NEW: Add a new employee
+EMPLOYEE_EDIT: Edit a employee
+EMPLOYEE_DELETE: Delete a employee
+SALE_INDEX_DELETED: Consult the list of deleted sales
+SALE_INDEX_UNSETTLED: Consult the list of unsettled sales
+SALE_SOFT_DELETE: Delete temporarily a sale
+SALE_RESTORE: Restore the deleted sales
+NOTICE_BOARD_INDEX: Consult the notice list
+NOTICE_BOARD_NEW: Add a notice
+NOTICE_BOARD_EDIT: Edit a notice
+NOTICE_BOARD_DELETE: Delete a notice
+NOTICE_BOARD_ADD_USER: Link a user to a notice
+NOTICE_BOARD_DELETE_USER: Delink a user to a notice
+RAW_MATERIAL_INDEX: Consult the list of raw material
+RAW_MATERIAL_EDIT: Edit ad raw material
+RAW_MATERIAL_NEW: Add a raw material
+RAW_MATERIAL_DELETE: Delete a raw material
+RAW_MATERIAL_OUT_OF_DATE: Consult the out of date raw materail
+RAW_MATERIAL_INVENTORY: Consulter the inventory of raw material
+RAW_MATERIAL_IMPORT: Import a raw material file
+RAW_MATERIAL_EXPIRY_DATE: Consult the list of raw material near the peremption
+RAW_MATERIAL_DETAIL: Consult the detail of raw material
+MATERIAL_LOSS_DELETE: Delete a raw material loss
+MATERIAL_LOSS_INDEX: Consult the raw material loss
+MATERIAL_LOSS_NEW: Add a raw material loss
+PRODUCTION_DELETE: Delete a production
+PRODUCTION_DETAIL: Consult the production detail
+PRODUCTION_INDEX: Consult the production list
+PRODUCTION_NEW: Add a new production
+PRODUCTION_PRINT: Print a production
+PRODUCTION_PRODUCT_STOCK_ADD: Add a finished product to a production
+PRODUCTION_PRODUCT_STOCK_DELETE: Delete a finished product of a production
+PRODUCTION_STOCK_STATUS: Change state of the finished products of a production
+REPORT_SUPPLY: Consult the periodic supply report
+REPORT_SALARY: Consult the periodic salary report
+REPORT_PRODUCTION: Consult the periodic production report
+REPORT_EXPENSE: Consult the periodic expense report
+REPORT_ATTENDANCE: Consult the periodic attendance report
+SALE_WHOLESALER_NEW: Add a sale for wholesaler
+SALE_CHOICE: Choice of sale type
+SUPPLY_ADD: Add a supply of raw material
+SUPPLY_DELETE: Delete a supply of raw material
+SUPPLY_DETAIL:  Consult the supply detail of raw material
+SUPPLY_IMPORT: Import a supply file
+SUPPLY_INDEX: Consult the supply list of raw material
+SUPPLY_NEW: Add a supply of raw material
+SUPPLY_PRINT: Print a supply of raw material
+SUPPLY_RAW_ADD: Add a supply line
+SUPPLY_RAW_DELETE: Delete a supply line
+SUPPLY_RAW_WITHDRAW: Withdraw a raw material of a supply
+SUPPLY_SET_STATUS: Change state of a supply
+PERMISSION_INDEX: Consult the permission list
+PERMISSION_PDF: Print the permission file
+PRODUCT_ADD_PRICE: Add a whole price for a product
+PRODUCT_REMOVE_PRICE: Remove a whole price to a product
+PRODUCT_PRICE: Product list with whole price
+PRODUCT_PRICE_IMPORT: Import a whole price file by product
+PRODUCT_UPDATE_IMPORT: Import the updated products
+ADDONS_NEW: Add new module
+ADDONS_UPDATE_STATUS: Change the module state
+SALE_PROFIT: Consult the sale profit
+REPORT_CUSTOMER_SALE_PRODUCT: Consult the periodic sale report by customer
+REPORT_EMPLOYEE_SALE_PRODUCT: Consult the periodic sale report by employee
+PERFORMANCE_CUSTOMER: Consult the customer file
+SALE_INVOICE_PRINT: Print the purchase invoice of a customer
+REPORT_ACTIVITY: Consult the periodic activity report
+STORE_VALUE: View current store status and forecast value
+SALE_SENDBYMAIL: Send the purchase receipt to the customer by mail
+PERFORMANCE_PRODUCT_CATEGORY: Access statistics on product categories
+PERFORMANCE_PURCHASE:  Access statistics on Supplies
+REPORT_CATEGORY_SALE_PRODUCT: Consult the sale periodic report by product category
+REPORT_PRODUCT_CATEGORY: Consult the category periodic report
+REPORT_SUPPLIER: Consult the supplier periodic report
+REPORT_SUPPLIER_STOCK_PRODUCT: Consult the sale periodic report by supplier
+PRODUCT_ADD_CUSTOMER_PRICE: Add a reseller special price
+PRODUCT_REMOVE_CUSTOMER_PRICE: Remove a reseller special price
+PRODUCT_REMOVE_CUSTOMER_PRICE_ALL: Remove a list of reseller special prices
+SALE_DELETE_ALL: Delete any sale
+SETTING_THEME_ADD: Add a new theme
+SETTING_THEME_DELETE: Delete a theme
+SALE_WITH_DISCOUNT: Add a discount on the sale
+SALE_PRODUCT_RETURN_ADD: Add a product return
+SALE_PRODUCT_RETURN_DELETE: Delete a product return
+REPORT_SALE_PRODUCT_RETURN: Consult the periodic report on return of products sold
+REPORT_STOCK_PRODUCT_RETURN: Consult the periodic report on resend of products ordered
+PRODUCT_PACKAGING_INDEX: Consult the packaging list of product
+PRODUCT_PACKAGING_NEW: Add a product packaging
+PRODUCT_PACKAGING_EDIT: Edit a product packaging
+PRODUCT_PACKAGING_DELETE: Delete a product packaging
+PRODUCTION_STORAGE_INDEX: Consult the list of storages
+PRODUCTION_STORAGE_NEW: Add a storage
+PRODUCTION_STORAGE_EDIT: Edit a storage
+PRODUCTION_STORAGE_DELETE: Delete a storage
+PRODUCTION_STORAGE_INVENTORY: Consult the storage inventory
+PRODUCT_CHANGE_STATUS: Change the state of product
+SALE_CHANGE_NUM_INVOICE: Change the sale invoice number
+SALE_WITH_DISCOUNT_WHOLESALE: manage the discount in the retailler sale
+SALE_CHANGE_DATE: changer the sale date
+SALE_CHANGE_CUSTOMER: changer the sale customer
+FILE_SALE_EDIT_INITIAL_BALANCE: Edit the initial balance of the sale file
+STOCK_CHANGE_NUM_INVOICE: Change the order invoice number
+STOCK_CHANGE_DATE: changer the order date
+STOCK_CHANGE_SUPPLIER: changer the order supplier

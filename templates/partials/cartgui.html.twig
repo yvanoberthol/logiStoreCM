@@ -1,0 +1,212 @@
+{% set setting = app.session.get('setting') %}
+{% if items|length > 0 %}
+    <script type="text/javascript">
+        const datetimepicker = $('.datepicker');
+        datetimepicker.on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        const date = dayjs(new Date()).format("{{ app.session.get('setting').longDateJs }}");
+        datetimepicker.datetimepicker({
+            format: '{{ app.session.get('setting').dateLongPicker }}',
+            autoclose: true,
+            endDate: date,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        datetimepicker.val(date);
+
+        datetimepicker.hide();
+        $('#canPrint').on('change',function () {
+            const canPrint = $(this).is(':checked');
+
+            if (canPrint){
+                datetimepicker.hide();
+            }else{
+                datetimepicker.show();
+            }
+
+        });
+
+        $('.tax').on('change',function () {
+            const tax = $(this).is(':checked');
+            let taxId = $(this).attr('data-tax');
+
+            if (tax){
+                $('#tax-'+taxId).show();
+            }else{
+                $('#tax-'+taxId).hide();
+            }
+
+        });
+    </script>
+    <table class="table table-bordered table-striped">
+        {% for item in items  %}
+            <tr>
+                <td style="width: 35%">{{ item.product.name }}</td>
+                <td style="width: 30%">
+                    <ul class="list-group">
+                        {% for productStock in item.productStocks %}
+                            <li class="list-group-item list-group-item-light">
+                                {% if productStock[0].stock.supplier is not null %}
+                                    {{ productStock[0].stock.supplier.name}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                                 | {{ productStock[0].batchId}}
+                                ({{ productStock[0].qtyRemaining }}) =
+                                <span class="font-weight-bold">
+                                    {{ productStock[1] }}
+                                </span>
+                            </li>
+                        {% endfor %}
+                    </ul>
+
+                </td>
+                <td style="width: 25%">
+                  {{ item.qty }} X {{ item.sellPrice|formated }}
+                </td>
+                <td style="width: 30%">
+                    <span>{{ (item.sellPrice * item.qty)|formated }}</span>
+                    <input type="hidden" name="qty" value="{{ item.qty }}"
+                           data-product="{{ item.product.id }}"
+                           data-amount="{{ item.sellPrice }}"
+                           class="input-qty-cart">
+                </td>
+                <td style="width: 10%">
+                    <button name="remove" data-product="{{ item.product.id  }}"
+                            class="removeToCart btn-danger mb-1 mr-1" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        {% for tax in taxs %}
+            <tr>
+                <td colspan="3">
+                    <div class="form-inline float-right">
+                        <input type="checkbox" name="tax-{{ tax.id }}"
+                               value="{{ tax.rate }}"
+                               data-tax="{{ tax.id }}"
+                               class="form-control mr-2 tax"
+                               {% if tax in taxCart %}checked{% endif %}>
+                        <label for=tax>
+                            {{ tax.name }} ({{ tax.rate }}%)
+                        </label>
+                    </div>
+                </td>
+                <td colspan="2">
+                    <span id="tax-{{ tax.id }}">
+                       {{ (total * tax.rate / 100)|round|formated }}
+                    </span>
+                </td>
+            </tr>
+        {% endfor %}
+        <tr class="font-weight-bold h6">
+            <td colspan="3" class="text-right">
+                {{ 'sale.add.totalAmount'|trans({},'messages',app.session.get('_locale')) }}:
+            </td>
+            <td colspan="2">
+                <span id="cart-total">{{ totalWithTax|formated }}</span>
+                {{ app.session.get('setting').currencyName }}
+                <span id="cart-total-input" style="display: none;">{{ totalWithTax }}</span>
+            </td>
+        </tr>
+        {% if setting.withDiscount
+            and is_granted(permission_verify,'SALE_WITH_DISCOUNT') %}
+            <tr>
+                <td colspan="5">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="discount">{{ 'sale.add.discount'|trans({},'messages',app.session.get('_locale')) }}</label>
+                                <input type="text" id="discount" name="discount" class="form-control"
+                                       placeholder="0">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label for="amountWithReduction">
+                                    {{ 'sale.add.amountWithReduction'|trans({},'messages',app.session.get('_locale')) }}
+                                </label>
+                                <input type="text" id="amountWithReduction" class="form-control text-info font-weight-bold" disabled
+                                       value="{{ totalWithTax }}">
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        {% endif %}
+        <tr>
+            <td colspan="5">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="amountReceived">
+                                {{ 'sale.add.amountReceived'|trans({},'messages',app.session.get('_locale')) }}
+                            </label>
+                            <input type="text" id="amountReceived" name="amountReceived" class="form-control"
+                                   placeholder="0">
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="amountWithReduction">
+                                {{ 'sale.add.amountRefund'|trans({},'messages',app.session.get('_locale')) }}
+                            </label>
+                            <input type="text" id="amountRefund" class="form-control text-info font-weight-bold" disabled
+                                   value="0">
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="5">
+                <div>
+                    <button class="btn btn-uyblue collapsed pull-right mb-5"
+                            type="button" data-toggle="collapse" data-target="#validCart"
+                            aria-expanded="false" aria-controls="collapseExample">
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+                </div>
+                <div class="collapse mt-5" id="validCart" style="">
+                    <div class="card card-body">
+                        <div class="form-inline mb-1">
+                            <input type="checkbox" name="canPrint" value=""
+                                   id="canPrint" {% if setting.printDirectly %}checked{% endif %} class="form-control mr-2">
+                            <label for=canPrint>{{ 'sale.add.print'|trans({},'messages',app.session.get('_locale')) }}</label>
+                        </div>
+                        {% if is_granted(permission_verify,'SALE_CHANGE_DATE')  %}
+                        <div class="form-group">
+                            <input type="text" class="datepicker form-control mr-2 mb-1"
+                                   name="start">
+                        </div>
+                        {% endif %}
+                        <div class="form-group">
+                            <select class="form-control" name="paymentMethod" id="paymentMethod">
+                                {% for type in paymentMethods  %}
+                                    <option value="{{ type.id }}">{{ type.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-inline text-center">
+                            <button class="btn btn-danger mr-2" id="removeAllToCart">
+                                <i class="fa fa-trash"></i> {{ 'sale.add.btn_cleanBag'|trans({},'messages',app.session.get('_locale')) }}
+                            </button>
+                            <button type="submit" class="btn btn-success" id="btnValidate">
+                                <i class="fa fa-check-circle"></i> {{ 'sale.add.btn_valid'|trans({},'messages',app.session.get('_locale')) }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+{% else %}
+    <p class="text-center alert alert-info font-weight-bold">
+        {{ 'sale.add.bag_nodata'|trans({},'messages',app.session.get('_locale')) }}
+    </p>
+{% endif %}

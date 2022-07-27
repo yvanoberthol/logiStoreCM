@@ -1,0 +1,153 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'adjustment.index.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | longDate }} - {{ end | longDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'adjustment.index.block_title'|trans }} ({{ adjustments|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'ADJUSTMENT_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('adjustment_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-11">
+                    <form action="{{ path('adjustment_index') }}" method="post" class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue" >
+                           <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>{{ 'adjustment.index.tr_date'|trans }}</th>
+                            <th>{{ 'adjustment.index.tr_amount'|trans }}</th>
+                            <th>{{ 'adjustment.index.tr_recorder'|trans }}</th>
+                            <th class="not-export not-sort">
+                                {{ 'adjustment.index.tr_actions'|trans }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for adjustment in adjustments|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td>
+                                <a href="{{path('adjustment_detail',{'id': adjustment.id})}}">
+                                    {{ adjustment.addDate|mediumDate }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ adjustment.amount|formated }}
+
+                            </td>
+                            <td class="text-capitalize">
+                                {{ adjustment.recorder.name }}
+                            </td>
+                            <td>
+                                {% if is_granted(permission_verify,'ADJUSTMENT_PRINT') %}
+                                    <a target="_blank" class="p-2 badge badge-success"
+                                       href="{{ path('adjustment_print',{'id': adjustment.id}) }}">
+                                        <i class="fa fa-print"></i>
+                                    </a>
+                                {% endif %}
+                                {% if is_granted(permission_verify,'ADJUSTMENT_DELETE') %}
+                                    <a href="#deleteModal{{adjustment.id}}" data-toggle="modal"
+                                       class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{adjustment.id}}" tabindex="-1"
+                                         role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <form action="{{path('adjustment_delete')}}" method="post">
+                                                    <input type="hidden" name="id" value="{{ adjustment.id }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">
+                                                            {{ 'adjustment.index.modal.delete.title'|trans }}
+                                                        </h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{ 'adjustment.index.modal.delete.body1'|trans }}
+                                                        <span class="text-uyblue">
+                                                            {{ adjustment.addDate|mediumDate }}
+                                                        </span>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                        </button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

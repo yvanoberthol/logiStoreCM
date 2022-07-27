@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'salePayment.index.title'|trans({},'messages',app.session.get('_locale')) }}  {{ start | mediumDate }} - {{ end | mediumDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    <script type="text/javascript">
+        $('.datepicker').on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        $('.datepicker').datepicker({
+            format: '{{ app.session.get('setting').dateMediumPicker }}',
+            autoclose: true,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+
+        let customer = $('#customer');
+
+        customer.select2({
+            placeholder: "{{ 'report.saleByProductCustomer.select_customer'|trans }}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}",
+        });
+
+        {% if customer is defined and customer is not null %}
+        customer.val({{ customer.id }}).trigger('change');
+        {% else %}
+        customer.val([]).trigger('change');
+        {% endif %}
+
+        let customerForm = $('#customerForm');
+
+        customerForm.select2({
+            placeholder: "{{ 'report.saleByProductCustomer.select_customer'|trans }}",
+            allowClear: true,
+            dropdownParent: $('#addSalePaymentModal'),
+            language: "{{ app.session.get('_locale') }}",
+        });
+        customerForm.val([]).trigger('change');
+
+        getDataTable($('#dataTable'));
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+        const body = $('body');
+        body.on('click', '.detail-salePayment', function (e) {
+            e.preventDefault();
+            const customerId = $(this).attr('data-customer');
+            const date = $(this).attr('data-date');
+            const link = '{{ path('rest_customer_salePayment_modal') }}';
+            modalSalePayment(customerId,date,link);
+
+        });
+
+        function modalSalePayment(customerId,date,link) {
+            let data = new FormData();
+            data.append("customer", customerId + '');
+            data.append("date", date + '');
+
+            $('#salePaymentmodal').html("");
+            fetch(link, {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    $('#salePaymentmodal').html(data.content);
+                    $('.salePaymentmodal').modal('show');
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'salePayment.index.block_title'|trans }}
+                ({{ salePayments|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'SALE_PAYMENT_ADD') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue"
+                           href="#addSalePaymentModal" data-toggle="modal">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('sale_payment_index') }}" method="post" class="form-inline float-right">
+                        <select class=" form-control mr-2 mb-1"
+                                name="customer" id="customer">
+                            {% for customer in customers  %}
+                                <option value="{{ customer.id }}">
+                                    {{ customer.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <input type="text" class="datepicker form-control ml-2 mr-2 mb-1" name="start"
+                               value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end"
+                               value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue mr-5" >
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>{{ 'salePayment.index.tr_date'|trans }}</th>
+                        <th>{{ 'salePayment.index.tr_amount'|trans }}</th>
+                        <th>{{ 'salePayment.index.tr_customer'|trans }}</th>
+                        <th>{{ 'salePayment.index.tr_recorder'|trans }}</th>
+                        <th class="not-export not-sort">
+                            {{ 'salePayment.index.tr_actions'|trans }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for salePayment in salePayments|sort((a,b) => a.date <=> b.date) %}
+                        <tr>
+                            <td>{{ salePayment.date|mediumDate }}</td>
+                            <td>{{ salePayment.amount|formated }}</td>
+                            <td class="text-capitalize">
+                                <a href="{{ path('performance_customer',{id:salePayment.customerId}) }}">
+                                    {{ salePayment.customerName }}
+                                </a>
+                            </td>
+                            <td class="text-capitalize">{{ salePayment.recorderName }}</td>
+                            <td>
+                                <a href="#salesPaymentModal{{salePayment.customerId }}"
+                                   data-toggle="modal"
+                                   class="badge badge-uyblue p-2 detail-salePayment"
+                                   data-customer="{{ salePayment.customerId  }}"
+                                   data-date="{{ salePayment.date|mediumDate }}">
+                                    <i class="fa fa-file"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    <!-- sale payment Modal -->
+    <div id="salePaymentmodal"></div>
+
+    {% if is_granted(permission_verify,'SALE_PAYMENT_NEW') %}
+        <!-- add payment Modal -->
+        <div class="modal fade" id="addSalePaymentModal" tabindex="-1" role="dialog"
+             aria-labelledby="addSalePaymentModal" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            {{ 'salePayment.index.modal.addPayment.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('sale_payment_new') }}" method="post">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="customer">
+                                    {{ 'salePayment.index.modal.addPayment.form.customer'|trans }}
+                                </label>
+                                <select class="form-control" name="customer" id="customerForm"
+                                        style="width: 100% !important;" required>
+                                    {% for customer in customerDebts  %}
+                                        <option value="{{ customer.id }}">
+                                            {{ customer.name }} ({{ customer.amountDebt|formated }})
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">
+                                    {{ 'performance.performanceCustomer.modal.addPayment.form.date'|trans }}
+                                </label>
+                                <input type="text" class="form-control datepicker" name="date"
+                                       id="date" required value="{{ 'now'|mediumDate }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">
+                                    {{ 'performance.performanceCustomer.modal.addPayment.form.amount'|trans }}
+                                </label>
+                                <input type="number" class="form-control" name="amount"
+                                       id="amount" value="0" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">
+                                    {{ 'performance.performanceCustomer.modal.addPayment.form.paymentMethod'|trans }}
+                                </label>
+                                <select class="form-control" name="paymentMethod" id="paymentMethod">
+                                    {% for type in paymentMethods  %}
+                                        <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-check-circle"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

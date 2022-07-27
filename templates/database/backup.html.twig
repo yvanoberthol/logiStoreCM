@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'database.backup.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'database.backup.block_title'|trans }}
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'DATABASE_ADD') %}
+                <form action="{{ path('database_add') }}" method="post" class="form-inline float-right">
+                    <button type="submit" class="btn btn-uyblue form-control"
+                            name="export" value="export">
+                        <i class="fa fa-database"></i> {{ 'database.backup.export'|trans }}
+                    </button>
+                </form>
+                {% endif %}
+                <span class="triangle-border-left pull-left"></span>
+
+            </h5>
+            <div class="row">
+                <table class="table table-bordered">
+                    <tr>
+                       <th>{{ 'database.backup.tr_name'|trans }}</th>
+                       <th>{{ 'database.backup.tr_date'|trans }}</th>
+                       <th>{{ 'database.backup.tr_size'|trans }}</th>
+                       <th>#</th>
+                    </tr>
+                    {% for file in files|sort((a,b) => a.aTime <=> b.aTime)|reverse   %}
+                        <tr>
+                            <td>{{ file.filenameWithoutExtension }}</td>
+                            <td>{{ file.mTime|date('Y-m-d H:i')|longDate }}</td>
+                            <td>{{ file.size|unitSize }}</td>
+                            <td>
+                                {% if is_granted(permission_verify,'DATABASE_DOWNLOAD') %}
+                                <a href="{{ path('database_download',{name:file.filename}) }}" class="btn btn-primary mr-2">
+                                    <i class="fa fa-download"></i>
+                                </a>
+                                {% endif %}
+                                {% if is_granted(permission_verify,'DATABASE_REMOVE') %}
+                                <a href="{{ path('database_remove',{name:file.filename}) }}" class="btn btn-danger">
+                                    <i class="fa fa-trash"></i>
+                                </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

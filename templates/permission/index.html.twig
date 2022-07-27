@@ -1,0 +1,74 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'permission.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        const table = getDataTable($('#dataTable'),true);
+
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+    </script>
+
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'permission.index.block_title'|trans }} ({{ permissions|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'PERMISSION_PDF') %}
+                <span class="pull-right">
+                    <a class="btn btn-success mr-2" href="{{ path('permission_pdf') }}">
+                        <i class="fa fa-upload"></i> {{ 'permission.index.print'|trans }}
+                    </a>
+                </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>
+                            {{ 'pdf.permission.tr_title'|trans }}
+                        </th>
+                        {% for role in roles  %}
+                            <th class="text-uppercase">
+                                {{ role.title|trans  }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for permission in permissions  %}
+                        <tr>
+                            <td>
+                                {{ permission.code|trans({},'permission') }}
+                            </td>
+                            {% for role in roles %}
+                                <td>
+                                    {% if permission.roles.contains(role) %}
+                                        <i class="fa fa-check"></i>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

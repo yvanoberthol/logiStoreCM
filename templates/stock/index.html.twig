@@ -1,0 +1,221 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'stock.index.title'|trans({},'messages',app.session.get('_locale')) }}  {{ start | mediumDate }} - {{ end | mediumDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    <script type="text/javascript">
+        $('.datepicker').on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        $('.datepicker').datepicker({
+            format: '{{ app.session.get('setting').dateMediumPicker }}',
+            autoclose: true,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+
+        getDataTable($('#dataTable'));
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+        const body = $('body');
+
+        body.on('click','.senderMail',function (e) {
+            e.preventDefault();
+            const stockId = $(this).attr('data-stock');
+            console.log(stockId);
+            sendMail(stockId);
+            e.stopPropagation();
+        });
+
+        function sendMail(stockId) {
+            let data = new FormData();
+            data.append("id", stockId + '');
+            fetch('{{ path('rest_stock_byMail') }}', {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    if (data === true) {
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .success("<i class='fa fa-check-circle'></i> {{ 'stock.index.sendValid'|trans }}");
+                    }else{
+                        alertify.logPosition("top right");
+                        alertify.delay(6000)
+                            .error("<i class='fa fa-close'></i> {{ 'stock.index.sendInvalid'|trans }}");
+                    }
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'stock.index.block_title'|trans }} ({{ stocks|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'STOCK_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('stock_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('stock_index') }}" method="post" class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start"
+                               value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end"
+                               value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue mr-5" >
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-sort">{{ 'stock.index.tr_date'|trans }}</th>
+                        {% if setting.withPurchasePrice  %}
+                        <th>{{ 'stock.index.tr_amount'|trans }}</th>
+                        {% endif %}
+                        <th>{{ 'stock.index.tr_supplier'|trans }}</th>
+                        <th>{{ 'stock.index.tr_status'|trans }}</th>
+                        <th>{{ 'stock.index.tr_recorder'|trans }}</th>
+                        <th class="not-export not-sort">{{ 'stock.index.tr_actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for stock in stocks|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td>
+                                <a href="{{path('stock_detail',{'id': stock.id})}}">
+                                    {{ stock.addDate|mediumDate }}
+                                </a>
+                            </td>
+                            {% if setting.withPurchasePrice  %}
+                            <td>
+                                {{ stock.amount|customCurrency }}
+                                {% if stock.amountRemaining > 0 and setting.withSettlement %}
+                                    <span class="badge badge-warning"
+                                          data-original-title="{{ 'stock.index.tr_amount_tooltip'|trans }}"
+                                          data-toggle="tooltip-info" data-placement="top">
+                                        <i class="fa fa-warning"></i>
+                                    </span>
+                                {% endif %}
+                            </td>
+                            {% endif %}
+                            <td class="text-capitalize">
+                                {% if stock.supplier is not null %}
+                                    {{ stock.supplier.name }}
+                                {% else %}
+                                    /
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if stock.status %}
+                                    <h6>
+                                    {% if stock.initial %}
+                                        <span class="badge badge-success">{{ 'stock.index.tr_initial'|trans }}</span>
+                                    {% else %}
+                                        <span class="badge badge-success">{{ 'stock.index.tr_delivered'|trans }}</span>
+                                    {% endif %}
+                                    </h6>
+                                {% else %}
+                                    <h6>
+                                        <span class="badge badge-danger">
+                                            {{ 'stock.index.tr_waiting'|trans }}
+                                        </span>
+                                    </h6>
+                                {% endif %}
+                            </td>
+                            <td class="text-capitalize">{{ stock.recorder.name }}</td>
+                            <td>
+                                {% if stock.status == false and stock.supplier is not null and is_granted(permission_verify,'STOCK_PRINT') %}
+                                    {% if stock.supplier.email is not null %}
+                                        <a href="#" class="p-2 badge badge-uyblue senderMail"
+                                                data-stock="{{ stock.id }}">
+                                            <i class="fa fa-send-o"></i>
+                                        </a>
+                                    {% endif %}
+                                {% endif %}
+                                {% if is_granted(permission_verify,'STOCK_PRINT') %}
+                                <a target="_blank" class="p-2 badge badge-success"
+                                   href="{{ path('stock_print',{'id': stock.id}) }}">
+                                    <i class="fa fa-print"></i>
+                                </a>
+                                {% endif %}
+                                {% if is_granted('STOCK_DELETE',stock) and is_granted(permission_verify,'STOCK_DELETE') %}
+                                    <a href="#deleteModal{{stock.id}}" data-toggle="modal"
+                                       class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{stock.id}}" tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'stock.index.modal.delete.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'stock.index.modal.delete.body1'|trans }} <span class="text-uyblue">{{ stock.amount|customCurrency }}</span>
+                                                    {{ 'stock.index.modal.delete.body2'|trans }} {{ stock.addDate|mediumDate }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'stock.index.modal.delete.footer.cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-danger" href="{{path('stock_delete',{'id':stock.id})}}">
+                                                        <i class="fa fa-trash"></i> {{ 'stock.index.modal.delete.footer.delete'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

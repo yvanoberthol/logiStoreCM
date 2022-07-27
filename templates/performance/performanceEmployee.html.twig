@@ -1,0 +1,275 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-4 text-center mb-2">
+            {% if employee.imageName == null %}
+                <div class="avatar avatar-lg">
+                    <span class="avatar-text avatar-text-indigo rounded-circle">
+                        <span class="initial-wrap">
+                            <span>{{employee.initials}}</span>
+                        </span>
+                    </span>
+                </div>
+            {% else %}
+                <img src="{{ asset(userPhoto)~employee.imageName }}"
+                     class="avatar-img rounded rounded-pill" width="200px" height="200px"
+                     alt="">
+            {% endif %}
+            <h3 class="text-capitalize">{{ employee.allName|upper }}</h3>
+            <h4 class="alert alert-secondary text-success">{{ employee.title|trans }}</h4>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-body">
+                    <table class="table table-bordered font-weight-bold h6">
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_email'|trans }}</td>
+                            <td>{{ employee.email }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_tel'|trans }}</td>
+                            <td>{{ employee.firstPhoneNumber }} / {{ employee.secondPhoneNumber }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_gender'|trans }}</td>
+                            <td>{{ employee.gender|trans }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_district'|trans }}</td>
+                            <td>{{ employee.district }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_nbSales'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                <i class="h5">
+                                    <span class="badge badge-secondary" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-violet" data-placement="top">
+                                            {{ saleYear.nbSales|formatedInt }}
+                                    </span>
+                                </i>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_amount'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                <i class="h5">
+                                    <span class="badge badge-secondary" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-purple" data-placement="top">
+                                            {{ saleYear.amount|formated }}
+                                    </span>
+                                </i>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_profit'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                <i class="h5">
+                                    <span class="badge badge-secondary" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-indigo" data-placement="top">
+                                            {{ saleYear.profit|formated }}
+                                    </span>
+                                </i>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-header">
+                    <h4 class="mt-0 header-title">
+                        {{ 'performance.performanceEmployee.card_title_month'|trans }}
+                        <div class="float-right">
+                            <form class="form-inline">
+                                <select name="month_area" id="month_area" class="form-control mr-1 mb-1">
+                                    {% for key,month in months %}
+                                        <option value="{{ key - 1 }}" {% if key == monthNow %}selected{% endif %}>
+                                            {{month|trans({},'month')}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input name="year_area" id="year_area" class="form-control mr-1 mb-1" value="{{ year }}">
+                                <button class="btn btn-outline-uyblue mr-5" id="btnForAreaChart">
+                                    <i class="fa fa-search"></i> {{ 'performance.performanceEmployee.card_btn_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <canvas id="myAreaChartSale" width="100%" height="50"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="myAreaChartSaleAmount" width="100%" height="50"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-header">
+                    <h4 class="mt-0 header-title">
+                        {{ 'performance.performanceEmployee.card_title_year'|trans }}
+                        <div class="float-right">
+                            <form class="form-inline">
+                                <input name="year_bar" id="year_bar"
+                                       class="form-control mr-1 mb-1" value="{{ year }}">
+                                <button class="btn btn-outline-uyblue mr-5" id="btnForBarChart">
+                                    <i class="fa fa-search"></i> {{ 'performance.performanceEmployee.card_btn_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="myBarChartSale" width="100%" height="60"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="myBarChartSaleAmount" width="100%" height="60"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block title %}
+    {{ 'performance.performanceEmployee.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% if saleStats is not empty %}
+        <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+        <script src="{{ asset('dist/js/downloadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+        <script src="{{ asset('dist/js/allMonth.js') }}"></script>
+        <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+        <script src="{{ asset('dist/js/statFunction.js') }}"></script>
+        <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+        <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+        <script>
+            let salesNumber = [];
+            let salesAmount = [];
+            {% for sale in saleStats %}
+            salesNumber.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}',amount: {{ sale['nbSales']}}});
+            salesAmount.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}',amount: {{ sale['amount']}}});
+            {% endfor %}
+
+            let elemAreaChart = "myAreaChartSale";
+            let elemAreaChartAmount = "myAreaChartSaleAmount";
+            let elemBarChart = "myBarChartSale";
+            let elemBarChartAmount = "myBarChartSaleAmount";
+
+            const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+            const locale = "{{ app.session.get('_locale') }}";
+
+            const loadArea = loadAreaChart(elemAreaChart, saleByMonth(salesNumber,
+                new Date().getUTCMonth(),new Date().getFullYear()),"{{ 'performance.performanceEmployee.stat_title_number'|trans }}",
+                thousandSeparator,areacolors);
+
+            const loadAreaAmount = loadAreaChart(elemAreaChartAmount,
+                saleByMonth(salesAmount,
+                    new Date().getUTCMonth(),new Date().getFullYear()),"{{ 'performance.performanceEmployee.stat_title_amount'|trans }}",
+                thousandSeparator,areacolors);
+
+            const loadBar = loadBarChart(elemBarChart,
+                saleByYear(salesNumber,new Date().getFullYear()),"{{ 'performance.performanceEmployee.stat_title_number'|trans }}",
+                thousandSeparator,locale,barcolors);
+
+            const loadBarAmount = loadBarChart(elemBarChartAmount,
+                saleByYear(salesAmount,new Date().getFullYear()),"{{ 'performance.performanceEmployee.stat_title_amount'|trans }}",
+                thousandSeparator,locale,barcolors);
+
+
+            function updateAreaChart(sales,loadArea){
+                let color = "rgb(43,153,216)";
+
+                const data = sales.map(sale => {return sale.amount});
+
+                loadArea.options.scales.y.max = 0;
+                if (data.length > 0){
+                    color = data.map(x => 'rgb(43,153,216)');
+                    color[argMax(data)] = 'rgb(2,3,216)';
+                    color[argMin(data)] = 'rgb(216,22,31)';
+                    const valueMax = data[argMax(data)];
+                    loadArea.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                loadArea.data.labels = sales.map(sale => {
+                    return sale.date
+                });
+                loadArea.data.datasets[0].pointBackgroundColor = color;
+                loadArea.data.datasets[0].data = data;
+                loadArea.update();
+
+            }
+
+            function updateBarChart(data,loadBar){
+                loadBar.options.scales.y.max = 0;
+                if (data.length > 0){
+                    const valueMax = data[argMax(data)];
+                    loadBar.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                // loadBar.data.datasets[0].pointBackgroundColor = color;
+                loadBar.data.datasets[0].data = data;
+                loadBar.update();
+            }
+
+            // mettre à jour la vue du tableau statisque en fonction des critères
+            $('#btnForAreaChart').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area').val());
+                const year_area = parseInt($('#year_area').val());
+
+                const saleByMonthAmount = saleByMonth(salesAmount,month_area,year_area);
+                const saleByMonthNumber = saleByMonth(salesNumber,month_area,year_area);
+
+                updateAreaChart(saleByMonthNumber,loadArea);
+                updateAreaChart(saleByMonthAmount,loadAreaAmount);
+
+            });
+
+            $('#btnForBarChart').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar').val());
+
+                const dataNumber = saleByYear(salesNumber,year_bar)
+                    .map(sale => {return sale.amount});
+
+                const dataAmount = saleByYear(salesAmount,year_bar)
+                    .map(sale => {return sale.amount});
+
+                updateBarChart(dataNumber,loadBar);
+                updateBarChart(dataAmount,loadBarAmount);
+
+            });
+        </script>
+    {% endif %}
+{% endblock %}

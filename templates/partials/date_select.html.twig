@@ -1,0 +1,23 @@
+<select class="form-control mr-1" name="{{ name }}" id="{{ name }}">
+    {% if name starts with 'long' %}
+    <option value="H" {% if value == 'H' %}selected{% endif %}>
+        {{ 'hour'|trans }}
+    </option>
+    <option value="i" {% if value == 'i' %}selected{% endif %}>
+        {{ 'minute'|trans }}
+    </option>
+    {% endif %}
+
+    {% if name starts with 'medium' or name starts with 'long' %}
+    <option value="d" {% if value == 'd' %}selected{% endif %}>
+        {{ 'day'|trans }}
+    </option>
+    {% endif %}
+
+    <option value="m" {% if value == 'm' %}selected{% endif %}>
+        {{ 'month'|trans }}
+    </option>
+    <option value="Y" {% if value == 'Y' %}selected{% endif %}>
+        {{ 'year'|trans }}
+    </option>
+</select>

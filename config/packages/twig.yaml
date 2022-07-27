@@ -1,0 +1,75 @@
+twig:
+    default_path: '%kernel.project_dir%/templates'
+    paths:
+        # point this wherever your css files live
+        '%kernel.project_dir%/public/dist/css': css
+        '%kernel.project_dir%/public/dist/images': images
+        '%kernel.project_dir%/public/dist/js': js
+        '%kernel.project_dir%/public/%app.path.users%': userPhoto
+        '%kernel.project_dir%/public/%app.path.store%': storePhoto
+        '%kernel.project_dir%/public/%app.path.product%': productPhoto
+    form_themes: ['bootstrap_4_layout.html.twig']
+    globals:
+        prod_man: 'prod_man'
+        hrm: 'hrm'
+        acc_man: 'acc_man'
+        club_point: 'club_point'
+
+        role_admin: 'ROLE_ADMIN'
+        app_mode: '%app.mode%'
+        app_code: '%app.code_send%'
+        webmaster: '%env(resolve:APP_AUTHOR)%'
+        organization: '%env(resolve:APP_ORGANIZATION)%'
+        appname: '%env(resolve:APP_NAME)%'
+        userPhoto: '%app.path.users%/'
+        productPhoto: '%app.path.product%/'
+        images: '%app.path.images%/'
+        css: '%kernel.project_dir%/public/dist/css/'
+        storeImage: '%kernel.project_dir%/public/%app.path.store%/'
+        appLogo: '%kernel.project_dir%/public/%app.path.images%/logo.jpg'
+        storePhoto: '%app.path.store%/'
+        permission_verify: 'PERMISSION_VERIFY'
+        logo: 'logo.jpg'
+        productImage: 'product-image.png'
+
+        back_color_sidemenu: '%env(resolve:BACK_COLOR_SIDEMENU)%'
+        back_color_sidemenu_link: '%env(resolve:BACK_COLOR_SIDEMENU_LINK)%'
+        general_color_light: '%env(resolve:GENERAL_COLOR_LIGHT)%'
+        general_color_dark: '%env(resolve:GENERAL_COLOR_DARK)%'
+        
+        bar_one_color: '%env(resolve:BAR_ONE_COLOR)%'
+        bar_two_color: '%env(resolve:BAR_TWO_COLOR)%'
+        bar_three_color: '%env(resolve:BAR_THREE_COLOR)%'
+        bar_four_color: '%env(resolve:BAR_FOUR_COLOR)%'
+        bar_five_color: '%env(resolve:BAR_FIVE_COLOR)%'
+        bar_six_color: '%env(resolve:BAR_SIX_COLOR)%'
+        bar_seven_color: '%env(resolve:BAR_SEVEN_COLOR)%'
+        bar_eight_color: '%env(resolve:BAR_EIGHT_COLOR)%'
+        bar_nine_color: '%env(resolve:BAR_NINE_COLOR)%'
+        bar_ten_color: '%env(resolve:BAR_TEN_COLOR)%'
+        bar_eleven_color: '%env(resolve:BAR_ELEVEN_COLOR)%'
+        bar_twelve_color: '%env(resolve:BAR_TWELVE_COLOR)%'
+        bar_border_color: '%env(resolve:BAR_BORDER_COLOR)%'
+        bar_display_legend: '%env(resolve:BAR_DISPLAY_LEGEND)%'
+
+        area_background_color: '%env(resolve:AREA_BACKGROUND_COLOR)%'
+        area_border_color: '%env(resolve:AREA_BORDER_COLOR)%'
+        area_point_color: '%env(resolve:AREA_POINT_COLOR)%'
+        area_point_border_color: '%env(resolve:AREA_POINT_BORDER_COLOR)%'
+        area_max_color: '%env(resolve:AREA_MAX_COLOR)%'
+        area_min_color: '%env(resolve:AREA_MIN_COLOR)%'
+        area_display_legend: '%env(resolve:AREA_DISPLAY_LEGEND)%'
+
+        doughnut_one_color: '%env(resolve:DOUGHNUT_ONE_COLOR)%'
+        doughnut_two_color: '%env(resolve:DOUGHNUT_TWO_COLOR)%'
+        doughnut_three_color: '%env(resolve:DOUGHNUT_THREE_COLOR)%'
+        doughnut_four_color: '%env(resolve:DOUGHNUT_FOUR_COLOR)%'
+        doughnut_five_color: '%env(resolve:DOUGHNUT_FIVE_COLOR)%'
+        doughnut_six_color: '%env(resolve:DOUGHNUT_SIX_COLOR)%'
+        doughnut_seven_color: '%env(resolve:DOUGHNUT_SEVEN_COLOR)%'
+        doughnut_eight_color: '%env(resolve:DOUGHNUT_EIGHT_COLOR)%'
+        doughnut_nine_color: '%env(resolve:DOUGHNUT_NINE_COLOR)%'
+        doughnut_ten_color: '%env(resolve:DOUGHNUT_TEN_COLOR)%'
+        doughnut_display_legend: '%env(resolve:DOUGHNUT_DISPLAY_LEGEND)%'
+        
+        chart_font_color: '%env(resolve:CHART_FONT_COLOR)%'

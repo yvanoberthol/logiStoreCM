@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ 'pdf.adjustment.title'|trans({},'messages',app.session.get('_locale')) }}</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+</head>
+<body>
+{% set setting = app.session.get('setting') %}
+<div class="container-fluid" style="font-size: {{ setting.reportFontSize }}">
+    <div class="row" style="margin-bottom: 40px">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 text-center">
+            {% if store.imageName is not null %}
+                <img id="logo" class="rounded img-responsive center-block"
+                     src="{{ storeImage }}{{ store.imageName }}"
+                     alt="{{store.name}}" style="height: 200px">
+            {% else %}
+                <img id="logo" class="rounded" src="{{ appLogo }}"
+                     alt="" style="height: 200px">
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        {% if store is not null %}
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <table class="table table-bordered text-center">
+                <tr class="font-weight-bold">
+                    <td>{{ store.name }}</td>
+                </tr>
+                {% if store.email is not empty %}
+                <tr>
+                    <td>{{ store.email }}</td>
+                </tr>
+                {% endif %}
+                {% if store.phoneNumber is not empty %}
+                <tr>
+                    <td>{{ store.phoneNumber }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <td class="h2 text-center"
+                        colspan="4">
+                        {{ 'pdf.adjustment.tr_title'|trans({},'messages',app.session.get('_locale')) }}
+                        ({{ adjustment.productAdjusts|length|formatedInt }})
+                    </td>
+                </tr>
+                <tr class="font-weight-bold">
+                    <td>{{ 'pdf.adjustment.tr_product'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.adjustment.tr_qtyExpected'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.adjustment.tr_newQty'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    <td>{{ 'pdf.adjustment.tr_difference'|trans({},'messages',app.session.get('_locale')) }}</td>
+                </tr>
+                {% for productAdjust in adjustment.productAdjusts %}
+                    <tr>
+                        <td>{{ productAdjust.product.name }}</td>
+                        <td>{{ productAdjust.qtyBeforeAdjust|formatedInt }}</td>
+                        <td>{{ productAdjust.newQty|formatedInt }}</td>
+                        <td>{{ productAdjust.qty|formatedInt }}</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

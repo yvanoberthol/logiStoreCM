@@ -1,0 +1,29 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sale.employee.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'sale.employee.title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+            </h5>
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <ul class="list-group">
+                        {% for employee in employees  %}
+                            <li class="list-group-item text-uppercase">
+                                <a href="{{ path('file_sale_index',{id:employee.id}) }}">
+                                    {{ employee.allName }}
+                                </a>
+                            </li>
+                        {% endfor %}
+
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

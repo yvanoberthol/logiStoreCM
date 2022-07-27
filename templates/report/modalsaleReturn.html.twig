@@ -1,0 +1,59 @@
+<!-- Product Stock Modal -->
+<div class="modal fade" id="saleReturnModal" tabindex="-1"
+     role="dialog"
+     aria-labelledby="saleReturnModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'saleReturn.modal.title'|trans({},'messages',app.session.get('_locale')) }}
+                    <span class="text-info text-capitalize">
+                        {{ product.name }}
+                    </span>
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                <table class="table table-striped" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th>{{ 'saleReturn.modal.body.tr_date'|trans({},'messages',app.session.get('_locale')) }}</th>
+                        <th>{{ 'saleReturn.modal.body.tr_qty'|trans({},'messages',app.session.get('_locale')) }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% set totalQty = 0 %}
+                    {% for saleReturn in saleReturns %}
+                        <tr>
+                            <td>
+                                <a href="{{ path('sale_detail',{id: saleReturn.id}) }}">
+                                    {{ saleReturn.addDate|mediumDate }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ saleReturn.qty|formatedInt }}
+                            </td>
+                        </tr>
+                        {% set totalQty = totalQty + saleReturn.qty %}
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr class="font-weight-bold">
+                            <td></td>
+                            <td>{{ totalQty|formatedInt }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    {{ 'close'|trans({},'messages',app.session.get('_locale')) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

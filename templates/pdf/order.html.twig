@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ 'pdf.order.title'|trans({},'messages',app.session.get('_locale')) }}</title>
+    <style type="text/css" rel="stylesheet" media="all">
+        {% include 'pdf/css.html.twig' %}
+    </style>
+</head>
+<body>
+{% set setting = app.session.get('setting') %}
+<div class="container-fluid" style="font-size: {{ setting.reportFontSize }}">
+    <div class="row" style="margin-bottom: 40px">
+        <div class="col-xs-12 col-sm-12 col-md-12 col-lg-4 text-center">
+            {% if store.imageName is not null %}
+                <img id="logo" class="rounded img-responsive center-block"
+                     src="{{ storeImage }}{{ store.imageName }}"
+                     alt="{{store.name}}" style="height: 200px">
+            {% else %}
+                <img id="logo" class="rounded" src="{{ appLogo }}"
+                     alt="" style="height: 200px">
+            {% endif %}
+        </div>
+    </div>
+    <div class="row">
+        {% if store is not null %}
+        <div class="col-xs-4 col-sm-4 col-md-4 col-lg-4">
+            <table class="table table-bordered text-center">
+                <tr class="font-weight-bold">
+                    <td>{{ store.name }}</td>
+                </tr>
+                {% if store.email is not empty %}
+                <tr>
+                    <td>{{ store.email }}</td>
+                </tr>
+                {% endif %}
+                {% if store.phoneNumber is not empty %}
+                <tr>
+                    <td>{{ store.phoneNumber }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+        {% endif %}
+        {% if stock.supplier is not null %}
+            <div class="col-sm-4 col-md-4 col-lg-4 col-xs-4
+            col-sm-offset-4 col-md-offset-4 col-lg-offset-4 col-xs-offset-4">
+                <table class="table table-bordered text-center">
+                    <tr class="font-weight-bold">
+                        <td>{{ stock.supplier.name }}</td>
+                    </tr>
+                    {% if stock.supplier.email is not empty %}
+                    <tr>
+                        <td>{{ stock.supplier.email }}</td>
+                    </tr>
+                    {% endif %}
+                </table>
+            </div>
+        {% endif %}
+    </div>
+    <div class="row">
+        <div class="col-sm-12 col-md-12 col-lg-12 col-xs-12">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <td class="h2 text-center"
+                        colspan="{% if stock.status %}4{% else %}2{% endif %}">
+                        {{ 'pdf.order.tr_title'|trans({},'messages',app.session.get('_locale')) }}
+                        ({{ stock.productStocks|length|formatedInt }})
+                    </td>
+                </tr>
+                <tr class="font-weight-bold">
+                    <td>{{ 'pdf.order.tr_product'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    {% if stock.status and setting.withPurchasePrice  %}
+                        <td>{{ 'pdf.order.tr_unitPrice'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    {% endif %}
+                    <td>{{ 'pdf.order.tr_qty'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    {% if stock.status and setting.withPurchasePrice  %}
+                        <td>{{ 'pdf.order.tr_total'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    {% endif %}
+                </tr>
+                {% set totalAmount = 0 %}
+                {% for productStock in stock.productStocks %}
+                    <tr>
+                        <td>{{ productStock.product.name }}</td>
+                        {% if stock.status and setting.withPurchasePrice  %}
+                            <td>{{ productStock.unitPrice|formated }}</td>
+                        {% endif %}
+                        <td>{{ productStock.qty|formatedInt }}</td>
+                        {% if stock.status and setting.withPurchasePrice  %}
+                            <td>{{ productStock.subtotal|formated }}</td>
+                        {% endif %}
+                    </tr>
+                    {% set totalAmount = totalAmount + productStock.subtotal %}
+                {% endfor %}
+                {% if stock.status and setting.withPurchasePrice  %}
+                <tr class="font-weight-bold">
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td class="h6">
+                        {{totalAmount|customCurrency}}
+                    </td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+</div>
+</body>
+</html>

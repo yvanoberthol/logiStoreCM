@@ -1,0 +1,313 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/js/view-image.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+
+        $('.img').click(function (e) {
+           e.preventDefault();
+           console.log('#img'+$(this).attr('data-id'));
+           window.ViewImage && ViewImage.init('#img'+$(this).attr('data-id'));
+            console.log(window.ViewImage);
+        });
+
+
+        let category = $('#category');
+        category.select2({
+            placeholder: "{{ 'product.index.select_category'|trans }}",
+            allowClear: true,
+            language: "{{ app.request.get('_locale') }}"
+        });
+        {% if categorySearch is defined %}
+        category.val({{ categorySearch.id }}).trigger('change');
+        {% else %}
+        category.val([]).trigger('change');
+        {% endif %}
+
+       const table = getDataTable($('#dataTable'),true);
+
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+       const body = $('body');
+       body.on('click', '.delete-product', function (e) {
+           e.preventDefault();
+           const productId = $(this).attr('data-product');
+           const link = '{{ path('rest_product_modal_delete') }}';
+           modalProduct(productId,link);
+
+       });
+
+        body.on('click', '.list-substitute', function (e) {
+            e.preventDefault();
+            const productId = $(this).attr('data-product');
+            const link = '{{ path('rest_product_modal_substitute') }}';
+            modalProduct(productId,link);
+
+        });
+       function modalProduct(productId,link) {
+           let data = new FormData();
+           data.append("id", productId + '');
+
+           $('#modal').html("");
+           fetch(link, {
+               method: 'POST',
+               credentials: 'include',
+               body: data,
+           }).then(async response => {
+               try {
+                   const data = await response.json();
+                   console.log(data.content);
+                   $('#modal').html(data.content);
+                   $('.modal').modal('show');
+                   return false;
+               } catch (reason) {
+                   console.log(reason);
+               }
+           }).catch(function (reason) {
+               console.log(reason);
+           })
+       }
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'product.index.block_title'|trans }} ({{ products|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                <span class="pull-right">
+                    {% if is_granted(permission_verify,'PRODUCT_NEW') %}
+                        <a class="btn btn-outline-uyblue" href="{{ path('product_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'PRODUCT_UPDATE_IMPORT')
+                        or is_granted(permission_verify,'PRODUCT_IMPORT')%}
+                        <span class="dropdown">
+                        <a class="btn btn-success dropdown-toggle"
+                           href="#" id="dropdownImportLink" data-toggle="dropdown"
+                           aria-haspopup="true" aria-expanded="true">
+                           <i class="fa fa-upload"></i> {{ 'product.index.form_import'|trans }}
+                        </a>
+
+                        <div class="dropdown-menu"
+                             aria-labelledby="dropdownImportLink"
+                             x-placement="bottom-start"
+                             style="position: absolute;
+                             transform: translate3d(0px, 36px, 0px);
+                             top: 0px; left: 0px; will-change: transform;">
+                            {% if is_granted(permission_verify,'PRODUCT_UPDATE_IMPORT') %}
+                                <a class="dropdown-item"
+                                   href="{{ path('product_update_import') }}">
+                                    {{ 'product.index.form_import_without_stock'|trans }}
+                                </a>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'PRODUCT_IMPORT') %}
+                                <a class="dropdown-item"
+                                   href="{{ path('product_import') }}">
+                                    {{ 'product.index.form_import_with_stock'|trans }}
+                                </a>
+                            {% endif %}
+                        </div>
+                    </span>
+                    {% endif %}
+
+                </span>
+            </h5>
+            <div class="float-right mb-3">
+                <form class="form-inline" action="{{ path('product_index') }}" method="get">
+                    <select name="category" class="form-control mx-1 my-2" id="category">
+                        {% for category in categories  %}
+                            <option value="{{ category.id }}">
+                                {{ category.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <select name="status" class="form-control mx-1 my-2">
+                        <option value="all" {% if search == 'all' %}selected{% endif %}>
+                            {{ 'product.index.form_all'|trans }}
+                        </option>
+                        <option value="byStockAlert" {% if search == 'byStockAlert' %}selected{% endif %}>
+                            {{ 'product.index.form_stockAlert'|trans }}
+                        </option>
+                        <option value="byOutOfStock" {% if search == 'byOutOfStock' %}selected{% endif %}>
+                            {{ 'product.index.form_outOfStock'|trans }}
+                        </option>
+                        <option value="byNew" {% if search == 'byNew' %}selected{% endif %}>
+                            {{ 'product.index.form_new'|trans }}
+                        </option>
+                    </select>
+                    <button class="btn btn-outline-uyblue">
+                        <i class="fa fa-search"></i>
+                    </button>
+                </form>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                <thead>
+                <tr>
+                    {% if setting.productWithImage  %}
+                        <th>
+                            {{ 'product.index.tr_image'|trans }}
+                        </th>
+                    {% endif %}
+                    {% if setting.withProductReference  %}
+                        <th class="searchable">
+                            {{ 'product.index.tr_reference'|trans }}
+                        </th>
+                    {% endif %}
+                    {% if setting.withBarcode  %}
+                    <th class="searchable">
+                        {{ 'product.index.tr_barcode'|trans }}
+                    </th>
+                    {% endif %}
+                    <th style="width: 20%;">{{ 'product.index.tr_name'|trans }}</th>
+                    <th>{{ 'product.index.tr_category'|trans }}</th>
+
+                    {% if setting.withPurchasePrice  %}
+                        <th class="not-export">{{ 'product.index.tr_buyPrice'|trans }}</th>
+                        <th class="searchable">
+                            {{ 'product.index.tr_buyPrice'|trans }}
+                        </th>
+                    {% endif %}
+                    <th class="not-export">{{ 'product.index.tr_sellPrice'|trans }}</th>
+                    <th class="searchable">
+                        {{ 'product.index.tr_sellPrice'|trans }}
+                    </th>
+                    {% if setting.withPackaging %}
+                        <th class="not-export">
+                            {{ 'Pack'|trans }}
+                        </th>
+                    {% endif %}
+                    <th class="not-export">{{ 'product.index.tr_stock'|trans }}</th>
+                    <th class="searchable">{{ 'product.index.tr_stock'|trans }}</th>
+                    <th style="width: 10%;">{{ 'product.index.tr_stockAlert'|trans }}</th>
+                    <th class="not-export not-sort">{{ 'product.index.tr_actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in products %}
+                    <tr>
+                        {% if setting.productWithImage  %}
+                        <td>
+                            {% if product.imageName %}
+                                <img class="rounded img" id="img{{ product.id }}" data-id="{{ product.id }}"
+                                     src="{{ asset(productPhoto)~product.imageName }}"
+                                     alt="{{product.name}}" style="height: 30px">
+                            {% else %}
+                                <img class="rounded img" id="img{{ product.id }}" data-id="{{ product.id }}"
+                                     src="{{ asset(images)~productImage }}"
+                                     alt="" style="height: 30px">
+                            {% endif %}
+                        </td>
+                        {% endif %}
+                        {% if setting.withProductReference  %}
+                            <td>
+                                {{ product.reference }}
+                            </td>
+                        {% endif %}
+                        {% if setting.withBarcode  %}
+                        <td>
+                            {{ product.qrCode }}
+                        </td>
+                        {% endif %}
+                        <td>
+                            <a class="text-capitalize text-uyblue-dark"
+                               href="{{ path('product_detail',{id:product.id}) }}">
+                                {{ product.name }}
+                            </a>
+                            {% if setting.withSubstitute  %}
+                            <a href="" class="list-substitute badge badge-info"
+                               data-product="{{ product.id }}">
+                                <i class="fa fa-info-circle"></i>
+                            </a>
+                            {% endif %}
+                            {% if product.new %}
+                                <span class="badge badge-warning hidden-print">
+                                    <i class="fa fa-star"></i>
+                                    {#<span class="hidden-print">
+                                        {{ 'product.index.tr_new'|trans }}
+                                    </span>#}
+                                </span>
+                            {% endif %}
+
+                        </td>
+                        <td>
+                            {% if product.category %}
+                                {{ product.category.name }}
+                            {% else %}
+                                <span class="text-warning"><i class="fa fa-warning"></i></span>{{ 'product.index.tr_noCategory'|trans }}
+                            {% endif %}
+                        </td>
+                        {% if setting.withPurchasePrice  %}
+                            <td>{{ product.buyPrice|formated }}</td>
+                            <td>{{ product.buyPrice }}</td>
+                        {% endif %}
+                        <td>{{ product.sellPrice|formated }}</td>
+                        <td>{{ product.sellPrice }}</td>
+                        {% if setting.withPackaging %}
+                        <td>{{ product.packagingQty|formatedInt }}</td>
+                        {% endif %}
+                        <td>
+                           <span class="{% if product.stockAlert >= product.stock %}bg-danger text-white p-2{% endif %}">
+                               {{ product.stock|formatedInt }}
+                           </span>
+                        </td>
+                        <td>{{ product.stock }}</td>
+                        <td>{{ product.stockAlert|formatedInt }}</td>
+                        <td>
+                            {% if is_granted(permission_verify,'PRODUCT_EDIT') %}
+                            <a href="{{ path('product_edit',{'id': product.id}) }}"
+                               class="p-2 badge badge-uyblue">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {% endif %}
+                            {% if product.deletable %}
+                                <a href="#" data-product="{{ product.id }}"
+                                        class="p-2 badge badge-danger delete-product">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                            {% endif %}
+
+                            {% if product.enabled %}
+                            <a href="{{ path('product_change_status',{'id': product.id}) }}"
+                               class="p-2 badge badge-success">
+                                <i class="fa fa-toggle-on"></i>
+                            </a>
+                            {% else %}
+                                <a href="{{ path('product_change_status',{'id': product.id}) }}"
+                                   class="p-2 badge badge-danger">
+                                    <i class="fa fa-toggle-off"></i>
+                                </a>
+                            {% endif %}
+
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div id="modal"></div>
+    </div>
+{% endblock %}

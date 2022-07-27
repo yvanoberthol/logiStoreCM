@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'inventory.index.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="" method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end" value="{{ end|mediumDate }}">
+                        <button class="btn btn-outline-uyblue mb-1">
+                            <i class="fa fa-search"></i> {{ 'inventory.index.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            {% if inventory is not null %}
+                <div class="row">
+                    <div class="col-md-12 text-center h2 mb-5">
+                        <span class="text-info mt-0 header-title">
+                            {{ start | mediumDate }} - {{ end | mediumDate }}
+                        </span>
+                    </div>
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table" style="width: 100%;" id="dataTable">
+                                <thead>
+                                <tr class="font-weight-bold">
+                                    <th>{{ 'inventory.index.tr_product'|trans }}</th>
+                                    {% if setting.withPackaging %}
+                                    <th>{{ 'Pack'|trans }}</th>
+                                    {% endif %}
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_initialStock'|trans }}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_qtyOrdered'|trans }}
+                                        {% if setting.withStockReturn %}
+                                            {{ 'inventory.index.tr_qtyOrdered_resend'|trans }}
+                                        {% endif %}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_qtySold'|trans }}
+                                        {% if setting.withSaleReturn %}
+                                            {{ 'inventory.index.tr_qtySold_resend'|trans }}
+                                        {% endif %}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_qtyLoss'|trans }}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_qtyAdjust'|trans }}
+                                    </th>
+                                    <th class="not-sort">
+                                        {{ 'inventory.index.tr_stockRemaining'|trans }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% for ligneInventory in inventory %}
+                                    <tr>
+                                        <td>
+                                            <a class="text-capitalize text-uyblue-dark"
+                                               href="{{ path('product_detail',{id:ligneInventory.id}) }}">
+                                                {{ ligneInventory.product }}
+                                            </a>
+                                        </td>
+                                        {% if setting.withPackaging %}
+                                        <td>{{ ligneInventory.packagingQty|formatedInt }}</td>
+                                        {% endif %}
+                                        <td>{{ ligneInventory.initialStock|formatedInt }}</td>
+                                        <td>
+                                            {{ ligneInventory.qtyOrdered|formatedInt }}
+                                            {% if ligneInventory.qtyStockReturn > 0 %}
+                                                ({{ ligneInventory.qtyStockReturn|formatedInt }})
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ ligneInventory.qtySold|formatedInt }}
+                                            {% if ligneInventory.qtySaleReturn > 0 %}
+                                                ({{ ligneInventory.qtySaleReturn|formatedInt }})
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            {{ ligneInventory.qtyLoss|formatedInt }}
+                                        </td>
+                                        <td>
+                                            {{ ligneInventory.qtyAdjust|formatedInt }}
+                                        </td>
+                                        <td>
+                                            {{ ligneInventory.stockRemaining|formatedInt }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="row">
+                    <div class="col-md-12 text-center alert alert-info font-weight-bold">
+                        <i class="fa fa-info-circle"></i> {{ 'inventory.index.tr_nodata'|trans }}
+                    </div>
+                </div>
+            {% endif %}
+
+        </div>
+    </div>
+
+{% endblock %}
+
+{% block title %}
+    {{ 'inventory.index.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | mediumDate }} - {{ end | mediumDate }}
+{% endblock %}

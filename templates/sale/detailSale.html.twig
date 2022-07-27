@@ -1,0 +1,894 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'sale.detail.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    <span class="mx-2">
+                       <a class="btn btn-light" href="#" onclick="document.getElementById('returnIndex').submit()">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                    {{ 'sale.detail.block_title'|trans }} N° {{ sale.code }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered " style="width: 100%;">
+                            <tr>
+                                <td class="font-weight-bold h6">{{ 'sale.index.modal.detail.body.tr_numInvoice'|trans }}</td>
+                                <td>
+                                    {% if  sale.numInvoice  %}
+                                        {{sale.numInvoice}}
+                                    {% else %}
+                                        //
+                                    {% endif %}
+                                    &nbsp;
+                                    {% if is_granted(permission_verify,'SALE_CHANGE_NUM_INVOICE') %}
+                                        <a href="#changeNumInvoiceModal" data-toggle="modal" class="pull-right">
+                                            <i class="fa fa-edit"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'sale.index.modal.detail.body.tr_date'|trans }}</td>
+                            <td>
+                                {{sale.addDate | longDate}}
+                                &nbsp;
+                                {% if is_granted(permission_verify,'SALE_CHANGE_DATE') %}
+                                    <a href="#changeDateModal" data-toggle="modal" class="pull-right">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'sale.index.modal.detail.body.tr_productList'|trans }} ({{ sale.productSales|length }})</td>
+                            <td>
+                                <table class="table table-striped">
+                                    <tr class="font-weight-bold">
+                                        <td style="width: 40%;">{{ 'sale.index.modal.detail.body.tr_product'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'sale.index.modal.detail.body.tr_unitPrice'|trans }}</td>
+                                        <td style="width: 15%;">{{ 'sale.index.modal.detail.body.tr_qty'|trans }}</td>
+                                        <td style="width: 25%;">{{ 'sale.index.modal.detail.body.tr_subtotal'|trans }}</td>
+                                    </tr>
+                                    {% for productSale in sale.productSales|sort((a,b) => a.product.name <=> b.product.name)  %}
+                                        <tr>
+                                            <td>{{ productSale.product.name }}</td>
+                                            <td>{{ productSale.unitPrice|formated}}</td>
+                                            <td>{{ productSale.qty|formatedInt }}</td>
+                                            <td>{{ productSale.subtotal|formated }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                    {% if sale.discount > 0 %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="font-weight-bold">{{ 'sale.index.modal.detail.body.tr_subtotal'|trans }}</td>
+                                            <td class="h6 font-weight-bold">
+                                                {{sale.amountWithoutDiscount|formated}}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if sale.taxs|length > 0 %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="font-weight-bold">{{ 'sale.index.modal.detail.body.taxedAmount'|trans }}</td>
+                                            <td class="h6 font-weight-bold">
+                                                {{sale.taxAmount|formated}}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if sale.discount > 0 %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="font-weight-bold">{{ 'sale.index.modal.detail.body.discount'|trans }}</td>
+                                            <td class="h6 font-weight-bold">
+                                                {{sale.discount|formated}}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td class="h6 font-weight-bold">
+                                            {{sale.amount|customCurrency}}
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                        {% if setting.withSaleReturn %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'sale.index.modal.detail.body.tr_product_return'|trans }}
+                                {% if is_granted(permission_verify,'SALE_PRODUCT_RETURN_ADD') %}
+                                    <a href="#addProductReturnModal{{ sale.id }}"
+                                       data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <table class="table table-striped">
+                                    <tr class="font-weight-bold">
+                                        <td style="width: 20%;">{{ 'sale.index.modal.detail.body.tr_dateReturn'|trans }}</td>
+                                        <td style="width: 30%;">{{ 'sale.index.modal.detail.body.tr_product'|trans }}</td>
+                                        <td style="width: 10%;">{{ 'sale.index.modal.detail.body.tr_qtyReturn'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'sale.index.modal.detail.body.tr_unitPrice'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'sale.index.modal.detail.body.tr_subtotal'|trans }}</td>
+                                    </tr>
+                                    {% set totalReturn = 0 %}
+                                    {% for productSale in sale.productSales|sort((a,b) => a.product.name <=> b.product.name)  %}
+                                        {% for productStockSale in productSale.productStockSales %}
+                                            {% for productSaleReturn in productStockSale.productSaleReturns %}
+                                                <tr>
+                                                    <td>{{ productSaleReturn.date|mediumDate }}</td>
+                                                    <td>{{ productSale.product.name }}</td>
+                                                    <td>
+                                                        {{ productSaleReturn.qty|formatedInt }}
+                                                        {% if productSaleReturn.stockable %}
+                                                            <span class="text-success">
+                                                                <i class="fa fa-check-circle"></i>
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>{{ productSaleReturn.unitPrice|formated}}</td>
+                                                    <td>
+                                                        {{ productSaleReturn.subtotal|formated }} &nbsp;
+                                                        {% if productSaleReturn.repay %}
+                                                            <span class="text-success">
+                                                                <i class="fa fa-check-circle"></i>
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    <td>
+                                                        {% if is_granted(permission_verify,'SALE_PRODUCT_RETURN_DELETE') %}
+                                                        <a class="btn-danger p-1" href="{{ path('sale_product_return_delete',{id:productSaleReturn.id}) }}">
+                                                            <i class="fa fa-minus"></i>
+                                                        </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% set totalReturn = totalReturn + productSaleReturn.subtotal %}
+                                            {% endfor %}
+                                        {% endfor %}
+                                    {% endfor %}
+                                    {% if totalReturn > 0 %}
+                                        <tr>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td></td>
+                                            <td class="h6 font-weight-bold">
+                                                {{ totalReturn|customCurrency }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                </table>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'sale.index.modal.detail.body.tr_amountReceived'|trans }}
+                            </td>
+                            <td>
+                                {% if sale.amountReceived >= sale.amount %}
+                                    <span class="font-weight-bold">
+                                        {{ sale.amountReceived|customCurrency }}
+                                    </span>
+                                {% else %}
+                                    <span class="font-weight-bold text-info">
+                                        {{ sale.amountTotalReceived|formated }}
+                                    </span>
+                                    (
+                                    {% if sale.amountReceived > 0 %}
+                                    <span data-original-title="{{ sale.addDate|mediumDate }}"
+                                           data-toggle="tooltip-smoke" data-placement="top">
+                                        {{sale.amountReceived|formated}}
+                                    </span>
+                                    {% endif %}
+                                    {% for payment in sale.salePayments %}
+                                        {% if loop.first %}
+                                        {% if sale.amountReceived > 0 %},{% endif %}
+                                        {% else %}
+                                            ,
+                                        {% endif %}
+                                        <a href="#deletePaymentModal{{ payment.id }}"
+                                             data-toggle="modal">
+                                            <span data-original-title="{{ payment.addDate|mediumDate }}"
+                                              data-toggle="tooltip-smoke" data-placement="top">
+                                                {{ payment.amount|formated }}
+                                            </span>
+                                        </a>
+                                        {% if is_granted(permission_verify,'SALE_PAYMENT_REMOVE') %}
+                                        <!-- delete payment Modal -->
+                                        <div class="modal fade" id="deletePaymentModal{{ payment.id }}"
+                                             tabindex="-1" role="dialog"
+                                             aria-labelledby="deletePaymentModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">
+                                                            {{ 'sale.index.modal.deletePayment.title'|trans }}
+                                                        </h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                <span>
+                                                    {{ 'sale.index.modal.deletePayment.body'|trans }}
+                                                    <span class="text-info">{{ payment.amount|customCurrency }}</span>?
+                                                </span>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                        <a href="{{ path('sale_payment_remove',{id: payment.id}) }}" class="btn btn-danger">
+                                                            <i class="fa fa-check-circle"></i>
+                                                            {{ 'delete'|trans }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        {% endif %}
+                                    {% endfor %})
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        {% if sale.amountToRepay > 0 %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'sale.index.modal.detail.body.tr_amountToRepay'|trans }}</td>
+                            <td class="text-capitalize font-weight-bold">
+                                {{sale.amountToRepay|customCurrency}}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if sale.amountDebt > 0 %}
+                            <tr>
+                                <td class="font-weight-bold h6">
+                                    {{ 'sale.index.modal.detail.body.tr_rest_to_pay'|trans }}
+                                    {% if is_granted(permission_verify,'SALE_PAYMENT_ADD') %}
+                                        <a href="#addPaymentModal{{ sale.id }}"
+                                           data-toggle="modal"
+                                           class="badge badge-info">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    {% endif %}
+                                </td>
+                                <td class="text-capitalize font-weight-bold text-danger">
+                                    {{sale.amountDebt|customCurrency}}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'sale.index.modal.detail.body.tr_customer'|trans }}
+                            </td>
+                            <td>
+                                <span class="text-capitalize">
+                                    {% if sale.customer is not null %}
+                                        {{sale.customer.name}}
+                                    {% else %}
+                                        //
+                                    {% endif %}
+                                </span>
+                                {% if sale.customer is not null and sale.customer.email is not empty %}
+                                    &nbsp;<span>
+                                        <a href="#invoiceModal{{ sale.id }}" data-toggle="modal">
+                                            {{ 'sale.index.modal.detail.body.tr_sendbymail'|trans }}
+                                        </a>
+                                    </span>
+                                {% endif %}
+
+                                &nbsp;
+                                {% if is_granted(permission_verify,'SALE_CHANGE_CUSTOMER') %}
+                                    <a href="#changeCustomerModal" data-toggle="modal" class="pull-right">
+                                        <i class="fa fa-edit"></i>
+                                    </a>
+                                {% endif %}
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'sale.index.modal.detail.body.tr_recorder'|trans }}</td>
+                            <td class="text-capitalize">{{sale.recorder.name}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if sale.amountDebt > 0 %}
+        <!-- add payment Modal -->
+        <div class="modal fade" id="addPaymentModal{{ sale.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            {{ 'sale.index.modal.addPayment.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('sale_payment_add') }}" method="post">
+                        <input type="hidden" value="{{ sale.id }}" name="saleId">
+                        <div class="modal-body">
+                            <div class="alert alert-info text-justify">
+                                <i class="fa fa-info-circle"></i>
+                                {{ 'sale.index.modal.addPayment.infoMessage'|trans }}
+                                <b>{{ sale.amountDebt|customCurrency }}</b>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">
+                                    {{ 'sale.index.modal.addPayment.form.date'|trans }}
+                                </label>
+                                <input type="text" class="form-control datepicker" name="date"
+                                       id="date" required value="{{ 'now'|mediumDate }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">
+                                    {{ 'sale.index.modal.addPayment.form.amount'|trans }}
+                                </label>
+                                <input type="number" class="form-control" name="amount"
+                                       id="amount" value="{{ sale.amountDebt}}" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">
+                                    {{ 'sale.index.modal.addPayment.form.paymentMethod'|trans }}
+                                </label>
+                                <select class="form-control" name="paymentMethod" id="paymentMethod">
+                                    {% for type in paymentMethods  %}
+                                        <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-check-circle"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if setting.withSaleReturn %}
+    <!-- add product return Modal -->
+    <div class="modal fade" id="addProductReturnModal{{ sale.id }}"
+         tabindex="-1" role="dialog"
+         aria-labelledby="addProductReturnModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'sale.index.modal.addProductReturn.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('sale_product_return_add') }}" method="post">
+                    <input type="hidden" value="{{ sale.id }}" name="saleId">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="date">
+                                {{ 'sale.index.modal.addProductReturn.form.date'|trans }}
+                            </label>
+                            <input type="text" class="form-control datepicker" name="date"
+                                   id="date" required value="{{ 'now'|mediumDate }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="productSale">
+                                {{ 'sale.index.modal.addProductReturn.form.product'|trans }}
+                            </label>
+                            <select class="form-control" name="productSale" id="productSale">
+                                {% for productSale in sale.productSales|sort((a,b) => a.product.name <=> b.product.name)   %}
+                                    {% if productSale.qtyRemaining > 0 %}
+                                        <option value="{{ productSale.id }}">
+                                            {{ productSale.product.nameWithCategory }}
+                                            ({{ productSale.qtyRemaining }})
+                                        </option>
+                                    {% endif %}
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div id="showByProductSale">
+                            <label for="qtyReturn">
+                                {{ 'sale.index.modal.addProductReturn.form.qtyReturn'|trans }}
+                            </label>
+                            <table class="table table-striped" id="tableProductStock">
+                            </table>
+                            <table class="table table-striped">
+                                <tr>
+                                    <td width="50%">{{ 'sale.addgui.modal.form.qtyTotal'|trans }}</td>
+                                    <td class="font-weight-bold">
+                                        <input type="number" class="form-control font-weight-bold"
+                                               id="qtyTotal" value="0" disabled>
+
+                                        <input type="hidden" id="qtyReturn" value="0" name="qtyReturn">
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="form-group">
+                            <label for="reason">
+                                {{ 'sale.index.modal.addProductReturn.form.reason'|trans }}
+                            </label>
+                            <textarea class="form-control" rows="4"
+                                      name="reason" required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="repay"
+                                   id="repay">
+                            <label for="repay">
+                                {{ 'sale.index.modal.addProductReturn.form.repay'|trans }}
+                            </label>
+                        </div>
+                        <div class="form-group">
+                            <input type="checkbox" name="stockable"
+                                   id="stockable">
+                            <label for="stockable">
+                                {{ 'sale.index.modal.addProductReturn.form.stockable'|trans }}
+                            </label>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if sale.customer is not null and sale.customer.email is not null  %}
+        <div class="modal fade" id="invoiceModal{{ sale.id }}" tabindex="-1" role="dialog"
+             aria-labelledby="addPaymentModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            {{ 'sale.index.modal.invoice.title'|trans }} {{ sale.code }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                        <div class="modal-body">
+                            <div class="container-fluid">
+                                <div class="row" style="margin-bottom: 40px">
+                                    <div class="col-md-4 border-dark py-2
+                                    rounded text-center">
+                                        {% if store.imageName is not null %}
+                                            <img id="logo" class="rounded img-responsive center-block"
+                                                 src="{{ storeImage }}{{ store.imageName }}"
+                                                 alt="{{store.name}}" style="height: 100px">
+                                        {% else %}
+                                            <img id="logo" class="rounded" src="{{ appLogo }}"
+                                                 alt="" style="height: 100px">
+                                        {% endif %}
+                                        <b>{{ store.name }}</b><br>
+                                        {% if store.phoneNumber is not empty %}
+                                            {{ 'report.phone'|trans({},'messages',app.session.get('_locale')) }}: {{ store.phoneNumber }}
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <p>
+                                            <b class="text-uppercase">{{ sale.customer.name }}</b><br>
+                                            {{ sale.customer.email }}<br>
+                                            {% if sale.customer.phoneNumber is not null %}
+                                                {{ sale.customer.phoneNumber }}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+
+                                    <div class="col-md-6 offset-md-2">
+                                        <table class="table table-borderless">
+                                            <tr>
+                                                <td class="text-right font-weight-bold">
+                                                    {{ 'pdf.invoice.tr_code'|trans({},'messages',app.session.get('_locale')) }}:
+                                                </td>
+                                                <td >{{ sale.code }}</td>
+                                            </tr>
+                                            {% if sale.numInvoice %}
+                                                <tr>
+                                                    <td class="text-right font-weight-bold">
+                                                        {{ 'pdf.invoice.tr_numInvoice'|trans({},'messages',app.session.get('_locale')) }}:
+                                                    </td>
+                                                    <td >{{ sale.numInvoice }}</td>
+                                                </tr>
+                                            {% endif %}
+                                            <tr>
+                                                <td class="text-right font-weight-bold">
+                                                    {{ 'pdf.invoice.tr_date'|trans({},'messages',app.session.get('_locale')) }}:
+                                                </td>
+                                                <td>{{ sale.addDate|longDate }}</td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <table class="table table-bordered table-striped">
+                                            <tr class="font-weight-bold">
+                                                <td>{{ 'pdf.invoice.tr_designation'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                                <td>{{ 'pdf.invoice.tr_unitPrice'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                                <td>{{ 'pdf.invoice.tr_qty'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                                <td>{{ 'pdf.invoice.tr_amount'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                            </tr>
+                                            {% for productSale in sale.productSales %}
+                                                <tr>
+                                                    <td>{{ productSale.product.name }}</td>
+                                                    <td>{{ productSale.unitPrice|formated }}</td>
+                                                    <td>{{ productSale.qty|formatedInt }}</td>
+                                                    <td>{{ productSale.subtotal|formated }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="font-weight-bold">{{ 'pdf.invoice.tr_subtotal'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                                <td class="h6">
+                                                    {{sale.amountWithoutTax|formated}}
+                                                </td>
+                                            </tr>
+                                            {% for tax in sale.taxs %}
+                                                <tr>
+                                                    <td></td>
+                                                    <td></td>
+                                                    <td class="font-weight-bold">{{ tax.name }}({{ tax.rate }}%)</td>
+                                                    <td>{{ ((sale.amountWithoutTax * tax.rate)/100)|formated }}</td>
+                                                </tr>
+                                            {% endfor %}
+                                            <tr>
+                                                <td></td>
+                                                <td></td>
+                                                <td class="font-weight-bold">{{ 'pdf.invoice.tr_total'|trans({},'messages',app.session.get('_locale')) }}</td>
+                                                <td class="h6">
+                                                    {{sale.amount|customCurrency}}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <a class="btn btn-success" href="{{ path('sale_invoice_print',{id: sale.id}) }}">
+                                <i class="fa fa-print"></i> {{ 'print'|trans }}
+                            </a>
+                            <a class="btn btn-secondary" href="#">
+                                <i class="fa fa-send"></i>
+                                {{ 'pdf.invoice.sendByMail'|trans }}
+                            </a>
+                        </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+    <form action="{{ path('sale_index') }}" method="post" id="returnIndex">
+        <input type="hidden" name="start" value="{{ sale.addDate|mediumDate~' 00:00' }}">
+        <input type="hidden" name="end" value="{{ sale.addDate|mediumDate~' 23:59' }}">
+    </form>
+
+    {% if is_granted(permission_verify,'SALE_CHANGE_NUM_INVOICE') %}
+        <!-- change numinvoice Modal -->
+        <div class="modal fade changeNumInvoiceModal" id="changeNumInvoiceModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeNumInvoiceModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeNumInvoiceModalLabel">
+                            {{ 'sale.detail.modal.changeNumInvoice.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('sale_change_num_invoice') }}" method="post">
+                        <input type="hidden" value="{{ sale.id }}" name="saleId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'sale.detail.modal.changeNumInvoice.form.numInvoice'|trans }}
+                                </label>
+                                <input type="text" class="form-control" required
+                                       name="numInvoice" id="numInvoice">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if is_granted(permission_verify,'SALE_CHANGE_DATE') %}
+        <!-- change date Modal -->
+        <div class="modal fade changeDateModal" id="changeDateModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeDateModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="addFeeModalLabel">
+                            {{ 'sale.detail.modal.changeDate.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('sale_change_date') }}" method="post">
+                        <input type="hidden" value="{{ sale.id }}" name="saleId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'sale.detail.modal.changeDate.form.date'|trans }}
+                                </label>
+                                <input type="text" class="form-control datetimepicker"
+                                       value="{{ sale.addDate|longDate }}" name="date" id="date" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+    {% if is_granted(permission_verify,'SALE_CHANGE_CUSTOMER') %}
+        <!-- change customer Modal -->
+        <div class="modal fade changeCustomerModal" id="changeCustomerModal" tabindex="-1" role="dialog"
+             aria-labelledby="changeCustomerModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="changeCustomerModalLabel">
+                            {{ 'sale.detail.modal.changeCustomer.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('sale_change_customer') }}" method="post">
+                        <input type="hidden" value="{{ sale.id }}" name="saleId">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label for="name">
+                                    {{ 'sale.detail.modal.changeCustomer.form.customer'|trans }}
+                                </label>
+                                <select name="customer" id="customer" class="form-control"
+                                       style="width: 100%!important;" required>
+                                    <option value="0">
+                                        {{ 'sale.detail.modal.changeCustomer.form.withoutCustomer'|trans }}
+                                    </option>
+                                    {% for customer in customers  %}
+                                        <option value="{{ customer.id }}">
+                                            {{ customer.name }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-edit"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    <!-- Add Prescription Modal -->
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            let customer = $('#customer');
+            customer.select2({
+                placeholder: "{{ 'sale.detail.select_customer'|trans }}",
+                allowClear: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+            customer.val([]).trigger('change');
+
+        });
+    </script>
+
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            const datepicker = $('.datepicker');
+            datepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+            datepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                endDate: date,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+            datepicker.val(date);
+
+            const datetimepicker = $('.datetimepicker');
+            datetimepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+
+            const datetime = dayjs(new Date()).format("{{ app.session.get('setting').longDateJs }}");
+            datetimepicker.datetimepicker({
+                format: '{{ app.session.get('setting').dateLongPicker }}',
+                autoclose: true,
+                endDate: datetime,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            datetimepicker.val(datetime);
+
+            $('#showByProductSale').css('display','none');
+
+            const productSale = $('#productSale');
+            getStockByProduct(productSale.val());
+            productSale.change(function (e) {
+                const id = $(this).val();
+                console.log(id);
+                getStockByProduct(id);
+            });
+        });
+
+
+        const body = $('body');
+        body.on('change', '.input-qty', function (e) {
+            e.preventDefault();
+            if (parseInt($(this).attr('data-qty')) < parseInt($(this).val())){
+                alertify.logPosition("top right");
+                alertify.delay(2000)
+                    .error("<i class='fa fa-close'></i>{{ 'controller.productReturn.add.flash.error_qty'|trans }}");
+                $(this).val("1");
+            }
+
+            let qty = 0;
+            const inputQtys = document.querySelectorAll(".input-qty");
+            inputQtys.forEach(function (input) {
+                qty += parseInt(input.value);
+            });
+
+            $('#qtyReturn').val(qty);
+            $('#qtyTotal').val(qty);
+        });
+
+        function getStockByProduct(id){
+            if (id === null){
+                $('#showByProductSale').css('display','none');
+            }else{
+                let data = new FormData();
+                data.append( "id", id+'' );
+                fetch('{{ path('rest_productStockSale') }}', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then( async response => {
+                    try {
+                        const data = await response.json();
+
+                        if (data !== null){
+                            const productStockSales = data['productStockSales'];
+                            if (productStockSales.length > 0){
+
+                                $('#qtyReturn').val('0');
+                                $('#qtyTotal').val('0');
+                                $('#showByProductSale').css('display','block');
+
+                                const tableProductStock = $('#tableProductStock');
+                                tableProductStock.empty();
+
+                                for(let i=0; i < productStockSales.length; i++){
+                                    let supplier = '';
+                                    let productStock = productStockSales[i].productStock;
+                                    if (productStock.stock.supplier == null){
+                                        supplier = '//';
+                                    }else{
+                                        supplier = productStock.stock.supplier.name;
+                                    }
+
+                                    tableProductStock.append('<tr id="'+productStock.id+'" ' +
+                                        'data-value="'+productStock.qtyRemaining+'">'+
+                                        '<td width="50%">'+supplier+' | '+productStock.batchId+' = (<b>'+productStockSales[i].qtyRemaining+'</b>)'+'</td>'+
+                                        '<td><input type="hidden" name="ps[]" value="'+productStockSales[i].id+'"> <input class="form-control input-qty" data-qty="'+productStockSales[i].qtyRemaining+'"' +
+                                        ' data-batch="'+productStockSales[i].id+'" name="qty[]" type="number" value="0"/></td>'+
+                                        '</tr>')
+                                }
+                            }else{
+                                $('#showByProductSale').css('display','none');
+                            }
+                        }
+
+                        console.log(data);
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
+            }
+        }
+    </script>
+{% endblock %}

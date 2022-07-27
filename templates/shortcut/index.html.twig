@@ -1,0 +1,160 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'shortcut.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        getDataTable($('#dataTable'),false,25);
+
+        let permission = $('#permission');
+        permission.select2({
+            placeholder: "{{ 'shortcut.index.select_permission'|trans }}",
+            allowClear: true,
+            dropdownParent: $('.addModal'),
+            language: "{{ app.session.get('_locale') }}"
+        });
+        permission.val([]).trigger('change');
+    </script>
+
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'shortcut.index.block_title'|trans }} ({{ shortcuts|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'SHORTCUT_NEW') %}
+                    <a href="#addShortcutModal" data-toggle="modal" class="btn btn-success pull-right">
+                        <i class="fa fa-plus"></i>
+                    </a>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                <thead>
+                <tr>
+                    <th>{{ 'shortcut.index.tr_name'|trans }}</th>
+                    <th class="not-sort">{{ 'shortcut.index.tr_shortcut'|trans }}</th>
+                    <th class="not-export not-sort">
+                        {{ 'shortcut.index.tr_actions'|trans }}
+                    </th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for shortcut in shortcuts %}
+                    <tr>
+                        <td class="text-capitalize">
+                            {{ shortcut.code|trans({},'permission')  }}
+                        </td>
+                        <td>
+                            <span class="badge badge-secondary p-2">
+                                {{ shortcut.shortcut }}
+                            </span>
+                        </td>
+                        <td>
+                            {% if is_granted(permission_verify,'SHORTCUT_DELETE') %}
+                                <a href="#deleteModal{{shortcut.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                    <i class="fa fa-remove"></i>
+                                </a>
+                                <!-- Delete Modal -->
+                                <div class="modal fade" id="deleteModal{{shortcut.id}}" tabindex="-1" role="dialog"
+                                     aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                    <div class="modal-dialog" role="document">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title" id="exampleModalLabel">{{ 'shortcut.index.modal.title'|trans }}</h5>
+                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                    <span aria-hidden="true">×</span>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body">
+                                                {{ 'shortcut.index.modal.body'|trans }}
+                                                <span class="text-info">{{ shortcut.code|trans({},'permission')  }}</span>?
+                                            </div>
+                                            <div class="modal-footer">
+                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                    {{ 'cancel'|trans }}
+                                                </button>
+                                                <a class="btn btn-danger" href="{{path('shortcut_delete',{'id':shortcut.id})}}">
+                                                    <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade addModal"
+         id="addShortcutModal" tabindex="-1" role="dialog"
+         aria-labelledby="addShortcutModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'shortcut.index.addShortcut.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form action="{{ path('shortcut_new') }}" method="post">
+                        <div class="form-group">
+                            <label for="permission">{{ 'shortcut.index.addPermission.form.permission.libelle'|trans }}</label>
+                            <select name="permission" id="permission" class="form-control"
+                                    style="width: 100% !important;" required>
+                                {% for permission in permissions %}
+                                    <option value="{{ permission.id }}">
+                                        {{ permission.code|trans({},'permission') }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="shortcut">
+                                {{ 'shortcut.index.addPermission.form.shortcut.libelle'|trans }}
+                            </label>
+                            <select name="shortcut" id="shortcut" class="form-control"
+                                    style="width: 100% !important;" required>
+                                {% for key in keys %}
+                                    <option value="{{ key }}">{{ key }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <button class="btn btn-uyblue">
+                                <i class="fa fa-save"></i> {{ 'role.index.addPermission.form.btn_add'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

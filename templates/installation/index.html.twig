@@ -1,0 +1,249 @@
+{% extends 'baseFront.html.twig' %}
+{% block title %}
+    {{ 'installation.index.title'|trans }}
+{% endblock %}
+{% block stylesheets %}
+    <link href="{{ asset('dist/plugins/bs-stepper/bs-stepper.min.css') }}" rel="stylesheet" type="text/css">
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2 horizontal-center">
+            <div class="card" style="margin-top: 250px; margin-bottom: 50px">
+                <div class="card-header">
+                    <div class="card-title text-center">
+                        {{ render(path('imageLogo',{height: 150})) }}
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="mb-5 p-4 bg-white shadow-sm">
+                        <h3>{{ 'installation.index.title'|trans }}</h3>
+                        <div id="stepperForm" class="bs-stepper linear">
+                            <div class="bs-stepper-header" role="tablist">
+                                <div class="step active" data-target="#store-form">
+                                    <button type="button" class="step-trigger" role="tab" id="stepperFormTrigger1" aria-controls="test-form-1" aria-selected="true">
+                                        <span class="bs-stepper-circle">1</span>
+                                        <span class="bs-stepper-label">{{ 'installation.index.step1.title'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="bs-stepper-line"></div>
+                                <div class="step" data-target="#user-form">
+                                    <button type="button" class="step-trigger" role="tab" id="stepperFormTrigger2" aria-controls="test-form-2" aria-selected="false" disabled="disabled">
+                                        <span class="bs-stepper-circle">2</span>
+                                        <span class="bs-stepper-label">{{ 'installation.index.step2.title'|trans }}</span>
+                                    </button>
+                                </div>
+                                <div class="bs-stepper-line"></div>
+                                <div class="step" data-target="#parameter-form">
+                                    <button type="button" class="step-trigger" role="tab" id="stepperFormTrigger3" aria-controls="test-form-3" aria-selected="false" disabled="disabled">
+                                        <span class="bs-stepper-circle">3</span>
+                                        <span class="bs-stepper-label">{{ 'installation.index.step3.title'|trans }}</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="bs-stepper-content">
+                                <form class="needs-validation" method="post" name="installation"
+                                      onsubmit="return false" novalidate="">
+                                    <div id="store-form" role="tabpanel"
+                                         class="bs-stepper-pane fade active dstepper-block" aria-labelledby="stepperFormTrigger1">
+                                        <div class="form-group">
+                                            <label for="store_name">
+                                                {{ 'installation.index.store.form.name.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="store_name" name="store_name" type="text" class="form-control"
+                                                   placeholder="{{ 'installation.index.store.form.name.placeholder'|trans }} "
+                                                   value="{{ installation.storeName }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="store_email">
+                                                {{ 'installation.index.store.form.email.label'|trans }}
+                                            </label>
+                                            <input id="store_email" name="store_email"
+                                                   type="email" class="form-control" value="{{ installation.storeEmail }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="store_phoneNumber">
+                                                {{ 'installation.index.store.form.phoneNumber.label'|trans }}
+                                            </label>
+                                            <input id="store_phoneNumber" name="store_phoneNumber"
+                                                   type="text" class="form-control" value="{{ installation.storePhoneNumber }}">
+                                        </div>
+                                        <div class="text-right">
+                                            <button class="btn btn-outline-uyblue btn-next-form">
+                                                {{ 'next'|trans }} <i class="fa fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="user-form" role="tabpanel" class="bs-stepper-pane fade dstepper-none" aria-labelledby="stepperFormTrigger2">
+                                        <div class="form-group">
+                                            <label for="user_name">
+                                                {{ 'installation.index.user.form.name.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="user_name" name="user_name"
+                                                   type="text" class="form-control"
+                                                   placeholder="{{ 'installation.index.user.form.name.placeholder'|trans }} "
+                                                   value="{{ installation.userName }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="user_email">
+                                                {{ 'installation.index.user.form.email.label'|trans }}
+                                            </label>
+                                            <input id="user_email" name="user_email"
+                                                   type="email" class="form-control" value="{{ installation.userEmail }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="user_password">
+                                                {{ 'installation.index.user.form.password.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="user_password" name="user_password"
+                                                   type="password" class="form-control" value="{{ installation.userPassword }}" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="user_confirmPassword">
+                                                {{ 'installation.index.user.form.confirmPassword.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="user_confirmPassword" name="user_confirmPassword"
+                                                   type="password" class="form-control" value="{{ installation.userConfirmPassword }}" required>
+                                        </div>
+                                        <div class="text-right">
+                                            <button class="btn btn-outline-uyblue btn-previous-form">
+                                                <i class="fa fa-arrow-left"></i> {{ 'previous'|trans }}
+                                            </button>
+                                            <button class="btn btn-outline-uyblue btn-next-form">
+                                                {{ 'next'|trans }} <i class="fa fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div id="parameter-form" role="tabpanel"
+                                         class="bs-stepper-pane fade dstepper-none"
+                                         aria-labelledby="stepperFormTrigger3">
+                                        <div class="form-group">
+                                            <label for="parameter_currencyName">
+                                                {{ 'installation.index.parameter.form.currencyName.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="parameter_currencyName" name="parameter_currencyName"
+                                                   type="text"  value="{{ installation.parameterCurrencyName }}" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="parameter_currencySide">
+                                                {{ 'installation.index.parameter.form.currencySide.label'|trans }}
+                                            </label>
+                                            <select name="parameter_currencySide" id="parameter_currencySide" class="form-control">
+                                                <option value="right">
+                                                    {{ 'right'|trans }}
+                                                </option>
+                                                <option value="left">
+                                                    {{ 'left'|trans }}
+                                                </option>
+                                            </select>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="parameter_currencyDecimal">
+                                                {{ 'installation.index.parameter.form.currencyDecimal.label'|trans }}
+                                                <span class="text-danger font-weight-bold">*</span>
+                                            </label>
+                                            <input id="parameter_currencyDecimal" name="parameter_currencyDecimal"
+                                                   type="number" value="{{ installation.parameterCurrencyDecimal }}" class="form-control" required>
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="parameter_currencyThousandSeparator">
+                                                {{ 'installation.index.parameter.form.currencyThousandSeparator.label'|trans }}
+                                            </label>
+                                            <select class="form-control" name="parameter_currencyThousandSeparator"
+                                                    id="parameter_currencyThousandSeparator">
+                                                <option value=" ">
+                                                    {{ 'space'|trans }}
+                                                </option>
+                                                <option value=".">
+                                                    {{ 'full stop'|trans }}
+                                                </option>
+                                                <option value="," selected>
+                                                    {{ 'comma'|trans }}</option>
+                                            </select>
+                                        </div>
+                                        <div class="text-right">
+                                            <button class="btn btn-outline-uyblue btn-previous-form">
+                                                <i class="fa fa-arrow-left"></i>  {{ 'previous'|trans }}
+                                            </button>
+                                            <button type="submit" class="btn btn-uyblue" id="validate">
+                                                <i class="fa fa-check-circle"></i> {{ 'validate'|trans }}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+{% block javascripts %}
+    <script src="{{ asset('dist/plugins/bs-stepper/bs-stepper.min.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            const stepperFormEl = document.querySelector('#stepperForm');
+            const btnValidate = document.querySelector('#validate');
+
+            const stepper = new Stepper(stepperFormEl);
+
+            const btnNextList = [].slice.call(document.querySelectorAll('.btn-next-form'));
+            const btnPreviousList = [].slice.call(document.querySelectorAll('.btn-previous-form'));
+            const stepperPanList = [].slice.call(stepperFormEl.querySelectorAll('.bs-stepper-pane'));
+            const store_name = document.getElementById('store_name');
+            const user_name = document.getElementById('user_name');
+            const user_password = document.getElementById('user_password');
+            const user_confirmPassword = document.getElementById('user_confirmPassword');
+
+            const parameter_currencyName = document.getElementById('parameter_currencyName');
+            const parameter_currencyDecimal = document.getElementById('parameter_currencyDecimal');
+            const form = stepperFormEl.querySelector('.bs-stepper-content form');
+
+            btnNextList.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    stepper.next()
+                })
+            });
+
+            btnPreviousList.forEach(function (btn) {
+                btn.addEventListener('click', function () {
+                    stepper.previous()
+                })
+            });
+
+            btnValidate.addEventListener('click',function () {
+               form.submit();
+            });
+
+            stepperFormEl.addEventListener('show.bs-stepper', function (event) {
+                form.classList.remove('was-validated');
+                let currentStep = event.detail.indexStep;
+
+                if (currentStep > 0) {
+                    currentStep--
+                }
+
+                const stepperPan = stepperPanList[currentStep];
+
+                if ((stepperPan.getAttribute('id') === 'store-form' && !store_name.value.length)
+                    || (stepperPan.getAttribute('id') === 'user-form' && (!user_name.value.length ||
+                        !user_password.value.length || !user_confirmPassword.value.length
+                    || (stepperPan.getAttribute('id') === 'parameter-form' && (!parameter_currencyName.value.length || !parameter_currencyDecimal.value.length )) ) )) {
+                    event.preventDefault();
+                    form.classList.add('was-validated')
+                }
+            })
+        });
+
+
+
+    </script>
+{% endblock %}

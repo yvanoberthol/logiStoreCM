@@ -1,0 +1,14 @@
+<li class="list-inline-item notification-list">
+    <a class="btn btn-light" href="{{ path('product_index') }}?status=byStock">
+        <span>
+            <i class="mdi mdi-bell-outline h6">
+                <span>{{ 'partials.header.dropdown_stockAlert'|trans }}</span>
+            </i>
+            <span class="badge {% if stockAlertCount > 0 %}badge-danger{% else %}badge-info{% endif %}">
+                {{ stockAlertCount|formatedInt }}
+            </span>
+
+        </span>
+    </a>
+</li>
+

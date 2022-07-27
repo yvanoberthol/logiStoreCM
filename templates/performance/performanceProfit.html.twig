@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="row mb-3">
+        <div class="col-md-10 offset-md-1 mb-2">
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <td class="bg-white font-weight-bold">{{ 'performance.performanceProfit.tr_profit'|trans }}</td>
+                    <td class="bg-white">
+                        {% for saleYear in salesYear %}
+                            <i class="h5">
+                                <span class="badge badge-uyblue" data-original-title="{{ saleYear.year }}"
+                                      data-toggle="tooltip-uyblue" data-placement="top">
+                                        {{ saleYear.profit|formated }}
+                                </span>
+                            </i>
+                        {% else %}
+                            <span class="text-secondary">
+                                {{ 'performance.performanceProfit.tr_noData'|trans }}
+                            </span>
+                        {% endfor %}
+                    </td>
+                </tr>
+            </table>
+        </div>
+        {% if saleStats is not empty %}
+            <div class="col-md-10 offset-md-1 mb-2">
+                <div class="card">
+                    <span class="triangle-border-left pull-left"></span>
+                    <div class="card-header">
+                        <h4 class="mt-0 header-title">
+                            {{ 'performance.performanceProfit.card_title_month'|trans }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="float-right">
+                                    <form class="form-inline">
+                                        <select name="month_area" id="month_area" class="form-control mr-1">
+                                            {% for key,month in months %}
+                                                <option value="{{ key - 1 }}" {% if key == monthNow %}selected{% endif %}>
+                                                    {{month|trans({},'month')}}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <input name="year_area" id="year_area" class="form-control mr-1 mb-1" value="{{ year }}">
+                                        <button class="btn btn-outline-uyblue" id="btnForAreaChart">
+                                            <i class="fa fa-search"></i> {{ 'performance.performanceProfit.card_btn_search'|trans }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="myAreaChartProfit" width="100%" height="30"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-10 offset-md-1 mb-2">
+                <div class="card">
+                    <span class="triangle-border-left pull-left"></span>
+                    <div class="card-header">
+                        <h4 class="mt-0 header-title">
+                            {{ 'performance.performanceProfit.card_title_year'|trans }}
+                        </h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-12">
+                                <div class="float-right">
+                                    <form class="form-inline">
+                                        <input name="year_bar" id="year_bar"
+                                               class="form-control mr-1 mb-1" value="{{ year }}">
+                                        <button class="btn btn-outline-uyblue" id="btnForBarChart">
+                                            <i class="fa fa-search"></i> {{ 'performance.performanceProfit.card_btn_search'|trans }}
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        <canvas id="myBarChartProfit" width="100%" height="30"></canvas>
+                    </div>
+                </div>
+            </div>
+        {% else %}
+            <h4 class="col-md-10 offset-md-1 alert alert-warning text-center">
+                <i class="fa fa-warning"></i> {{ 'performance.performanceProfit.no_stats'|trans }}
+            </h4>
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block title %}
+    {{ 'performance.performanceProfit.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% if saleStats is not empty %}
+        <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+        <script src="{{ asset('dist/js/downloadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+        <script src="{{ asset('dist/js/allMonth.js') }}"></script>
+        <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+        <script src="{{ asset('dist/js/statFunction.js') }}"></script>
+        <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+        <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+        <script>
+            let salesAmount = [];
+            {% for sale in saleStats %}
+            salesAmount.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}',amount: {{ sale['profit']}}});
+            {% endfor %}
+            console.log(salesAmount);
+
+            let elemAreaChart = "myAreaChartProfit";
+            let elemBarChart = "myBarChartProfit";
+
+            const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+            const locale = "{{ app.session.get('_locale') }}";
+
+            const loadArea = loadAreaChart(elemAreaChart, saleByMonth(salesAmount,
+                new Date().getUTCMonth(),new Date().getFullYear()),
+                "{{ 'performance.performanceProfit.stat_title_amount'|trans }}",
+                thousandSeparator,areacolors);
+
+            const loadBar = loadBarChart(elemBarChart,
+                saleByYear(salesAmount,new Date().getFullYear()),
+                "{{ 'performance.performanceProfit.stat_title_amount'|trans }}",
+                thousandSeparator,locale,barcolors);
+
+
+            function updateAreaChart(sales,loadArea){
+                let color = "rgb(43,153,216)";
+
+                const data = sales.map(sale => {return sale.amount});
+
+                loadArea.options.scales.y.max = 0;
+                if (data.length > 0){
+                    color = data.map(x => 'rgb(43,153,216)');
+                    color[argMax(data)] = 'rgb(2,3,216)';
+                    color[argMin(data)] = 'rgb(216,22,31)';
+                    const valueMax = data[argMax(data)];
+                    loadArea.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                loadArea.data.labels = sales.map(sale => {return sale.date});
+                loadArea.data.datasets[0].pointBackgroundColor = color;
+                loadArea.data.datasets[0].data = data;
+                loadArea.update();
+
+            }
+
+            function updateBarChart(data,loadBar){
+                loadBar.options.scales.y.max = 0;
+                if (data.length > 0){
+                    const valueMax = data[argMax(data)];
+                    loadBar.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                // loadBar.data.datasets[0].pointBackgroundColor = color;
+                loadBar.data.datasets[0].data = data;
+                loadBar.update();
+            }
+
+            $('#btnForAreaChart').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area').val());
+                const year_area = parseInt($('#year_area').val());
+
+                const salesByMonthAmount = saleByMonth(salesAmount,month_area,year_area);
+                updateAreaChart(salesByMonthAmount,loadArea);
+
+            });
+
+            $('#btnForBarChart').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar').val());
+
+                const data = saleByYear(salesAmount,year_bar)
+                    .map(sale => {return sale.amount});
+
+                updateBarChart(data,loadBar);
+
+            });
+        </script>
+    {% endif %}
+{% endblock %}

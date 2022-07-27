@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+    <head lang="{{ app.session.get('_locale') }}">
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+        <title>{% block title %}{% endblock %}</title>
+        <meta content="Store Management System" name="description" />
+        <meta content="Yvano Berthol" name="author" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+        <link rel="shortcut icon" href="{{ asset('dist/images/logo.jpg') }}">
+        <style>
+            {% set theme = app.session.get('theme') %}
+            :root{
+                --uyblue:{{ theme.generalColorLight }};
+                --uybluedark:{{ theme.generalColorDark }};
+                --uygrey:#847E8A;
+                --blackmiddledark:#2C3136;
+                --blackdark:{{ theme.colorSideMenuLink }};
+                --blacknonedark:{{ theme.backcolorSideMenu }};
+            }
+
+            a, button,.qtySold,.qtyReturn,.addInCart,.list-substitute{
+                cursor: pointer;
+            }
+
+            ​path {
+                fill: white;
+            }
+            th{
+                font-weight: bold;
+                font-size: 12px;
+            }
+            th>input, tr>input, tr{
+                font-size: 12px;
+            }
+            /*table>tbody>td{
+                word-wrap: break-word;
+                white-space: normal;
+                max-width: 300px;
+            }*/
+            .datepicker .table-condensed{
+                width: 230px;
+                height:230px;
+            }
+
+            .datepicker{
+                background:white!important;
+            }
+
+            .datetimepicker .table-condensed{
+                width: 230px;
+                height:230px;
+            }
+
+            .datetimepicker{
+                background:white!important;
+            }
+        </style>
+        <link href="{{ asset('dist/css/print.css') }}" rel="stylesheet" type="text/css" media="print">
+        {% block stylesheets %}{% endblock %}
+        <link href="{{ asset('dist/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/css/icons.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/css/style.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/css/avatar.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/css/tooltip.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/plugins/alertify/css/alertify.css') }}" rel="stylesheet" type="text/css">
+        <link href="{{ asset('dist/plugins/bootstrap-fileinput/css/fileinput.min.css') }}" media="all"
+              rel="stylesheet" type="text/css" />
+    </head>
+    <body class="fixed-left fixed-left-void">
+    <!-- Loader -->
+    <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
+    {% set setting = app.session.get('setting') %}
+    <!-- Begin page -->
+    <div id="wrapper">
+        {% include 'partials/sidebar.html.twig' %}
+        <div class="content-page">
+            <!-- Start content -->
+            <div class="content">
+                {%  if app.user %}
+                    {% include 'partials/header.html.twig' %}
+                {% endif %}
+                <div class="page-content-wrapper ">
+                    <div class="container-fluid">
+                        {{ render(path('notice')) }}
+                        {% block body %} {% endblock %}
+                    </div>
+                </div>
+            </div>
+            {% if app.user %}
+                {% include 'partials/footer.html.twig' %}
+            {% endif %}
+        </div>
+        <script src="{{ asset('dist/js/jquery.min.js') }}"></script>
+        <script>
+            $(document).ready(function(){
+                $("html").keydown(function(e) {
+
+                    fetch('{{ path('rest_shortcut') }}', {
+                        method: 'GET',
+                        credentials: 'include'
+                    }).then( async response => {
+                        try {
+                            const data = await response.json();
+                            console.log(data);
+
+                            for(let i = 0;i < data.length;i++){
+                                const line = data[i];
+                                if (e.ctrlKey && e.key == line['shortcutKey']){
+                                    location.href = line['link'];
+                                }
+                            }
+                        } catch (reason) {
+                            console.log(reason);
+                        }
+                    }).catch(function (reason) {
+                        console.log(reason);
+                    });
+                });
+            });
+        </script>
+        <script src="{{ asset('dist/js/popper.min.js') }}"></script>
+        <script src="{{ asset('dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('dist/js/modernizr.min.js') }}"></script>
+        <script src="{{ asset('dist/js/detect.js') }}"></script>
+        <script src="{{ asset('dist/js/fastclick.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.slimscroll.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.blockUI.js') }}"></script>
+        <script src="{{ asset('dist/js/waves.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.nicescroll.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.scrollTo.min.js') }}"></script>
+        <script src="{{ asset('dist/plugins/alertify/js/alertify.js') }}"></script>
+        <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+        <script>
+            //bar chart
+            let barcolors = [['{{bar_one_color}}',
+                    '{{bar_two_color}}',
+                    '{{bar_three_color}}',
+                    '{{bar_four_color}}',
+                    '{{bar_five_color}}',
+                    '{{bar_six_color}}',
+                    '{{bar_seven_color}}',
+                    '{{bar_eight_color}}',
+                    '{{bar_nine_color}}',
+                    '{{bar_ten_color}}',
+                    '{{bar_eleven_color}}',
+                    '{{bar_twelve_color}}',
+                ],
+                '{{bar_border_color}}',
+                '{{bar_display_legend}}'
+            ];
+
+            //area chart
+            let areacolors = [
+                '{{area_background_color}}',
+                '{{area_border_color}}',
+                '{{area_point_color}}',
+                '{{area_point_border_color}}',
+                '{{area_max_color}}',
+                '{{area_min_color}}',
+                '{{area_display_legend}}'
+            ];
+
+            //doughnut chart
+            let doughnutcolors = [['{{doughnut_one_color}}',
+                '{{doughnut_two_color}}',
+                '{{doughnut_three_color}}',
+                '{{doughnut_four_color}}',
+                '{{doughnut_five_color}}',
+                '{{doughnut_six_color}}',
+                '{{doughnut_seven_color}}',
+                '{{doughnut_eight_color}}',
+                '{{doughnut_nine_color}}',
+                '{{doughnut_ten_color}}',
+            ],'{{doughnut_display_legend}}'
+            ];
+
+
+            $('.datepicker').attr('readonly','readonly');
+            $('.datetimepicker').attr('readonly','readonly');
+        </script>
+
+        {% block javascripts %}{% endblock %}
+        {% include 'partials/flashBag.html.twig' %}
+        <script>
+            const groups = document.querySelectorAll('.has_sub');
+            groups.forEach(function (group) {
+                if ($(group).find('li').length === 0){
+                    $(group).css('display','none')
+                }
+            })
+        </script>
+        <script>
+            $('.notice').click(function (e) {
+                updateNoticeBoard($(this).attr('data-value'));
+            });
+            function updateNoticeBoard(id){
+                let data = new FormData();
+                data.append( "id", id+'' );
+                fetch('{{ path('rest_notice_seen') }}', {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then( async response => {
+                    try {
+                        const data = await response.json();
+
+                        console.log(data);
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                });
+            }
+        </script>
+        {% if app.user and (app.user.role.rank == 1) %}
+            <script>
+                let nbProducts = parseInt('{{ render(path('nbProduct')) }}');
+                function fetchProductCount() {
+                    let count = nbProducts;
+                    fetch('{{ path('rest_product_count') }}',
+                        {'credentials': 'include'}).then(function (response) {
+                        response.json().then(function (data) {
+                            if (data.count > count){
+                                nbProducts = data.count;
+                                alertify.logPosition("top right");
+                                alertify.delay(6000)
+                                    .success("<i class='fa fa-bell'></i> {{ 'product.index.notifyAdd'|trans }}");
+                            }
+
+                            if (data.count < count) {
+                                nbProducts = data.count;
+                                alertify.logPosition("top right");
+                                alertify.delay(6000)
+                                    .error("<i class='fa fa-bell'></i> {{ 'product.index.notifyRemove'|trans }}");
+                            }
+                        });
+                        setTimeout(fetchProductCount,5000);
+                    }).catch(function (reason) {
+                        console.log(reason);
+                    });
+                }
+                fetchProductCount();
+            </script>
+        {% endif %}
+        {% if app.user and (app.user.role.rank > 1) %}
+            <script>
+                async function fetchHeaderCount() {
+                    const response = await fetch('{{ path('rest_header_count') }}',
+                        {'credentials': 'include'});
+                    return await response.json();
+                }
+                fetchHeaderCount().then(function (data) {
+
+                    console.log(data);
+                    $('#stockAlertCount').removeClass('lds-dual-ring');
+                    $('#outOfStockCount').removeClass('lds-dual-ring');
+                    $('#stockExpiryDateCount').removeClass('lds-dual-ring');
+                    $('#stockOutOfDateCount').removeClass('lds-dual-ring');
+                    if (data.stockAlertCount > 0){
+                        $('#stockAlertCount').html('<span class="badge badge-danger">'+data.stockAlertCount+'</span>');
+                    } else{
+                        $('#stockAlertCount').html('<span class="badge badge-uyblue">'+data.stockAlertCount+'</span>');
+                    }
+
+                    if (data.outOfStockCount > 0){
+                        $('#outOfStockCount').html('<span class="badge badge-danger">'+data.outOfStockCount+'</span>');
+                    } else{
+                        $('#outOfStockCount').html('<span class="badge badge-uyblue">'+data.outOfStockCount+'</span>');
+                    }
+
+                    if (data.stockExpiryDateCount > 0){
+                        $('#stockExpiryDateCount').html('<span class="badge badge-danger">'+data.stockExpiryDateCount+'</span>');
+                    } else{
+                        $('#stockExpiryDateCount').html('<span class="badge badge-uyblue">'+data.stockExpiryDateCount+'</span>');
+                    }
+
+                    if (data.stockOutOfDateCount > 0){
+                        $('#stockOutOfDateCount').html('<span class="badge badge-danger">'+data.stockOutOfDateCount+'</span>');
+                    } else{
+                        $('#stockOutOfDateCount').html('<span class="badge badge-uyblue">'+data.stockOutOfDateCount+'</span>');
+                    }
+                });
+            </script>
+        {% endif %}
+        <script src="{{ asset('dist/js/app.js') }}"></script>
+    </div>
+    </body>
+</html>

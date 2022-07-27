@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+{% block title %}
+    Page Introuvable
+{% endblock %}
+{% block body %}
+    <div class="container">
+        <div class="alert alert-secondary h4 p-5 ">
+            <p class="text-center"><i class="fa fa-hand-stop-o"></i> Cette page n'existe pas</p>
+            <p class="text-center">
+                <a href="{{ path('accueil') }}" class="btn btn-primary">
+                    <i class="fa fa-home"></i>  Retourner à la page d'accueil
+                </a>
+            </p>
+        </div>
+    </div>
+{% endblock %}

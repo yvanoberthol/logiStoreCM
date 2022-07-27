@@ -1,0 +1,173 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'performance.performanceProductCategory.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | longDate }} - {{ end | longDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            $("#searchBy").keyup(function() {
+
+                // Retrieve the input field text and reset the count to zero
+                let filter = $(this).val(),
+                    count = 0;
+
+                // Loop through the comment list
+                $('#categories div').each(function() {
+
+
+                    // If the list item does not contain the text phrase fade it out
+                    if ($(this).attr('data-name').search(new RegExp(filter, "i")) < 0) {
+                        $(this).hide();  // MY CHANGE
+
+                        // Show the list item if the phrase matches and increase the count by 1
+                    } else {
+                        $(this).show(); // MY CHANGE
+                        count++;
+                    }
+
+                });
+
+            });
+
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'performance.performanceProductCategory.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('performance_product_category') }}"
+                          method="post" class="form-inline pull-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|mediumDate}}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue" >
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center h3 mb-5">
+                    <span class="text-info mt-0 header-title">
+                        {{ start | mediumDate }} - {{ end | mediumDate }}
+                    </span>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-12 text-center h3 mb-5">
+                    <table class="table table-bordered">
+                        <tr>
+                            <td>
+                                {{ 'performance.performanceProductCategory.tr_totalqtySold'|trans }}:
+                               <span class="font-weight-bold">{{ qtySold|formatedInt }}</span>
+                            </td>
+                            <td>
+                                {{ 'performance.performanceProductCategory.tr_totalAmount'|trans }}:
+                                <span class="font-weight-bold">{{ totalAmount|customCurrency  }}</span>
+                            </td>
+                            <td>
+                                {{ 'performance.performanceProductCategory.tr_totalProfit'|trans }}:
+                                <span class="font-weight-bold">{{ totalProfit|customCurrency }}</span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            <div class="row mb-1">
+                <div class="col-md-12">
+                    <div class="form-group">
+                        <input type="text" class="form-control" id="searchBy"
+                               placeholder="{{ 'performance.performanceProductCategory.searchBy'|trans }}">
+                    </div>
+                </div>
+            </div>
+            <div class="row" id="categories">
+                {% for category in categories %}
+                    <div class="col-md-6 mt-1" data-name="{{ category.name }}">
+                        <table class="table table-bordered">
+                            <tr>
+                                <td style="width: 30%!important;">
+                                    <a href="javascript:void()"
+                                       onclick="document.getElementById('cat{{ category.id }}').submit();"
+                                       class="text-uppercase h6">
+                                        {{ category.name }}
+                                    </a>
+
+                                    <form id="cat{{ category.id }}" action="{{ path('report_category_sale_product') }}" method="post">
+                                        <input type="hidden" name="category" value="{{ category.id }}">
+                                        <input type="hidden" name="start" value="{{ start|mediumDate }}">
+                                        <input type="hidden" name="end" value="{{ end|mediumDate }}">
+                                    </form>
+                                </td>
+                                <td>
+                                    <table class="w-100 table table-striped">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'performance.performanceProductCategory.tr_qtySold'|trans }}</td>
+                                            <td class="{% if maxQty == category.qtySold %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minQty == category.qtySold %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{ category.qtySold|formatedInt }}
+                                            </td>
+                                            <td class="{% if maxQty == category.qtySold %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minQty == category.qtySold %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{(category.qtySold / qtySold * 100)|round(2)  }}%
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'performance.performanceProductCategory.tr_amount'|trans }}</td>
+                                            <td  class="{% if maxAmount == category.amount %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minAmount == category.amount %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{ category.amount|formated }}
+                                            </td>
+                                            <td class="{% if maxAmount == category.amount %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minAmount == category.amount %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{(category.amount / totalAmount * 100)|round(2)  }}%
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'performance.performanceProductCategory.tr_profit'|trans }}</td>
+                                            <td class="{% if maxProfit == category.profit %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minProfit == category.profit %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{ category.profit|formated }}
+                                            </td>
+                                            <td class="{% if maxProfit == category.profit %}font-weight-bold alert alert-success{% endif %}
+                                            {% if minProfit == category.profit %}font-weight-bold alert alert-danger{% endif %}">
+                                                {{(category.profit / totalProfit * 100)|round(2)  }}%
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

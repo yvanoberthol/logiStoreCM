@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sale.add.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'sale.add.title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+            </h5>
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <ul class="list-group">
+                        <li class="list-group-item">
+                            <a href="{{ path('sale_new') }}">
+                              <i class="fa fa-user"></i>
+                                {% if is_granted(permission_verify, 'SALE_FOR_EMPLOYEE') %}
+                                    {{ 'sale.add.li.walkingAndEmployee'|trans }}
+                                {% else %}
+                                    {{ 'sale.add.li.walking-customer'|trans }}
+                                {% endif %}
+
+                            </a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="{{ path('sale_wholesaler_new') }}">
+                                <i class="fa fa-users"></i>   {{ 'sale.add.li.wholeSaler'|trans }}
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,1414 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'setting.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <style>
+        .theme.Selected {
+            padding-bottom: 5px;
+            border: #000 2px solid;
+        }
+    </style>
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+        $(document).ready(function () {
+            $(".theme-icon").hide();
+
+            if ($(".theme").hasClass('Selected')){
+                $(".theme.Selected").children('.theme-icon').show();
+            }
+            $(".theme").click( function() {
+                $(".theme").removeClass("Selected");
+                $(".theme-icon").hide();
+                $(this).addClass("Selected");
+                $(this).children('.theme-icon').show();
+
+                $("#themeId").val($(this).attr('data-value'));
+            });
+        });
+
+    </script>
+{% endblock %}
+{% block body %}
+<div class="row">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    {{ 'setting.index.block_title'|trans }}
+                    <span class="triangle-border-right pull-right ml-3"></span>
+                    <span class="triangle-border-left pull-left"></span>
+                </h5>
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="nav flex-column nav-pills" id="v-pills-tab"
+                             role="tablist" aria-orientation="vertical">
+                            <a class="nav-link active" id="v-pills-general-tab" data-toggle="pill"
+                               href="#v-pills-general" role="tab" aria-controls="v-pills-general"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.general'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-currency-tab"
+                               data-toggle="pill" href="#v-pills-currency" role="tab"
+                               aria-controls="v-pills-currency" aria-selected="true">
+                                {{ 'setting.index.tab.currency'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-date-tab" data-toggle="pill"
+                               href="#v-pills-date" role="tab" aria-controls="v-pills-date"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.date'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-product-tab" data-toggle="pill"
+                               href="#v-pills-product" role="tab" aria-controls="v-pills-product"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.product'|trans }}
+                            </a>
+                            {% if moduleExists(prod_man) %}
+                                <a class="nav-link" id="v-pills-rawMaterial-tab" data-toggle="pill"
+                                   href="#v-pills-rawMaterial" role="tab" aria-controls="v-pills-rawMaterial"
+                                   aria-selected="false">
+                                    {{ 'setting.index.tab.rawMaterial'|trans }}
+                                </a>
+                                <a class="nav-link" id="v-pills-production-tab" data-toggle="pill"
+                                   href="#v-pills-production" role="tab" aria-controls="v-pills-production"
+                                   aria-selected="false">
+                                    {{ 'setting.index.tab.production'|trans }}
+                                </a>
+                            {% endif %}
+                            <a class="nav-link" id="v-pills-sale-tab" data-toggle="pill"
+                               href="#v-pills-sale" role="tab" aria-controls="v-pills-sale"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.sale'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-order-tab" data-toggle="pill"
+                               href="#v-pills-order" role="tab" aria-controls="v-pills-order"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.order'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-pdf-tab" data-toggle="pill"
+                               href="#v-pills-pdf" role="tab" aria-controls="v-pills-pdf"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.pdf'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-security-tab" data-toggle="pill"
+                               href="#v-pills-security" role="tab" aria-controls="v-pills-security"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.security'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-color-tab" data-toggle="pill"
+                               href="#v-pills-color" role="tab" aria-controls="v-pills-color"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.color'|trans }}
+                            </a>
+                            <a class="nav-link" id="v-pills-chartcolor-tab" data-toggle="pill"
+                               href="#v-pills-chartcolor" role="tab" aria-controls="v-pills-chartcolor"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.chartcolor'|trans }}
+                            </a>
+                            {% if is_granted(role_admin) %}
+                            <a class="nav-link" id="v-pills-addons-tab" data-toggle="pill"
+                               href="#v-pills-addons" role="tab" aria-controls="v-pills-addons"
+                               aria-selected="false">
+                                {{ 'setting.index.tab.addons'|trans }} 
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-9">
+                        <div class="tab-content" id="v-pills-tabContent">
+                            {# configure general #}
+                            <div class="tab-pane fade show active" id="v-pills-general" role="tabpanel"
+                                 aria-labelledby="v-pills-general-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="general">
+                                    <table class="table table-bordered">
+                                        {% if moduleExists(acc_man) %}
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withAccounting'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withAccounting"
+                                                       {% if setting.withAccounting %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withExpense'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withExpense"
+                                                       {% if setting.withExpense %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% if moduleExists(hrm) %}
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withHrm'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withHrm"
+                                                       {% if setting.withHrm %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% if moduleExists(prod_man) %}
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.withProduction'|trans }}</td>
+                                                <td>
+                                                    <input type="checkbox" name="withProduction"
+                                                           {% if setting.withProduction %}checked{% endif %}>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if moduleExists(club_point) %}
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.withPoint'|trans }}</td>
+                                                <td>
+                                                    <input type="checkbox" name="withPoint"
+                                                           {% if setting.withClubPoint %}checked{% endif %}>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure currency #}
+                            <div class="tab-pane fade" id="v-pills-currency"
+                                 role="tabpanel" aria-labelledby="v-pills-currency-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="currency">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.currencyName'|trans }} (USD,EUR,XAF)</td>
+                                            <td>
+                                                <input type="text" class="form-control" name="currencyName" value="{{ setting.currencyName }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.currencySide'|trans }}</td>
+                                            <td>
+                                                <select name="currencySide" id="currencySide" class="form-control">
+                                                    <option value="right" {% if setting.currencySide == 'right' %}selected{% endif %} >
+                                                        {{ 'right'|trans }}
+                                                    </option>
+                                                    <option value="left" {% if setting.currencySide == 'left' %}selected{% endif %}>
+                                                        {{ 'left'|trans }}</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.currencyDecimal'|trans }} (1=>0.0, 2=>0.00)</td>
+                                            <td>
+                                                <input type="number" name="currencyDecimal" class="form-control" value="{{ setting.currencyDecimal }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.currencyThousandSeparator'|trans }}</td>
+                                            <td>
+                                                <select class="form-control" name="currencyThousandSeparator" id="currencyThousandSeparator">
+                                                    <option value=" " {% if setting.currencyThousandSeparator == ' ' %}selected{% endif %}>
+                                                        {{ 'space'|trans }}
+                                                    </option>
+                                                    <option value="." {% if setting.currencyThousandSeparator == '.' %}selected{% endif %}>
+                                                        {{ 'full stop'|trans }}
+                                                    </option>
+                                                    <option value="," {% if setting.currencyThousandSeparator == ',' %}selected{% endif %}>
+                                                        {{ 'comma'|trans }}</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure date #}
+                            <div class="tab-pane fade" id="v-pills-date" role="tabpanel"
+                                 aria-labelledby="v-pills-date-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="date">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.shortDate'|trans }}</td>
+                                            <td>
+                                                <div class="form-inline">
+                                                    {%   include 'partials/date_select.html.twig' with{'name': 'shortDate1','value':setting.shortDate1} %}
+                                                    {%  include 'partials/date_select.html.twig' with{'name': 'shortDate2','value':setting.shortDate2} %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.mediumDate'|trans }}</td>
+                                            <td>
+                                                <div class="form-inline">
+                                                    {%   include 'partials/date_select.html.twig' with{'name': 'mediumDate1','value':setting.mediumDate1} %}
+                                                    {%  include 'partials/date_select.html.twig' with{'name': 'mediumDate2','value':setting.mediumDate2}%}
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'mediumDate3','value':setting.mediumDate3}%}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.longDate'|trans }}</td>
+                                            <td>
+                                                <div class="form-inline">
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'longDate1','value':setting.longDate1}%}
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'longDate2','value':setting.longDate2} %}
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'longDate3','value':setting.longDate3} %}
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'longDate4','value':setting.longDate4}%}
+                                                    {%  include'partials/date_select.html.twig' with{'name': 'longDate5','value':setting.longDate5} %}
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.dateSeparator'|trans }}</td>
+                                            <td>
+                                                <select name="dateSeparator" id="dateSeparator" class="form-control">
+                                                    <option value=" " {% if setting.dateSeparator == ' ' %}selected{% endif %} >
+                                                        {{ 'space'|trans }}
+                                                    </option>
+                                                    <option value="/" {% if setting.dateSeparator == '/' %}selected{% endif %} >
+                                                        {{ 'slash'|trans }}
+                                                    </option>
+                                                    <option value="-" {% if setting.dateSeparator == '-' %}selected{% endif %}>
+                                                        {{ 'dash'|trans }}</option>
+                                                </select>
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure product #}
+                            <div class="tab-pane fade" id="v-pills-product" role="tabpanel"
+                                 aria-labelledby="v-pills-product-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="product">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productNew'|trans }}</td>
+                                            <td>
+                                                <input type="number" name="productNew"
+                                                       class="form-control" value="{{ setting.productNew }}" required>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.daybeforeexpiration'|trans }}</td>
+                                            <td>
+                                                <input type="number" name="daybeforeexpiration"
+                                                       class="form-control" value="{{ setting.daysBeforeExpiration }}" required>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithImage'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="productWithImage"
+                                                       {% if setting.productWithImage %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithExpiration'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="productWithExpiration"
+                                                       {% if setting.withExpiration %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithReference'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="productWithReference"
+                                                       {% if setting.withProductReference %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithBarcode'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="productWithBarcode"
+                                                       {% if setting.withBarcode %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithGenerateBarcode'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="productWithGenerateBarcode"
+                                                       {% if setting.generateBarcode %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithDiscount'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="productWithDiscount"
+                                                       {% if setting.productWithDiscount %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">
+                                                {{ 'setting.index.productWithSubstitute'|trans }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="productWithSubstitute"
+                                                       {% if setting.withSubstitute %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">
+                                                {{ 'setting.index.productWithPackaging'|trans }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="productWithPackaging"
+                                                       {% if setting.withPackaging %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">
+                                                {{ 'setting.index.productWithBatchPrice'|trans }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="productWithBatchPrice"
+                                                       {% if setting.withBatchPrice %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure rawMaterial #}
+                            {% if moduleExists(prod_man) %}
+                                <div class="tab-pane fade" id="v-pills-rawMaterial" role="tabpanel"
+                                     aria-labelledby="v-pills-rawMaterial-tab">
+                                    <form action="{{ path('setting_update') }}"
+                                          method="post">
+                                        <input type="hidden" name="tab" id="tab" value="rawMaterial">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.daybeforeexpiration'|trans }}</td>
+                                                <td>
+                                                    <input type="number" name="daybeforerawexpiration"
+                                                           class="form-control" value="{{ setting.daysbeforerawexpiration }}" required>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.rawMaterialWithExpiration'|trans }}</td>
+                                                <td>
+                                                    <input type="checkbox" name="rawMaterialWithExpiration"
+                                                           {% if setting.withRawExpiration %}checked{% endif %}>
+                                                </td>
+                                            </tr>
+                                            {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                <tr>
+                                                    <td class="text-center" colspan="2">
+                                                        <button type="submit" class="btn btn-uyblue form-control"
+                                                                name="export" value="export">
+                                                            <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        </table>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                            {# configure production #}
+                            {% if moduleExists(prod_man) %}
+                                <div class="tab-pane fade" id="v-pills-production" role="tabpanel"
+                                     aria-labelledby="v-pills-production-tab">
+                                    <form action="{{ path('setting_update') }}"
+                                          method="post">
+                                        <input type="hidden" name="tab" id="tab" value="production">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.withGapProduction'|trans }}</td>
+                                                <td>
+                                                    <input type="checkbox" name="withGapProduction"
+                                                           {% if setting.withGapProduction %}checked{% endif %}>
+                                                </td>
+                                            </tr>
+                                            {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                <tr>
+                                                    <td class="text-center" colspan="2">
+                                                        <button type="submit" class="btn btn-uyblue form-control"
+                                                                name="export" value="export">
+                                                            <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                        </button>
+                                                    </td>
+                                                </tr>
+                                            {% endif %}
+                                        </table>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                            {# configure sale #}
+                            <div class="tab-pane fade" id="v-pills-sale" role="tabpanel"
+                                 aria-labelledby="v-pills-sale-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="sale">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithPrintDirectly'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="saleWithPrintDirectly"
+                                                       {% if setting.printDirectly %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithPartialPayment'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="saleWithPartialPayment"
+                                                       {% if setting.withPartialPayment %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.productWithPurchasePrice'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="productWithPurchasePrice"
+                                                       {% if setting.withPurchasePrice %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithDiscount'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="saleWithDiscount"
+                                                       {% if setting.withDiscount %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withSaleNumInvoice'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="withSaleNumInvoice"
+                                                       {% if setting.withSaleNumInvoice %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithSaleReturn'|trans }}</td>
+
+                                            <td>
+                                                <input type="checkbox" name="saleWithSaleReturn"
+                                                       {% if setting.withSaleReturn %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithUserCategory'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="saleWithUserCategory"
+                                                       {% if setting.withUserCategory %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">
+                                                {{ 'setting.index.productWithWholeSale'|trans }}
+                                            </td>
+                                            <td>
+                                                <input type="checkbox" name="productWithWholeSale"
+                                                       {% if setting.withWholeSale %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.saleWithGui'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withguisale"
+                                                       {% if setting.withGuiSale %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withSoftDelete'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withsoftdelete"
+                                                       {% if setting.withSoftDelete %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure order #}
+                            <div class="tab-pane fade" id="v-pills-order" role="tabpanel"
+                                 aria-labelledby="v-pills-order-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="order">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.orderWithSettlement'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="orderWithSettlement"
+                                                       {% if setting.withSettlement %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.stockWithStockReturn'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="stockWithStockReturn"
+                                                       {% if setting.withStockReturn %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.withStockGenerateNumInvoice'|trans }}</td>
+                                            <td>
+                                                <input type="checkbox" name="withStockGenerateNumInvoice"
+                                                       {% if setting.withStockGenerateNumInvoice %}checked{% endif %}>
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure format pdf (sale, order, report) #}
+                            <div class="tab-pane fade" id="v-pills-pdf" role="tabpanel"
+                                 aria-labelledby="v-pills-pdf-tab2">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="nav flex-column nav-pills" id="v-pills-tab2"
+                                             role="tablist" aria-orientation="vertical">
+                                            <a class="nav-link active" id="v-pills-pdf-list-tab2"
+                                               data-toggle="pill" href="#v-pills-pdf-list" role="tab"
+                                               aria-controls="v-pills-pdf-list" aria-selected="true">
+                                                {{ 'setting.index.tab2.list'|trans }}
+                                            </a>
+                                            <a class="nav-link" id="v-pills-pdf-sale-tab2"
+                                               data-toggle="pill" href="#v-pills-pdf-sale" role="tab"
+                                               aria-controls="v-pills-pdf-sale" aria-selected="true">
+                                                {{ 'setting.index.tab2.sale'|trans }}
+                                            </a>
+                                            <a class="nav-link" id="v-pills-pdf-report-tab2" data-toggle="pill"
+                                               href="#v-pills-pdf-report" role="tab" aria-controls="v-pills-pdf-report"
+                                               aria-selected="false">
+                                                {{ 'setting.index.tab2.report'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="tab-content" id="v-pills-tabContent2">
+                                            <div class="tab-pane fade show active" id="v-pills-pdf-list" role="tabpanel"
+                                                 aria-labelledby="v-pills-pdf-list">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td>
+                                                            {{ 'setting.index.tab2.tr_name'|trans }}
+                                                        </td>
+                                                        <td>
+                                                            {{ 'setting.index.tab2.tr_size'|trans }}
+                                                        </td>
+                                                        <td>
+                                                            <a href="#addModal" data-toggle="modal"
+                                                               class="btn btn-outline-uyblue">
+                                                                <i class="fa fa-plus"></i>
+                                                            </a>
+                                                        </td>
+                                                    </tr>
+                                                    {% for pageSize in pageSizes %}
+                                                        <tr>
+                                                            <td class="font-weight-bold">
+                                                                {{ pageSize.name }}
+                                                            </td>
+                                                            <td>
+                                                                 ({{ pageSize.width}} x {{pageSize.height }})
+                                                            </td>
+                                                            <td>
+                                                                {% if pageSize.deletable %}
+                                                                    <a href="{{ path('setting_format_delete',{id:pageSize.id}) }}" class="btn btn-danger">
+                                                                        <i class="fa fa-trash"></i>
+                                                                    </a>
+                                                                {% endif %}
+
+                                                            </td>
+                                                        </tr>
+                                                    {% endfor %}
+                                                </table>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-pdf-sale" role="tabpanel"
+                                                 aria-labelledby="v-pills-pdf-sale">
+                                                <form action="{{ path('setting_update') }}"
+                                                      method="post">
+                                                    <input type="hidden" name="tab" id="tab" value="pdf_sale">
+                                                    <table class="table table-bordered">
+                                                        {% for pageSize in pageSizes %}
+                                                            <tr>
+                                                                <td class="font-weight-bold">
+                                                                    <input type="radio" name="pdf_sale"
+                                                                           {% if pdfSaleFormat.id == pageSize.id %}checked{% endif %}
+                                                                           value="{{ pageSize.id }}">
+                                                                </td>
+                                                                <td>
+                                                                    {{ pageSize.name }} ({{ pageSize.width}} x {{pageSize.height }})
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+
+                                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                            <tr>
+                                                                <td class="text-center" colspan="2">
+                                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                                            name="export" value="export">
+                                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-pdf-report" role="tabpanel"
+                                                 aria-labelledby="v-pills-pdf-report">
+                                                <form action="{{ path('setting_update') }}"
+                                                      method="post">
+                                                    <input type="hidden" name="tab" id="tab" value="pdf_report">
+                                                    <table class="table table-bordered">
+                                                        {% for pageSize in pageSizes %}
+                                                            <tr>
+                                                                <td class="font-weight-bold">
+                                                                    <input type="radio" name="pdf_report"
+                                                                           {% if pdfReportFormat.id == pageSize.id %}checked{% endif %}
+                                                                           value="{{ pageSize.id }}">
+                                                                </td>
+                                                                <td>
+                                                                    {{ pageSize.name }} ({{ pageSize.width}} x {{pageSize.height }})
+                                                                </td>
+                                                            </tr>
+                                                        {% endfor %}
+
+                                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                            <tr>
+                                                                <td class="text-center" colspan="2">
+                                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                                            name="export" value="export">
+                                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {# configure security #}
+                            <div class="tab-pane fade" id="v-pills-security" role="tabpanel"
+                                 aria-labelledby="v-pills-security-tab">
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="security">
+                                    <table class="table table-bordered">
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.accessLimit'|trans }}</td>
+                                            <td>
+                                                <input type="number" name="accessLimit"
+                                                       class="form-control" value="{{ setting.accessLimit }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">
+                                                {{ 'setting.index.timeValiditySale'|trans }} ( <= 24 )
+                                            </td>
+                                            <td>
+                                                <input type="number" name="timeValiditySale"
+                                                       class="form-control" value="{{ setting.timeValiditySale }}">
+                                            </td>
+                                        </tr>
+                                        {% if app.session.get('setting').withSubscription %}
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.activationLink'|trans }}</td>
+                                            <td>
+                                                <input type="text" name="activationLink"
+                                                       class="form-control" value="{{ setting.activationLink }}">
+                                            </td>
+                                        </tr>
+                                        {% endif %}
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>
+                                </form>
+                            </div>
+                            {# configure color #}
+                            <div class="tab-pane fade" id="v-pills-color" role="tabpanel"
+                                 aria-labelledby="v-pills-color-tab">
+                                <div class="row mb-3">
+                                    <div class="col-md-12">
+                                        <a href="#addThemeModal" data-toggle="modal"
+                                           class="btn btn-outline-uyblue pull-right">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    </div>
+                                </div>
+                                <div class="row mb-5" id="themes">
+                                    {% for theme in themes  %}
+                                        <div class="card col-md-3 theme mb-3 {% if setting.themeId == theme.id %}Selected{% endif %}"
+                                             id="theme{{ theme.id }}" data-value="{{ theme.id }}">
+                                            <span class="w-100 theme-icon">
+                                              <span class="pull-right text-success">
+                                                        <i class="fa fa-check-circle"></i>
+                                                    </span>
+                                            </span>
+                                                <div class="card-header"
+                                                     style="background-color: {{ theme.generalColorDark }}">
+                                                   <span class="text-white">
+                                                       {{ 'btn_and_tooltip'|trans }}
+                                                   </span>
+                                                </div>
+                                                <div class="card-body"
+                                                     style="background-color: {{ theme.backcolorSideMenu }}">
+                                                    <span class="h6 text-white">
+                                                        {{ 'sidemenu'|trans }}
+                                                    </span>
+                                                </div>
+                                            <div class="card-footer"
+                                                 style="background-color: {{ theme.generalColorLight }}">
+                                                <span class="text-white">{{ 'link_hover'|trans }}</span>
+                                            </div>
+                                            {% if theme.id != setting.themeId and theme.deletable %}
+                                                <div class="text-center">
+                                                    <a class="btn btn-danger form-control"
+                                                       href="#deleteThemeModal{{ theme.id }}"
+                                                       data-toggle="modal">
+                                                        <i class="fa fa-trash"></i>
+                                                    </a>
+                                                </div>
+                                                <!-- delete theme Modal -->
+                                                <div class="modal fade deleteThemeModal" id="deleteThemeModal{{ theme.id }}" tabindex="-1" role="dialog"
+                                                     aria-labelledby="deleteThemeModal" aria-hidden="true">
+                                                    <div class="modal-dialog" role="document">
+                                                        <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title" id="exampleModalLabel">
+                                                                    {{ 'setting.index.modal.deleteTheme.title'|trans }}
+                                                                </h5>
+                                                                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">×</span>
+                                                                </button>
+                                                            </div>
+                                                            <div class="modal-body">
+                                                                <p>
+                                                                    {{ 'setting.index.modal.deleteTheme.body'|trans }}?
+                                                                </p>
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                    {{ 'cancel'|trans }}
+                                                                </button>
+                                                                <a class="btn btn-danger"
+                                                                   href="{{ path('setting_theme_delete',{id:theme.id}) }}">
+                                                                    <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                                </a>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            {% endif %}
+
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                                <form action="{{ path('setting_update') }}"
+                                      method="post">
+                                    <input type="hidden" name="tab" id="tab" value="color">
+                                    <input type="hidden" name="themeId" id="themeId" value="{{ setting.themeId }}">
+                                    {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                        <tr>
+                                            <td class="text-center" colspan="2">
+                                                <button type="submit" class="btn btn-uyblue form-control"
+                                                        name="export" value="export">
+                                                    <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                    {#<table class="table table-bordered">
+                                        <tr>
+                                            <td width="50%" class="font-weight-bold">{{ 'setting.index.back_color_sidemenu'|trans }}</td>
+                                            <td width="50%">
+                                                <input type="color" name="back_color_sidemenu"
+                                                       class="form-control" value="{{ back_color_sidemenu }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.back_color_sidemenu_link'|trans }}</td>
+                                            <td>
+                                                <input type="color" name="back_color_sidemenu_link"
+                                                       class="form-control" value="{{ back_color_sidemenu_link }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.general_color_light'|trans }}</td>
+                                            <td>
+                                                <input type="color" name="general_color_light"
+                                                       class="form-control" value="{{ general_color_light }}">
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td class="font-weight-bold">{{ 'setting.index.general_color_dark'|trans }}</td>
+                                            <td>
+                                                <input type="color" name="general_color_dark"
+                                                       class="form-control" value="{{ general_color_dark }}">
+                                            </td>
+                                        </tr>
+                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                            <tr>
+                                                <td class="text-center" colspan="2">
+                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                            name="export" value="export">
+                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                    </table>#}
+
+                                </form>
+                            </div>
+                            {#configure chart color#}
+                            <div class="tab-pane fade" id="v-pills-chartcolor" role="tabpanel"
+                                 aria-labelledby="v-pills-chartcolor-tab2">
+                                <div class="row">
+                                    <div class="col-md-4">
+                                        <div class="nav flex-column nav-pills" id="v-pills-tab2"
+                                             role="tablist" aria-orientation="vertical">
+                                            <a class="nav-link active" id="v-pills-chartcolor-areaChart-tab2"
+                                               data-toggle="pill" href="#v-pills-chartcolor-areaChart" role="tab"
+                                               aria-controls="v-pills-chartcolor-areaChart" aria-selected="true">
+                                                {{ 'setting.index.tab2.areaChart'|trans }}
+                                            </a>
+                                            <a class="nav-link" id="v-pills-chartcolor-barChart-tab2"
+                                               data-toggle="pill" href="#v-pills-chartcolor-barChart" role="tab"
+                                               aria-controls="v-pills-chartcolor-barChart" aria-selected="true">
+                                                {{ 'setting.index.tab2.barChart'|trans }}
+                                            </a>
+                                            <a class="nav-link" id="v-pills-chartcolor-doughnutChart-tab2"
+                                               data-toggle="pill"
+                                               href="#v-pills-chartcolor-doughnutChart" role="tab"
+                                               aria-controls="v-pills-chartcolor-doughnutChart"
+                                               aria-selected="false">
+                                                {{ 'setting.index.tab2.doughnutChart'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <div class="tab-content" id="v-pills-tabContent2">
+                                            <div class="tab-pane fade show active"
+                                                 id="v-pills-chartcolor-areaChart" role="tabpanel"
+                                                 aria-labelledby="v-pills-chartcolor-areaChart">
+                                                <form action="{{ path('setting_update') }}"
+                                                      method="post">
+                                                <input type="hidden" name="tab" id="tab" value="chartcolor_areaChart">
+                                                <table class="table table-bordered">
+                                                    <tr>
+                                                        <td width="50%" class="font-weight-bold">
+                                                            <label for="">{{ 'setting.index.area_background_color'|trans }}</label>
+                                                            <input type="color" name="area_background_color"
+                                                                   class="form-control" value="{{ area_background_color }}">
+                                                        </td>
+                                                        <td width="50%">
+                                                            <label for="">{{ 'setting.index.area_border_color'|trans }}</label>
+                                                            <input type="color" name="area_border_color"
+                                                                   class="form-control" value="{{ area_border_color }}">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bold">
+                                                            <label for="">{{ 'setting.index.area_point_color'|trans }}</label>
+                                                            <input type="color" name="area_point_color"
+                                                                   class="form-control" value="{{ area_point_color }}">
+                                                        </td>
+                                                        <td>
+                                                            <label for="">{{ 'setting.index.area_point_border_color'|trans }}</label>
+                                                            <input type="color" name="area_point_border_color"
+                                                                   class="form-control" value="{{ area_point_border_color }}">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bold">
+                                                            <label for="">{{ 'setting.index.area_max_color'|trans }}</label>
+                                                            <input type="color" name="area_max_color"
+                                                                   class="form-control" value="{{ area_max_color }}">
+                                                        </td>
+                                                        <td>
+                                                            <label for="">{{ 'setting.index.area_min_color'|trans }}</label>
+                                                            <input type="color" name="area_min_color"
+                                                                   class="form-control" value="{{ area_min_color }}">
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td class="font-weight-bold">{{ 'setting.index.area_display_legend'|trans }}</td>
+                                                        <td>
+                                                            <input type="checkbox" name="area_display_legend"
+                                                                   {% if area_display_legend  %}checked{% endif %}
+                                                            >
+                                                        </td>
+                                                    </tr>
+                                                    {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                        <tr>
+                                                            <td class="text-center" colspan="2">
+                                                                <button type="submit" class="btn btn-uyblue form-control"
+                                                                        name="export" value="export">
+                                                                    <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                                </button>
+                                                            </td>
+                                                        </tr>
+                                                    {% endif %}
+                                                </table>
+                                                </form>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-chartcolor-barChart"
+                                                 role="tabpanel"
+                                                 aria-labelledby="v-pills-chartcolor-barChart">
+                                                <form action="{{ path('setting_update') }}"
+                                                      method="post">
+                                                    <input type="hidden" name="tab" id="tab" value="chartcolor_barChart">
+                                                    <table class="table table-bordered">
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_one_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_one_color"
+                                                                       class="form-control" value="{{ bar_one_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_two_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_two_color"
+                                                                       class="form-control" value="{{ bar_two_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for=""> {{ 'setting.index.bar_three_color'|trans }}</label>
+                                                                <input type="color" name="bar_three_color"
+                                                                       class="form-control" value="{{ bar_three_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_four_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_four_color"
+                                                                       class="form-control" value="{{ bar_four_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_five_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_five_color"
+                                                                       class="form-control" value="{{ bar_five_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_six_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_six_color"
+                                                                       class="form-control" value="{{ bar_six_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_seven_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_seven_color"
+                                                                       class="form-control" value="{{ bar_seven_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_eight_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_eight_color"
+                                                                       class="form-control" value="{{ bar_eight_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_nine_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_nine_color"
+                                                                       class="form-control" value="{{ bar_nine_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">{{ 'setting.index.bar_ten_color'|trans }}</label>
+                                                                <input type="color" name="bar_ten_color"
+                                                                       class="form-control" value="{{ bar_ten_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.bar_eleven_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="bar_eleven_color"
+                                                                       class="form-control" value="{{ bar_eleven_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">{{ 'setting.index.bar_twelve_color'|trans }}</label>
+                                                                <input type="color" name="bar_twelve_color"
+                                                                       class="form-control" value="{{ bar_twelve_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                {{ 'setting.index.bar_border_color'|trans }}
+                                                            </td>
+                                                            <td width="50%">
+                                                                <input type="color" name="bar_border_color"
+                                                                       class="form-control" value="{{ bar_border_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bold">{{ 'setting.index.bar_display_legend'|trans }}</td>
+                                                            <td>
+                                                                <input type="checkbox" name="area_display_legend"
+                                                                       {% if bar_display_legend  %}checked{% endif %}
+                                                                >
+                                                            </td>
+                                                        </tr>
+                                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                            <tr>
+                                                                <td class="text-center" colspan="2">
+                                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                                            name="export" value="export">
+                                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    </table>
+                                                </form>
+                                            </div>
+                                            <div class="tab-pane fade" id="v-pills-chartcolor-doughnutChart"
+                                                 role="tabpanel"
+                                                 aria-labelledby="v-pills-chartcolor-doughnutChart">
+                                                <form action="{{ path('setting_update') }}"
+                                                      method="post">
+                                                    <input type="hidden" name="tab" id="tab" value="chartcolor_doughnutChart">
+                                                    <table class="table table-bordered">
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_one_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_one_color"
+                                                                       class="form-control" value="{{ doughnut_one_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_two_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_two_color"
+                                                                       class="form-control" value="{{ doughnut_two_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for=""> {{ 'setting.index.doughnut_three_color'|trans }}</label>
+                                                                <input type="color" name="doughnut_three_color"
+                                                                       class="form-control" value="{{ doughnut_three_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_four_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_four_color"
+                                                                       class="form-control" value="{{ doughnut_four_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_five_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_five_color"
+                                                                       class="form-control" value="{{ doughnut_five_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_six_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_six_color"
+                                                                       class="form-control" value="{{ doughnut_six_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_seven_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_seven_color"
+                                                                       class="form-control" value="{{ doughnut_seven_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_eight_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_eight_color"
+                                                                       class="form-control" value="{{ doughnut_eight_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td width="50%" class="font-weight-bold">
+                                                                <label for="">
+                                                                    {{ 'setting.index.doughnut_nine_color'|trans }}
+                                                                </label>
+                                                                <input type="color" name="doughnut_nine_color"
+                                                                       class="form-control" value="{{ doughnut_nine_color }}">
+                                                            </td>
+                                                            <td width="50%">
+                                                                <label for="">{{ 'setting.index.doughnut_ten_color'|trans }}</label>
+                                                                <input type="color" name="doughnut_ten_color"
+                                                                       class="form-control" value="{{ doughnut_ten_color }}">
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bold">{{ 'setting.index.doughnut_display_legend'|trans }}</td>
+                                                            <td>
+                                                                <input type="checkbox" name="doughnut_display_legend"
+                                                                       {% if doughnut_display_legend  %}checked{% endif %}
+                                                                >
+                                                            </td>
+                                                        </tr>
+
+                                                        {% if is_granted(permission_verify,'SETTING_UPDATE') %}
+                                                            <tr>
+                                                                <td class="text-center" colspan="2">
+                                                                    <button type="submit" class="btn btn-uyblue form-control"
+                                                                            name="export" value="export">
+                                                                        <i class="fa fa-check-circle"></i> {{ 'setting.index.update'|trans }}
+                                                                    </button>
+                                                                </td>
+                                                            </tr>
+                                                        {% endif %}
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if is_granted(role_admin) %}
+                                {# configure module #}
+                                <div class="tab-pane fade" id="v-pills-addons" role="tabpanel"
+                                     aria-labelledby="v-pills-addons-tab">
+                                    <form action="{{ path('setting_update') }}"
+                                          method="post">
+                                        <input type="hidden" name="tab" id="tab" value="addons">
+                                        <table class="table table-bordered">
+                                            <tr>
+                                                <td class="font-weight-bold">{{ 'setting.index.addons.identifier'|trans }}</td>
+                                                <td class="font-weight-bold">{{ 'setting.index.addons.name'|trans }}</td>
+                                                <td class="font-weight-bold">{{ 'setting.index.addons.version'|trans }}</td>
+                                                <td class="font-weight-bold">{{ 'setting.index.addons.state'|trans }}</td>
+                                            </tr>
+                                            {% for addon in addons  %}
+                                                <tr>
+                                                    <td>
+                                                        {{ addon.identifier }}
+                                                    </td>
+                                                    <td>
+                                                        {{ addon.name|trans }}
+                                                    </td>
+                                                    <td>
+                                                        {{ addon.version }}
+                                                    </td>
+                                                    <td>
+                                                        {% if addon.enabled  %}
+                                                            <a href="{{ path('addons_update_status',{id: addon.id}) }}" class="badge badge-success">
+                                                                <i class="ti-check"></i> {{ 'setting.index.addons.tr_active'|trans }}
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="{{ path('addons_update_status',{id: addon.id}) }}" class="badge badge-danger">
+                                                                <i class="ti-close"></i> {{ 'setting.index.addons.tr_inactive'|trans }}
+                                                            </a>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            {% endfor %}
+                                        </table>
+                                    </form>
+                                </div>
+                            {% endif %}
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- add format Modal -->
+<div class="modal fade addModal" id="addModal" tabindex="-1" role="dialog"
+     aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'setting.index.modal.addFormat.title'|trans }}
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form action="{{ path('setting_format_add') }}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="name">
+                            {{ 'setting.index.modal.addFormat.form.name'|trans }}
+                        </label>
+                        <input type="text" class="form-control"
+                               name="name" id="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="width">
+                            {{ 'setting.index.modal.addFormat.form.width'|trans }}
+                        </label>
+                        <input type="number" class="form-control"
+                               name="width" id="width" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="height">
+                            {{ 'setting.index.modal.addFormat.form.height'|trans}}
+                        </label>
+                        <input type="number" class="form-control"
+                               name="height" id="height" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'stock.detail.modal.add.footer.cancel'|trans }}
+                    </button>
+                    <button type="submit" id="addFormat" class="btn btn-success">
+                        <i class="fa fa-check-circle"></i>
+                        {{ 'stock.detail.modal.add.footer.validate'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- add theme Modal -->
+<div class="modal fade addThemeModal" id="addThemeModal" tabindex="-1" role="dialog"
+     aria-labelledby="addThemeModal" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'setting.index.modal.addTheme.title'|trans }}
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <form action="{{ path('setting_theme_add') }}" method="post">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="generalColorLight">
+                            {{ 'setting.index.modal.addTheme.form.generalColorLight'|trans }}
+                        </label>
+                        <input type="color" class="form-control"
+                               name="generalColorLight" id="generalColorLight" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="generalColorDark">
+                            {{ 'setting.index.modal.addTheme.form.generalColorDark'|trans }}
+                        </label>
+                        <input type="color" class="form-control"
+                               name="generalColorDark" id="generalColorDark" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="colorSideMenuLink">
+                            {{ 'setting.index.modal.addTheme.form.colorSideMenuLink'|trans}}
+                        </label>
+                        <input type="color" class="form-control"
+                               name="colorSideMenuLink" id="colorSideMenuLink" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="backcolorSideMenu">
+                            {{ 'setting.index.modal.addTheme.form.backcolorSideMenu'|trans}}
+                        </label>
+                        <input type="color" class="form-control"
+                               name="backcolorSideMenu" id="backcolorSideMenu" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                    <button type="submit" id="addTheme" class="btn btn-success">
+                        <i class="fa fa-check-circle"></i>
+                        {{ 'validate'|trans }}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

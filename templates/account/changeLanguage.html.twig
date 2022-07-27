@@ -1,0 +1,143 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'account.changeLanguage.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mt-0 header-title">
+                        {{ 'account.changeLanguage.block_title'|trans }} ({{ languages|length }})
+                        <span class="triangle-border-left pull-left"></span>
+                        <span class="triangle-border-right pull-right"></span>
+                        <a href="#addModal"
+                           data-toggle="modal"
+                           class="btn btn-outline-uyblue pull-right mr-2">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </h5>
+                    <div class="table-responsive">
+                        <table class="table table-bordered" style="width: 100%;">
+                            <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>{{ 'account.changeLanguage.tr_name'|trans }}</th>
+                                <th>{{ 'account.changeLanguage.tr_abbreviation'|trans }}</th>
+                                <th class="not-export not-sort">{{ 'account.changeLanguage.tr_actions'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for language in languages %}
+                                <tr>
+                                    <td>
+                                        <img style="width: 25px;height: 25px;border: #0a0c0d solid 1px"
+                                             src="{{ asset('dist/images/lang/')~language.code~'.png' }}" alt="">
+                                    </td>
+                                    <td class="text-capitalize">
+                                        {{ language.code|trans({},'language') }}
+                                    </td>
+                                    <td>
+                                        {{ language.code|upper }}
+                                    </td>
+                                    <td>
+                                        {% if user.language == language.code %}
+                                            <span class="text-success h5">
+                                                <i class="fa fa-check-circle"></i>
+                                            </span>
+                                        {% else %}
+                                            <form action="" method="post">
+                                                <input type="hidden" name="language" value="{{ language.code }}">
+                                                <button class="btn btn-uyblue">{{ 'account.changeLanguage.btn_activate'|trans }}</button>
+                                                {% if language.deletable %}
+                                                    <a href="#deleteModal{{language.id}}" data-toggle="modal" class="btn btn-danger">
+                                                        <i class="fa fa-remove"></i>
+                                                    </a>
+
+                                                    <!-- Delete Modal -->
+                                                    <div class="modal fade" id="deleteModal{{language.id}}" tabindex="-1" role="dialog"
+                                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                                        <div class="modal-dialog" role="document">
+                                                            <div class="modal-content">
+                                                                <div class="modal-header">
+                                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'account.deleteLanguage.modal.title'|trans }}</h5>
+                                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                                        <span aria-hidden="true">×</span>
+                                                                    </button>
+                                                                </div>
+                                                                <div class="modal-body">
+                                                                    {{ 'account.deleteLanguage.modal.body'|trans }}
+                                                                    <span class="text-info">{{ language.code|trans({},'language',app.session.get('_locale')) }}</span>?
+                                                                </div>
+                                                                <div class="modal-footer">
+                                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                                        {{ 'account.deleteLanguage.modal.footer.cancel'|trans }}
+                                                                    </button>
+                                                                    <a class="btn btn-danger" href="{{path('account_delete_language',{'id':language.id})}}">
+                                                                        <i class="fa fa-trash"></i> {{ 'account.deleteLanguage.modal.footer.delete'|trans }}
+                                                                    </a>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                {% endif %}
+                                            </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- add language Modal -->
+    <div class="modal fade addModal" id="addModal" tabindex="-1" role="dialog"
+         aria-labelledby="setStatusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'account.importLanguage.title'|trans }}
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('account_import_language') }}" method="post" enctype="multipart/form-data">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="code">
+                                {{ 'account.importLanguage.form.country'|trans }}
+                            </label>
+                            <select class="form-control" style="width: 100% !important;"
+                                    name="code" id="code" required>
+                                {% for code in countries %}
+                                    <option value="{{ code }}">{{ code|trans({},'language') }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="file">
+                                {{ 'account.importLanguage.form.file'|trans}}
+                            </label>
+                            <input type="file" name="file" id="file"
+                                   accept=".zip,.rar"
+                                   class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'account.importLanguage.footer.cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'account.importLanguage.footer.validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

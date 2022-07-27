@@ -1,0 +1,190 @@
+{% set setting = app.session.get('setting') %}
+{% if items|length > 0 %}
+    <script type="text/javascript">
+        getDataTable($('#dataTable2'),5);
+
+        const supplier = $('#supplier');
+        supplier.select2({
+            placeholder: "{{ 'stock.add.select_supplier'|trans({},'messages',app.session.get('_locale'))}}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        supplier.val([]).trigger('change');
+
+        $('.tax').on('change',function () {
+            const tax = $(this).is(':checked');
+            let taxId = $(this).attr('data-tax');
+
+            if (tax){
+                $('#tax-'+taxId).show();
+            }else{
+                $('#tax-'+taxId).hide();
+            }
+
+        });
+
+        const datepicker = $('.datepicker');
+        datepicker.on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+        datepicker.datepicker({
+            format: '{{ app.session.get('setting').dateMediumPicker }}',
+            autoclose: true,
+            endDate: date,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        datepicker.val(date);
+    </script>
+    <div class="form-group">
+        <input type="text" class="datepicker form-control mr-2 mb-1"
+               name="start" value="{{ date()|mediumDate }}">
+    </div>
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped" style="width: 100%;" id="dataTable2">
+        <thead>
+        <tr>
+            <th style="width: 30% !important;">
+                {{ 'stock.add.tr_name'|trans({},'messages',app.session.get('_locale')) }}
+            </th>
+            <th class="not-sort" style="width: 20% !important;">
+                {{ 'stock.add.tr_qty'|trans({},'messages',app.session.get('_locale')) }}
+            </th>
+            {% if setting.withPurchasePrice  %}
+            <th class="not-sort" style="width: 20% !important;">
+                {{ 'stock.add.tr_priceC'|trans({},'messages',app.session.get('_locale')) }}
+            </th>
+            {% endif %}
+            {% if setting.withPurchasePrice  %}
+                <th class="not-sort" style="width: 20% !important;">
+                    {{ 'stock.index.modal.detail.body.tr_subtotal'|trans({},'messages',app.session.get('_locale')) }}
+                </th>
+            {% endif %}
+            <th class="not-sort" style="width: 10% !important;"></th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for item in items  %}
+            <tr>
+                <td>{{ item.product.name }}</td>
+                <td>
+                    <span class="input-qty"
+                          data-value="{{ item.qty }}"
+                          data-amount="{{ item.price }}">
+                        {{ item.qty|formatedInt }}
+                    </span>
+                </td>
+                {% if setting.withPurchasePrice  %}
+                <td>
+                    <span class="input-price">
+                        {{ item.price|formated }}
+                    </span>
+                </td>
+                {% endif %}
+                {% if setting.withPurchasePrice  %}
+                <td>
+                    {{ (item.price * item.qty)|formated}}
+                </td>
+                {% endif %}
+                <td>
+                    <button name="remove" data-product="{{ item.product.id  }}"
+                            class="removeToOrder btn-danger mb-1 mr-1" type="button">
+                        <i class="fa fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+        {% if setting.withPurchasePrice  %}
+        <tfooter>
+            {% for tax in taxs %}
+                <tr>
+                    <td colspan="3">
+                        <div class="form-inline float-right">
+                            <input type="checkbox" name="tax-{{ tax.id }}"
+                                   value="{{ tax.rate }}"
+                                   data-tax="{{ tax.id }}"
+                                   class="form-control mr-2 tax"
+                                   {% if tax in taxOrder %}checked{% endif %}>
+                            <label for=tax>
+                                {{ tax.name }} ({{ tax.rate }}%)
+                            </label>
+                        </div>
+                    </td>
+                    <td colspan="2">
+                    <span id="tax-{{ tax.id }}">
+                       {{ (total * tax.rate / 100)|round }}
+                    </span>
+                    </td>
+                </tr>
+            {% endfor %}
+            <tr class="font-weight-bold">
+                <td></td>
+                <td></td>
+                <td>{{ 'stock.add.tr_totalAMount'|trans({},'messages',app.session.get('_locale')) }}:</td>
+                <td colspan="2">
+                    <span id="cart-total">{{ totalWithTax|formated }}</span>
+                    {{ app.session.get('setting').currencyName }}
+                </td>
+            </tr>
+            {% if setting.withSettlement %}
+            <tr class="font-weight-bold">
+                <td colspan="2"></td>
+                <td>
+                    {{ 'stock.add.tr_totalAMountSended'|trans({},'messages',app.session.get('_locale')) }}:
+                </td>
+                <td colspan="2">
+                    <input type="number" class="form-control" id="amountSended"
+                           value="" placeholder="0">
+                </td>
+
+            </tr>
+            {% endif %}
+        </tfooter>
+        {% endif %}
+    </table>
+    </div>
+    <table class="table mt-3">
+        <tr>
+            <td colspan="4">
+                <div>
+                    <button class="btn btn-uyblue collapsed pull-right mb-5"
+                            type="button" data-toggle="collapse" data-target="#validOrder"
+                            aria-expanded="false" aria-controls="collapseExample">
+                        <i class="fa fa-arrow-down"></i>
+                    </button>
+                </div>
+                <div class="collapse text-center mt-5" id="validOrder" style="">
+                    <div class="card card-body">
+                        <form action="{{ path('stock_add') }}">
+                            <div class="form-group">
+                                <select class="form-control" style="width: 100% !important;"
+                                        name="supplier" id="supplier">
+                                    <option value="0" selected>{{ 'stock.add.select_noSupplier'|trans({},'messages',app.session.get('_locale')) }}</option>
+                                    {% for supplier in suppliers  %}
+                                        <option value="{{ supplier.id }}">{{ supplier.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="button" class="btn btn-danger mb-1" id="removeAllToOrder">
+                                <i class="fa fa-trash"></i> {{ 'stock.add.btn_cleanBag'|trans({},'messages',app.session.get('_locale')) }}
+                            </button>
+                            <button type="button" class="btn btn-success" id="btnValidate">
+                                <i class="fa fa-check-circle"></i> {{ 'stock.add.btn_valid'|trans({},'messages',app.session.get('_locale')) }}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+{% else %}
+    <p class="text-center alert alert-info font-weight-bold">
+        {{ 'stock.add.bag_nodata'|trans({},'messages',app.session.get('_locale'))  }}
+    </p>
+{% endif %}

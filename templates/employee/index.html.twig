@@ -1,0 +1,141 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'employee.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'employee.index.block_title'|trans }} ({{ employees|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'EMPLOYEE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('employee_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-export not-sort">ID</th>
+                        <th class="not-sort">{{ 'employee.index.tr_employeename'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_email'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_phone'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_disctrict'|trans }}</th>
+                        {% if is_granted(permission_verify,'USER_UPDATE_CUSTOMER') %}
+                            <th class="not-sort">{{ 'user.index.tr_customer'|trans }}</th>
+                        {% endif %}
+                        <th class="not-export" data-sort="false">
+                            {{ 'employee.index.tr_actions'|trans }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td>{{employee.id}}</td>
+                            <td class="text-uppercase">
+                                {% if setting.withUserCategory %}
+                                    <a href="{{ path('user_detail',{id:employee.id}) }}">
+                                        {{employee.allName}}
+                                    </a>
+                                {% else %}
+                                    {{employee.allName}}
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if employee.email is not empty %}
+                                    {{employee.email}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if employee.phone is not empty %}
+                                    {{employee.phone}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if employee.district is not empty %}
+                                    {{employee.district}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            {% if is_granted(permission_verify,'USER_UPDATE_CUSTOMER') %}
+                                <td>
+                                    <a href="{{ path('employee_update_customer',{'id': employee.id}) }}" class="badge badge-{% if employee.canCustomer %}primary{% else %}warning{% endif %} p-2">
+                                        {% if employee.canCustomer %}
+                                            {{ 'user.index.tr_yes'|trans }}
+                                        {% else %}
+                                            {{ 'user.index.tr_no'|trans }}
+                                        {% endif %}
+                                    </a>
+                                </td>
+                            {% endif %}
+                            <td class="not-export">
+                                    {% if is_granted(permission_verify,'EMPLOYEE_EDIT') %}
+                                        <a href="{{ path('employee_edit',{'id': employee.id}) }}" class="p-2 badge badge-uyblue">
+                                            <i class="fa fa-pencil"></i>
+                                        </a>
+                                    {% endif %}
+                                {% if employee.role is empty%}
+                                    {% if is_granted(permission_verify,'EMPLOYEE_DELETE') %}
+                                        <a href="#deleteModal{{employee.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                            <i class="fa fa-remove"></i>
+                                        </a>
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{employee.id}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">{{ 'employee.index.modal.title'|trans }}</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{ 'employee.index.modal.body'|trans }}
+                                                        <span class="text-info">{{ employee.name }}</span>?
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                        <a class="btn btn-danger" href="{{path('employee_delete',{'id':employee.id})}}">
+                                                            <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

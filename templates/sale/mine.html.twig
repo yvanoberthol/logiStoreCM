@@ -1,0 +1,118 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sale.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        getDataTable($('#dataTable'),true);
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'sale.index.block_title'|trans }} ({{ sales|length }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'SALE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-uyblue" href="{{ path('sale_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th class="not-sort">{{ 'sale.index.tr_code'|trans }}</th>
+                            <th class="not-sort">{{ 'sale.index.tr_date'|trans }}</th>
+                            <th>{{ 'sale.index.tr_amount'|trans }}</th>
+                            <th>{{ 'sale.index.tr_type'|trans }}</th>
+                            <th class="not-export not-sort">{{ 'sale.index.tr_actions'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td>
+                                <a href="{{path('sale_detail',{'id': sale.id})}}">
+                                    <span class="h6 font-weight-bold">
+                                        {{ sale.code }}
+                                    </span>
+                                </a>
+                            </td>
+                            <td>
+                                {{ sale.addDate|longDate }}
+                            </td>
+                            <td>{{ sale.amount|formated}}</td>
+                            <td>{{ sale.paymentMethod.name }}</td>
+                            <td>
+                                {% if is_granted(permission_verify,'SALE_PRINT') %}
+                                <a target="_blank" class="p-2 badge badge-success" href="{{ path('sale_print',{'id': sale.id}) }}">
+                                    <i class="fa fa-print"></i>
+                                </a>
+                                {% endif %}
+                                {% if is_granted('SALE_DELETE',sale) and is_granted(permission_verify,'SALE_DELETE') %}
+                                    <a href="#deleteModal{{sale.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{sale.id}}" tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.index.modal.delete.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'sale.index.modal.delete.body1'|trans }} <span class="text-uyblue">{{ sale.amount|formated }}</span> XAF
+                                                    {{ 'sale.index.modal.delete.body2'|trans }} {{ sale.addDate|longDate }}
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'sale.index.modal.delete.footer.cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-danger" href="{{path('sale_delete',{'id':sale.id})}}">
+                                                        <i class="fa fa-trash"></i> {{ 'sale.index.modal.delete.footer.delete'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                            <td class="h6 font-weight-bold">
+                                {{ totalAmount|customCurrency }}
+                                {% if totalAmountDebt > 0 %}
+                                    ({{ totalAmountDebt|formated }})
+                                {% endif %}
+                            </td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,1168 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.detail.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    <span class="mx-2">
+                       <a class="btn btn-light" href="{{ path('product_index') }}">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                    {{ 'product.detail.block_title'|trans }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right ml-3"></span>
+                    {% if is_granted(permission_verify,'PRODUCT_EDIT') %}
+                        <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('product_edit',{id:product.id}) }}">
+                            <i class="fa fa-pencil"></i>
+                        </a>
+                    </span>
+                    {% endif %}
+                </h5>
+                <div class="mb-2 table-responsive">
+                    <table class="table table-bordered" style="width: 100%;">
+                        <tr>
+                            <td style="width: 40% !important;"></td>
+                            <td>
+                                <form action="" class="form-inline">
+                                    <select class="form-control mr-2" name="productSearch" id="productSearch"
+                                            style="width:60% !important;">
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}">
+                                                {{ product.nameWithCategory }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-info ml-2">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'product.detail.tr_name'|trans }}
+
+                            </td>
+                            <td class="text-capitalize font-weight-bold text-info">{{ product.name }}
+                                {% if product.category is not null %}({{ product.category.name }}){% endif %}
+                                {% if product.new %}
+                                <span class="badge badge-warning">
+                                      <i class="fa fa-star"></i> {{ 'search.product.tr_new'|trans }}
+                                   </span>
+                                {% endif %}
+                                {% if product.enabled == false %}
+                                   <span class="text-danger">({{ 'search.product.tr_disabled'|trans }})</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if setting.withPackaging and (product.packaging is not null) %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'product.detail.tr_packaging'|trans }}
+                            </td>
+                            <td class="text-capitalize font-weight-bold">
+                                {{ product.packagingName }}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6"> {{ 'product.detail.tr_stockDispo'|trans }}
+                                ({{ productStockDispo|length|formatedInt }})
+                            </td>
+                            <td>
+                                {% if productStockDispo|length > 0 %}
+                                    <table class="table table-striped">
+                                        <tr class="font-weight-bold">
+                                            <td style="width: 35%;">{{ 'product.detail.tr_stock'|trans }}</td>
+                                            <td style="width: 15%;">{{ 'product.detail.tr_batchId'|trans }}</td>
+                                            {% if setting.withExpiration %}
+                                            <td style="width: 15%;">{{ 'product.detail.tr_expirationDate'|trans }}</td>
+                                            {% endif %}
+                                            {% if setting.withPurchasePrice
+                                                and is_granted(permission_verify,'SALE_PROFIT') %}
+                                            <td style="width: 15%;">{{ 'product.detail.tr_unitPrice'|trans }}</td>
+                                            {% endif %}
+                                            <td style="width: 10%;">{{ 'product.detail.tr_qtyOrdered'|trans }}</td>
+                                            <td style="width: 10%;">{{ 'product.detail.tr_qtyRemaining'|trans }}</td>
+                                        </tr>
+                                        {% for productStock in productStockDispo %}
+                                            {% if productStock.withdraw == false %}
+                                                <tr class="{% if productStock.outOfDate and setting.withExpiration %}alert alert-danger{% endif %}"
+                                                    {% if productStock.outOfDate and setting.withExpiration %}
+                                                    data-original-title="{{ 'product.detail.tr_outOfDate'|trans }}: {{ productStock.interval|abs }} {{ 'product.detail.tr_days'|trans }}"
+                                                    data-toggle="tooltip-danger" data-placement="left"
+                                                    {% endif %}
+                                                    {% if productStock.outOfDate == false and setting.withExpiration %}
+                                                        {% if productStock.expirationDate is not null %}
+                                                        data-original-title="{{ 'product.detail.tr_daynear'|trans }}: {{ productStock.interval }}"
+                                                        data-toggle="tooltip-smoke" data-placement="left"
+                                                        {% endif %}
+                                                    {% endif %}>
+                                                    <td>
+                                                       <span class="text-info">
+                                                       {% if productStock.stock.supplier is not null %}
+                                                           {{ productStock.stock.supplier.name }}
+                                                       {% else %}
+                                                           <span class="text-secondary">
+                                                            {{ 'product.detail.tr_supplier'|trans }}
+                                                          </span>
+                                                       {% endif %} |
+
+                                                           {{ productStock.stock.deliveryDate|mediumDate }}
+                                                       </span>
+                                                    </td>
+                                                    <td>
+                                                        {{ productStock.batchId }}
+                                                    </td>
+                                                    {% if setting.withExpiration %}
+                                                    <td>
+                                                        {% if productStock.expirationDate is not null %}
+                                                            {{ productStock.expirationDate|mediumDate }}
+                                                        {% else %}
+                                                            {{ 'stock.index.modal.detail.body.no_expirationDate'|trans }}
+                                                        {% endif %}
+
+                                                    </td>
+                                                    {% endif %}
+                                                    {% if setting.withPurchasePrice
+                                                        and is_granted(permission_verify,'SALE_PROFIT')  %}
+                                                    <td>
+                                                        {{ productStock.unitPrice|formated }}
+                                                    </td>
+                                                    {% endif %}
+                                                    <td>
+                                                        {{ productStock.qty|formatedInt }}
+                                                    </td>
+                                                    <td>
+                                                        {{ productStock.qtyRemaining|formatedInt }}
+                                                    </td>
+                                                    {% if setting.withExpiration %}
+                                                    <td>
+                                                        {% if productStock.outOfDate %}
+                                                            <span class="text-danger">
+                                                            <i class="fa fa-arrow-down"></i>
+                                                        </span>
+                                                        {% endif %}
+                                                    </td>
+                                                    {% endif %}
+                                                </tr>
+                                            {% endif %}
+                                        {% endfor %}
+                                        <tr class="font-weight-bold">
+                                            <td></td>
+                                            <td></td>
+                                            {% if setting.withExpiration %}
+                                            <td></td>
+                                            {% endif %}
+                                            {% if setting.withPurchasePrice %}
+                                            <td></td>
+                                            {% endif %}
+                                            <td></td>
+                                            <td class="{% if product.stockAlert >= product.stock %}text-danger{% endif %}">
+                                                {{ product.stock|formatedInt }}
+                                            </td>
+                                        </tr>
+                                    </table>
+                                {% else %}
+                                    <span class="text-secondary">
+                                        {{ 'product.detail.tr_noStockDispo'|trans }}
+                                    </span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% if setting.withSubstitute  %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'product.detail.tr_substitute'|trans }} ({{ product.substitutes|length|formatedInt }})
+                                {% if is_granted(permission_verify,'PRODUCT_ADD_SUBSTITUTE') %}
+                                <span  data-toggle="tooltip-info" data-original-title="{{ 'product.detail.tr_info_addSubstitute'|trans }}"
+                                      data-placement="top">
+                                    <a href="#addSubstituteModal{{product.id}}" data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="row">
+                                    {% for substitute in product.substitutes %}
+                                        <div class="col-md-4 mt-1">
+                                                <table class="table">
+                                                    <tr>
+                                                        <td>
+                                                            <a href="{{ path('product_detail',{id:substitute.id}) }}"
+                                                               class="text-capitalize">
+                                                                {{ substitute.name }}
+                                                            </a>
+                                                            {% if is_granted(permission_verify,'PRODUCT_REMOVE_SUBSTITUTE') %}
+                                                            <span class="pull-right">
+                                                                <a href="{{ path('product_remove_substitute',{product:product.id, substitute:substitute.id}) }}"
+                                                                   class="badge badge-danger">
+                                                                    <i class="fa fa-minus"></i>
+                                                                </a>
+                                                            </span>
+                                                            {% endif %}
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-12">
+                                           <span class="text-secondary">
+                                               {{ 'product.detail.tr_noSubstitute'|trans }}
+                                           </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if setting.withBatchPrice  %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'product.detail.tr_product_price'|trans }}
+                                {% if is_granted(permission_verify,'PRODUCT_ADD_PRICE') %}
+                                    <span  data-toggle="tooltip-info" data-original-title="{{ 'product.detail.tr_info_addPrice'|trans }}"
+                                           data-placement="top">
+                                    <a href="#addPriceModal{{product.id}}" data-toggle="modal"
+                                       class="badge badge-info">
+                                        <i class="fa fa-plus"></i>
+                                    </a>
+                                </span>
+                                {% endif %}
+                                <br>
+                                ({{ product.sellPrice|customCurrency }})
+                            </td>
+                            <td>
+                                <div class="row">
+                                    {% for price in product.productPrices %}
+                                        <div class="col-md-4 mt-1">
+                                            <table class="table">
+                                                <tr>
+                                                    <td> {{ 'product.detail.tr_pricePrefix'|trans }} {{ price.qty|formatedInt }} = {{ price.unitPrice|customCurrency }}
+                                                        {% if is_granted(permission_verify,'PRODUCT_REMOVE_PRICE') %}
+                                                            <span class="pull-right">
+                                                                <a href="{{ path('product_remove_price',{id:price.id}) }}"
+                                                                   class="badge badge-danger">
+                                                                    <i class="fa fa-minus"></i>
+                                                                </a>
+                                                            </span>
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    {% else %}
+                                        <div class="col-md-12">
+                                           <span class="text-secondary">
+                                               {{ 'product.detail.tr_noPrice'|trans }}
+                                           </span>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        {% if setting.withWholeSale  %}
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'product.detail.tr_customer_price'|trans }}
+                                {% if is_granted(permission_verify,'PRODUCT_ADD_CUSTOMER_PRICE') %}
+                                    <span  data-toggle="tooltip-info"
+                                           data-original-title="{{ 'product.detail.tr_info_addCustomerPrice'|trans }}"
+                                           data-placement="top">
+                                        <a href="#addCustomerPriceModal{{product.id}}" data-toggle="modal"
+                                           class="badge badge-info">
+                                            <i class="fa fa-plus"></i>
+                                        </a>
+                                    </span>
+                                {% endif %}
+                                <br>
+                                ({{ product.wholePrice|customCurrency }})
+                            </td>
+                            <td>
+                                <div class="row">
+                                    {% if customerPrices|length > 0 %}
+                                        <table class="table">
+                                            <tr>
+                                                <td>
+                                                    {{ 'product.detail.tr_customers'|trans }}
+                                                </td>
+                                                <td>
+                                                    {{ 'product.detail.tr_customer_prices'|trans }}
+                                                </td>
+                                                <td></td>
+                                            </tr>
+                                            {% for price in customerPrices %}
+                                            <tr>
+                                                <td>
+                                                    {% for customerPrice in product.customerProductPrices %}
+                                                        {% if  customerPrice.price == price%}
+                                                            <span>
+                                                            {% if is_granted(permission_verify,'PRODUCT_REMOVE_CUSTOMER_PRICE') %}
+                                                                <span class="text-capitalize">
+                                                                    {{ customerPrice.customer.name }}
+                                                                </span>
+                                                                <span>
+                                                                    <a href="{{ path('product_remove_customer_price',{id:customerPrice.id}) }}"
+                                                                       class="badge badge-danger">
+                                                                        <i class="fa fa-minus"></i>
+                                                                    </a>
+                                                                </span>
+                                                                {% if loop.last == false %}
+                                                                    ,
+                                                                {% endif %}
+                                                            {% endif %}
+                                                            </span>
+                                                        {% endif %}
+                                                    {% endfor %}
+                                                </td>
+                                                <td>
+                                                    {{ price|formated }}
+                                                </td>
+                                                <td>
+                                                    {% if is_granted(permission_verify,'PRODUCT_REMOVE_CUSTOMER_PRICE_ALL') %}
+                                                    <a href="{{ path('product_remove_customer_price_all',{price:price}) }}"
+                                                       class="badge badge-danger">
+                                                        <i class="fa fa-close"></i>
+                                                    </a>
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                            {% endfor %}
+
+                                        </table>
+                                    {% else %}
+                                        <div class="col-md-12">
+                                           <span class="text-secondary">
+                                               {{ 'product.detail.tr_noCustomerPrice'|trans }}
+                                           </span>
+                                        </div>
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'product.detail.tr_nbTotalSales'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                    <i class="h5">
+                                    <span class="badge badge-uyblue" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-uyblue" data-placement="top">
+                                            {{ saleYear.nbSales|formatedInt }}
+                                    </span>
+                                    </i>
+                                {% else %}
+                                    <span class="text-secondary">
+                                        {{ 'product.detail.tr_noData'|trans }}
+                                    </span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'product.detail.tr_totalQtySold'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                    <i class="h5">
+                                    <span class="badge badge-uyblue" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-uyblue" data-placement="top">
+                                            {{ saleYear.qtySold|formatedInt }}
+                                    </span>
+                                    </i>
+                                {% else %}
+                                    <span class="text-secondary">
+                                        {{ 'product.detail.tr_noData'|trans }}
+                                    </span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'product.detail.tr_rate_sale'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                    <i class="h5">
+                                    <span class="badge badge-uyblue" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-uyblue" data-placement="top">
+                                            {{ saleYear.rate|doubleformated }}
+                                    </span>
+                                    </i>
+                                {% else %}
+                                    <span class="text-secondary">
+                                        {{ 'product.detail.tr_noData'|trans }}
+                                    </span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'product.detail.tr_profit'|trans }}</td>
+                            <td>
+                                {% for saleYear in salesYear %}
+                                    <i class="h5">
+                                    <span class="badge badge-uyblue" data-original-title="{{ saleYear.year }}"
+                                          data-toggle="tooltip-uyblue" data-placement="top">
+                                            {{ saleYear.profits|formated }}
+                                    </span>
+                                    </i>
+                                {% else %}
+                                    <span class="text-secondary">
+                                        {{ 'product.detail.tr_noData'|trans }}
+                                    </span>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                    </table>
+                </div>
+                {% if saleStats is not empty %}
+                    <div class="row">
+                        <div class="col-md-12 my-2">
+                            <ul class="nav nav-pills nav-justified" role="tablist">
+                                <li class="nav-item waves-effect waves-light">
+                                    <a class="nav-link active show" data-toggle="tab"
+                                       href="#statNumberSale" role="tab" aria-selected="true">
+                                        {{ 'product.detail.statNumberSale'|trans }}
+                                    </a>
+                                </li>
+                                <li class="nav-item waves-effect waves-light">
+                                    <a class="nav-link" data-toggle="tab"
+                                       href="#statQtySold" role="tab" aria-selected="false">
+                                        {{ 'product.detail.statQtySold'|trans }}
+                                    </a>
+                                </li>
+                                {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                    <li class="nav-item waves-effect waves-light">
+                                        <a class="nav-link" data-toggle="tab"
+                                           href="#statProfit" role="tab" aria-selected="false">
+                                            {{ 'product.detail.statProfit'|trans }}
+                                        </a>
+                                    </li>
+                                {% endif %}
+                                <li class="nav-item waves-effect waves-light">
+                                    <a class="nav-link" data-toggle="tab"
+                                       href="#statRate" role="tab" aria-selected="false">
+                                        {{ 'product.detail.statRate'|trans }}
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="tab-content">
+                                <div class="tab-pane p-3 active show" id="statNumberSale" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_month'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <select name="month_area" id="month_area"
+                                                                            class="form-control mr-1 mb-1">
+                                                                        {% for key,month in months %}
+                                                                            <option value="{{ key - 1 }}"
+                                                                                    {% if key == monthNow %}selected{% endif %}>
+                                                                                {{ month|trans({},'month') }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <input name="year_area" id="year_area"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue" id="btnForAreaChart">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-2">
+                                                            <canvas id="myAreaChartSale" width="100%" height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_year'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <input name="year_bar" id="year_bar"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue" id="btnForBarChart">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <canvas id="myBarChartSale" width="100%" height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="tab-pane p-3" id="statQtySold" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_month'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <select name="month_area_qty" id="month_area_qty"
+                                                                            class="form-control mr-1 mb-1">
+                                                                        {% for key,month in months %}
+                                                                            <option value="{{ key - 1 }}"
+                                                                                    {% if key == monthNow %}selected{% endif %}>
+                                                                                {{ month|trans({},'month') }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <input name="year_area_qty" id="year_area_qty"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-2"
+                                                                            id="btnForAreaChartQty">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-2">
+                                                            <canvas id="myAreaChartSaleQty" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_year'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <input name="year_bar_qty" id="year_bar_qty"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-5"
+                                                                            id="btnForBarChartQty">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <canvas id="myBarChartSaleQty" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                <div class="tab-pane p-3" id="statProfit" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_month'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <select name="month_area_profit" id="month_area_profit"
+                                                                            class="form-control mr-1 mb-1">
+                                                                        {% for key,month in months %}
+                                                                            <option value="{{ key - 1 }}"
+                                                                                    {% if key == monthNow %}selected{% endif %}>
+                                                                                {{ month|trans({},'month') }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <input name="year_area_profit" id="year_area_profit"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-2"
+                                                                            id="btnForAreaChartProfit">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-2">
+                                                            <canvas id="myAreaChartSaleProfit" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_year'|trans }}
+
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <input name="year_bar_profit" id="year_bar_profit"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-5"
+                                                                            id="btnForBarChartProfit">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <canvas id="myBarChartSaleProfit" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                <div class="tab-pane p-3" id="statRate" role="tabpanel">
+                                    <div class="row mb-3">
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_month'|trans }}
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <select name="month_area_rate" id="month_area_rate"
+                                                                            class="form-control mr-1 mb-1">
+                                                                        {% for key,month in months %}
+                                                                            <option value="{{ key - 1 }}"
+                                                                                    {% if key == monthNow %}selected{% endif %}>
+                                                                                {{ month|trans({},'month') }}
+                                                                            </option>
+                                                                        {% endfor %}
+                                                                    </select>
+                                                                    <input name="year_area_rate" id="year_area_rate"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-2"
+                                                                            id="btnForAreaChartRate">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 mb-2">
+                                                            <canvas id="myAreaChartSaleRate" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12 mb-2">
+                                            <div class="card">
+                                                <div class="card-header">
+                                                    <h4 class="mt-0 header-title">
+                                                        {{ 'product.detail.card_title_year'|trans }}
+
+                                                    </h4>
+                                                </div>
+                                                <div class="card-body">
+                                                    <div class="row mb-3">
+                                                        <div class="col-md-12">
+                                                            <div class="float-right">
+                                                                <form class="form-inline">
+                                                                    <input name="year_bar_rate" id="year_bar_rate"
+                                                                           class="form-control mr-1 mb-1"
+                                                                           value="{{ year }}">
+                                                                    <button class="btn btn-outline-uyblue mr-5"
+                                                                            id="btnForBarChartRate">
+                                                                        {{ 'product.detail.card_btn_search'|trans }}
+                                                                    </button>
+                                                                </form>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12">
+                                                            <canvas id="myBarChartSaleRate" width="100%"
+                                                                    height="50"></canvas>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="row">
+                        <h4 class="col-md-12 alert alert-warning text-center">
+                           <i class="fa fa-warning"></i> {{ 'product.detail.no_stats'|trans }}
+                        </h4>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% if setting.withSubstitute  %}
+            <div class="modal fade addModal"
+                 id="addSubstituteModal{{product.id}}" tabindex="-1" role="dialog"
+                 aria-labelledby="addSubstituteModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                {{ 'product.detail.addSubstituteModal.title'|trans }}
+                                <span class="text-info text-uppercase">{{product.name}}</span>
+                            </h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ path('product_add_substitute') }}" method="post">
+                                <input type="hidden" value="{{ product.id }}" name="product">
+                                <div class="form-group">
+                                    <label for="product">{{ 'product.detail.addSubstituteModal.form.product.description'|trans }}</label>
+                                    <select name="substitute" id="substitute" class="form-control"
+                                            style="width: 100% !important;" required>
+                                        {% for product in products %}
+                                            <option value="{{ product.id }}">{{ product.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-uyblue">
+                                        <i class="fa fa-save"></i> {{ 'product.detail.addSubstituteModal.form.btn_add'|trans }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'product.detail.addSubstituteModal.footer.cancel'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if setting.withBatchPrice  %}
+            <div class="modal fade addModal1"
+                 id="addPriceModal{{product.id}}" tabindex="-1" role="dialog"
+                 aria-labelledby="addPriceModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                {{ 'product.detail.addPriceModal.title'|trans }}
+                                <span class="text-info text-uppercase">{{product.name}}</span>
+                            </h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ path('product_add_price') }}" method="post">
+                                <input type="hidden" value="{{ product.id }}" name="product">
+                                <div class="form-group">
+                                    <label for="qty">{{ 'product.detail.addPriceModal.form.qty'|trans }}</label>
+                                    <input type="number" name="qty" id="qty" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <label for="unitPrice">{{ 'product.detail.addPriceModal.form.unitPrice'|trans }}</label>
+                                    <input type="number" name="unitPrice" id="unitPrice" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-uyblue">
+                                        <i class="fa fa-save"></i> {{ 'product.detail.addPriceModal.form.btn_add'|trans }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'product.detail.addSubstituteModal.footer.cancel'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+        {% if setting.withWholeSale  %}
+            <div class="modal fade addCustomerPriceModal"
+                 id="addCustomerPriceModal{{product.id}}" tabindex="-1" role="dialog"
+                 aria-labelledby="addCustomerPriceModalLabel" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">
+                                {{ 'product.detail.addCustomerPrice.title'|trans }}
+                                <span class="text-info text-uppercase">{{product.name}}</span>
+                            </h5>
+                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">×</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form action="{{ path('product_add_customer_price') }}" method="post">
+                                <input type="hidden" value="{{ product.id }}" name="product">
+                                <div class="form-group">
+                                    <label for="customer">{{ 'product.detail.addCustomerPrice.form.customer.libelle'|trans }}</label>
+                                    <select name="customer[]" id="customer" class="form-control"
+                                            style="width: 100% !important;" multiple required>
+                                        {% for customer in customers %}
+                                            <option value="{{ customer.id }}">{{ customer.name}}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="price">{{ 'product.detail.addCustomerPrice.form.price'|trans }}</label>
+                                    <input type="number" name="price" id="price" class="form-control" required />
+                                </div>
+                                <div class="form-group">
+                                    <button class="btn btn-uyblue">
+                                        <i class="fa fa-save"></i> {{ 'product.detail.addPriceModal.form.btn_add'|trans }}
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+{% endblock %}
+{% block javascripts %}
+
+    <!-- Add Prescription Modal -->
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function () {
+            let product = $('#substitute');
+            product.select2({
+                placeholder: "{{ 'product.detail.select_product'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addModal'),
+                language: "{{ app.request.get('_locale') }}"
+            });
+            product.val([]).trigger('change');
+
+            let productSearch = $('#productSearch');
+            productSearch.select2({
+                placeholder: "{{ 'product.detail.select_product'|trans }}",
+                allowClear: true,
+                language: "{{ app.request.get('_locale') }}"
+            });
+
+            {% if product is defined %}
+            productSearch.val({{ product.id }}).trigger('change');
+            {% else %}
+            productSearch.val([]).trigger('change');
+            {% endif %}
+
+            let customer = $('#customer');
+            customer.select2({
+                placeholder: "{{ 'product.detail.select_customers'|trans }}",
+                allowClear: true,
+                dropdownParent: $('.addCustomerPriceModal'),
+                language: "{{ app.session.get('_locale') }}"
+            });
+            customer.val([]).trigger('change');
+
+        });
+
+
+    </script>
+
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% if saleStats is not empty %}
+        <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+        <script src="{{ asset('dist/js/downloadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+        <script src="{{ asset('dist/js/allMonth.js') }}"></script>
+        <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+        <script src="{{ asset('dist/js/statFunction.js') }}"></script>
+        <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+        <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+        <script>
+            let salesNumber = [];
+            let salesQty = [];
+            let salesProfit = [];
+            let salesRate = [];
+            {% for sale in saleStats %}
+            salesNumber.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}', amount: {{ sale['nbSales'] }}});
+            salesQty.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}', amount: {{ sale['qtySold'] }}});
+            salesProfit.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}', amount: {{ sale['profits'] }}});
+            salesRate.push({dateNotFormated: '{{ sale['date']|date('Y-m-d') }}',date: '{{ sale['date']|mediumDate }}', amount: {{ sale['rate']|doubleformated }}});
+            {% endfor %}
+
+            let elemAreaChart = "myAreaChartSale";
+            let elemAreaChartQty = "myAreaChartSaleQty";
+            let elemAreaChartProfit = "myAreaChartSaleProfit";
+            let elemAreaChartRate = "myAreaChartSaleRate";
+
+            let elemBarChart = "myBarChartSale";
+            let elemBarChartQty = "myBarChartSaleQty";
+            let elemBarChartProfit = "myBarChartSaleProfit";
+            let elemBarChartRate = "myBarChartSaleRate";
+
+            const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+            const locale = "{{ app.session.get('_locale') }}";
+
+            const loadArea = loadAreaChart(elemAreaChart, saleByMonth(salesNumber,
+                new Date().getUTCMonth(), new Date().getFullYear()),
+                "{{ 'product.detail.stat_title_number'|trans }}", thousandSeparator,areacolors);
+
+            const loadAreaQty = loadAreaChart(elemAreaChartQty,
+                saleByMonth(salesQty,
+                    new Date().getUTCMonth(), new Date().getFullYear()),
+                "{{ 'product.detail.stat_title_qty'|trans }}", thousandSeparator,areacolors);
+
+            const loadAreaProfit = loadAreaChart(elemAreaChartProfit,
+                saleByMonth(salesProfit,
+                    new Date().getUTCMonth(), new Date().getFullYear()),
+                "{{ 'product.detail.stat_title_profit'|trans }}", thousandSeparator,areacolors);
+
+            const loadAreaRate = loadAreaChart(elemAreaChartRate,
+                saleByMonth(salesRate,
+                    new Date().getUTCMonth(), new Date().getFullYear()),
+                "{{ 'product.detail.stat_title_rate'|trans }}", thousandSeparator,areacolors);
+
+            const loadBar = loadBarChart(elemBarChart,
+                saleByYear(salesNumber, new Date().getFullYear()), "{{ 'product.detail.stat_title_number'|trans }}",
+                thousandSeparator, locale,barcolors);
+
+            const loadBarQty = loadBarChart(elemBarChartQty,
+                saleByYear(salesQty, new Date().getFullYear()), "{{ 'product.detail.stat_title_qty'|trans }}",
+                thousandSeparator, locale,barcolors);
+
+            const loadBarProfit = loadBarChart(elemBarChartProfit,
+                saleByYear(salesProfit, new Date().getFullYear()), "{{ 'product.detail.stat_title_profit'|trans }}",
+                thousandSeparator, locale,barcolors);
+
+            const loadBarRate = loadBarChart(elemBarChartRate,
+                saleByYearRate(salesRate, new Date().getFullYear()), "{{ 'product.detail.stat_title_rate'|trans }}",
+                thousandSeparator, locale,barcolors);
+
+            function updateAreaChart(sales, loadArea) {
+                let color = "rgb(43,153,216)";
+
+                const data = sales.map(sale => {
+                    return sale.amount
+                });
+
+                loadArea.options.scales.y.max = 0;
+                if (data.length > 0) {
+                    color = data.map(x => 'rgb(43,153,216)');
+                    color[argMax(data)] = 'rgb(2,3,216)';
+                    color[argMin(data)] = 'rgb(216,22,31)';
+                    const valueMax = data[argMax(data)];
+                    loadArea.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                loadArea.data.labels = sales.map(sale => {
+                    return sale.date
+                });
+                loadArea.data.datasets[0].pointBackgroundColor = color;
+                loadArea.data.datasets[0].data = data;
+                loadArea.update();
+
+            }
+
+            function updateBarChart(data, loadBar) {
+                loadBar.options.scales.y.max = 0;
+                if (data.length > 0) {
+                    const valueMax = data[argMax(data)];
+                    loadBar.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                // loadBar.data.datasets[0].pointBackgroundColor = color;
+                loadBar.data.datasets[0].data = data;
+                loadBar.update();
+            }
+
+
+            // button for areachart
+            $('#btnForAreaChart').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area').val());
+                const year_area = parseInt($('#year_area').val());
+                const saleByMonthNumber = saleByMonth(salesNumber, month_area, year_area);
+
+                updateAreaChart(saleByMonthNumber, loadArea);
+
+            });
+
+            $('#btnForAreaChartQty').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area_qty').val());
+                const year_area = parseInt($('#year_area_qty').val());
+
+                const saleByMonthQty = saleByMonth(salesQty, month_area, year_area);
+
+                updateAreaChart(saleByMonthQty, loadAreaQty);
+
+            });
+
+            $('#btnForAreaChartProfit').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area_profit').val());
+                const year_area = parseInt($('#year_area_profit').val());
+
+                const saleByMonthProfit = saleByMonth(salesProfit, month_area, year_area);
+
+                updateAreaChart(saleByMonthProfit, loadAreaProfit);
+
+            });
+
+            $('#btnForAreaChartRate').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area_rate').val());
+                const year_area = parseInt($('#year_area_rate').val());
+
+                const saleByMonthRate = saleByMonth(salesRate, month_area, year_area);
+
+                updateAreaChart(saleByMonthRate, loadAreaRate);
+
+            });
+
+            // button for barchart
+            $('#btnForBarChart').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar').val());
+
+                const dataNumber = saleByYear(salesNumber, year_bar)
+                    .map(sale => {
+                        return sale.amount
+                    });
+
+                updateBarChart(dataNumber, loadBar);
+
+            });
+
+            $('#btnForBarChartQty').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar_qty').val());
+
+                const dataQty = saleByYear(salesQty, year_bar)
+                    .map(sale => {
+                        return sale.amount
+                    });
+
+                updateBarChart(dataQty, loadBarQty);
+
+            });
+
+            $('#btnForBarChartProfit').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar_profit').val());
+
+                const dataProfit = saleByYear(salesProfit, year_bar)
+                    .map(sale => {
+                        return sale.amount
+                    });
+
+                updateBarChart(dataProfit, loadBarProfit);
+
+            });
+
+            $('#btnForBarChartRate').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar_rate').val());
+
+                const dataRate = saleByYearRate(salesRate, year_bar)
+                    .map(sale => {
+                        return sale.amount
+                    });
+
+                updateBarChart(dataRate, loadBarRate);
+
+            });
+        </script>
+    {% endif %}
+{% endblock %}

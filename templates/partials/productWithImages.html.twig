@@ -1,0 +1,63 @@
+{% set setting = app.session.get('setting') %}
+<div class="row mb-3">
+    <div class="col-md-12">
+        <input type="text" class="form-control searchBox" id="search"
+               value="" placeholder="{{ 'sale.add.searchBox'|trans }}">
+    </div>
+</div>
+<div class="pagination_wrapper default">
+    <div class="row pagination">
+        {% for product in products %}
+            <div class="col-md-4 col-sm-6 col-xl-4 result"
+                 style="margin-bottom: 20px !important;"
+                 data-reference="{{ product.reference }}" data-barcode="{{ product.qrCode }}"
+                 data-name="{{ product.name }}">
+                <div class="card">
+
+                    <div class="card-header bg-uyblue-dark text-center text-capitalize
+                   font-weight-bold text-white" style="font-size: 10px; height: 60px;">
+                        {% if setting.withSubstitute  %}
+                            <a href="" data-product="{{ product.id }}"
+                               class="list-substitute text-white">
+                                {{product.name}}
+                            </a>
+                        {% else %}
+                            <span>
+                                    {{product.name}}
+                                </span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body text-center {% if product.stock > 0 %}addInCart{% endif %}" {% if product.stock > 0 %}data-product="{{ product.id  }}"{% endif %}>
+                        {% if product.imageName %}
+                            <img class="rounded img img-fluid" id="img{{ product.id }}" data-id="{{ product.id }}"
+                                 src="{{ asset(productPhoto)~product.imageName }}"
+                                 alt="{{product.name}}" style="height: 100px">
+                        {% else %}
+                            <img class="rounded img img-fluid" id="img{{ product.id }}" data-id="{{ product.id }}"
+                                 src="{{ asset(images)~productImage }}"
+                                 alt="" style="height: 100px">
+                        {% endif %}
+                    </div>
+                    <div class="card-footer bg-uyblue text-white" style="font-size: 11px">
+                        <div class="row">
+                            <div class="col-md-8 text-center font-weight-bold">
+                                {{product.sellPrice|formated}}
+                            </div>
+                            <div id="product{{ product.id }}" class="col-md-4 text-center">
+                                <span class="text-white badge
+{% if product.stockAlert >= product.stock %}bg-danger{% else %}bg-success{% endif %}"
+                                      style="font-size: 1em">
+                                   {{ product.stock|formatedInt }}
+                               </span>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <div id="pagingControls" class="text-center"></div>
+    <div id="showingInfo" class="well" style="margin-top:20px"></div>
+</div>
+

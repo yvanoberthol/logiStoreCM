@@ -1,0 +1,113 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'employee.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        $('.datepicker').on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        $('.datepicker').datepicker({
+            format: '{{ app.session.get('setting').dateMediumPicker }}',
+            autoclose: true,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        getDataTable($('#dataTable'));
+    </script>
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'employee.fee.block_title'|trans }} ({{ employees|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'EMPLOYEE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('employee_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('employee_fee') }}" method="post" class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start"
+                               value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end"
+                               value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue mr-5" >
+                            <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-sort">{{ 'employee.index.tr_employeename'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_phone'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_role'|trans }}</th>
+                        <th class="not-sort">{{ 'employee.index.tr_fee'|trans }}</th>
+                        <th class="not-export" data-sort="false">
+                            {{ 'employee.index.tr_actions'|trans }}
+                        </th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for employee in employees %}
+                        <tr>
+                            <td class="text-uppercase">{{employee.customer.allName}}</td>
+                            <td>
+                                {% if employee.customer.phone is not empty %}
+                                    {{employee.customer.phone}}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ employee.customer.role.title|trans }}
+                            </td>
+                            <td>
+                                <span class="text-{% if employee.totalDebt > 0%}danger{% else %}info{% endif %}">
+                                    {{employee.totalDebt|formated}}
+                                </span>
+                            </td>
+                            <td class="not-export">
+                                {% if employee.totalDebt > 0 and is_granted(permission_verify,'EMPLOYEE_FEE_INDEX')%}
+                                    <form action="{{ path('employee_fee_index',{'id': employee.customer.id}) }}" method="post">
+                                        <input type="hidden" name="start" value="{{ start|mediumDate }}">
+                                        <input type="hidden" name="end" value="{{ end|mediumDate }}">
+                                        <button type="submit" class="btn btn-outline-uyblue">
+                                            <i class="fa fa-file"></i> {{ 'employee.index.tr_fee_detail'|trans }}
+                                        </button>
+                                    </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

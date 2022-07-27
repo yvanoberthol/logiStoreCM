@@ -1,0 +1,189 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.import.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $('#category').select2({
+            placeholder: "{{ 'product.import.select_category'|trans }}",
+            allowClear: true,
+            language: "{{ app.request.get('_locale') }}"
+        });
+        $('#category').val([]).trigger('change');
+
+        getDataTable($('#dataTable'),true);
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'product.import.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row">
+                {% if products is not defined %}
+                    <form class="col-md-12" action="" method="post" enctype="multipart/form-data">
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+
+                                <h6># {{ 'product.import.step1'|trans }}</h6>
+                                <div class="form-inline">
+                                    <input type="file" name="file" id="file"
+                                           accept=".csv,.xls,.xlsx"
+                                           class="form-control mb-2 mr-4" required>
+                                    <input class="form-control mr-1" type="checkbox" name="hasFirstRow"
+                                           id="hasFirstRow">
+                                    <label for="hasFirstRow">{{ 'product.import.removeFirstRow'|trans }}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row mb-4">
+                            <h6 class="col-md-12"># {{ 'product.import.setp2'|trans }}</h6>
+                            {% for i,key in keys %}
+                                <div class="col-md-3">
+                                    <div class="form-inline mb-2">
+                                        <label for=""
+                                               class="mr-1 mb-2" style="font-size: 14px"> {{ 'product.import.column'|trans }} {{ i+1 }}</label>
+                                        <select class="form-control" name="fields[{{ i }}]" id="fields">
+                                            <option value="empty">{{ 'product.import.empty'|trans }}</option>
+                                            {% for key in keys %}
+                                                <option value="{{ key }}">{{ key|trans }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <button type="submit" class="btn btn-uyblue form-control"
+                                        name="display" value="display">
+                                    <i class="fa fa-eye"></i> {{ 'product.import.display'|trans }}
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                {% else %}
+                    <form class="col-md-12" action="" method="post">
+                        {% if categoryExist is not defined %}
+                            <div class="row mb-4">
+                                <div class="col-md-6 offset-md-6">
+                                    <div class="form-inline pull-right">
+                                        <select class="form-control" name="category" id="category">
+                                            {% for category in categories %}
+                                                <option value="{{ category.id }}">{{ category.name }}</option>
+                                            {% endfor %}
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endif %}
+                        <div class="row mb-4">
+                            <div class="col-md-12">
+                                <div class="table-responsive">
+                                    <h6># {{ 'product.import.step3'|trans }}
+                                        (<span class="text-info">{{ products|length|formatedInt }}</span>)
+                                    </h6>
+                                    <table class="table" style="width: 100%;" id="dataTable">
+                                        <thead>
+                                        <tr>
+                                            {% if referenceExist is defined %}
+                                                <th>{{ 'product.import.tr_reference'|trans }}</th>
+                                            {% endif %}
+                                            {% if barcodeExist is defined %}
+                                                <th>{{ 'product.import.tr_barcode'|trans }}</th>
+                                            {% endif %}
+                                            {% if nameExist is defined %}
+                                                <th>{{ 'product.import.tr_name'|trans }}</th>
+                                            {% endif %}
+                                            {% if categoryExist is defined %}
+                                                <th>{{ 'product.import.tr_category'|trans }}</th>
+                                            {% endif %}
+                                            {% if buyPriceExist is defined and setting.withPurchasePrice %}
+                                                <td>{{ 'product.import.tr_buyPrice'|trans }}</td>
+                                            {% endif %}
+                                            {% if sellPriceExist is defined %}
+                                                <th>{{ 'product.import.tr_sellPrice'|trans }}</th>
+                                            {% endif %}
+                                            {% if stockExist is defined %}
+                                                <th>{{ 'product.import.tr_stock'|trans }}</th>
+                                            {% endif %}
+                                            {% if stockAlertExist is defined %}
+                                                <th>{{ 'product.import.tr_stockAlert'|trans }}</th>
+                                            {% endif %}
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        {% for product in products %}
+                                            <tr>
+                                                {% if referenceExist is defined %}
+                                                    <td>{{ product.reference }}</td>
+                                                {% endif %}
+                                                {% if barcodeExist is defined %}
+                                                    <td>{{ product.barcode }}</td>
+                                                {% endif %}
+                                                {% if nameExist is defined %}
+                                                    <td>{{ product.name }}</td>
+                                                {% endif %}
+
+                                                {% if categoryExist is defined %}
+                                                    <td>{{ product.category }}</td>
+                                                {% endif %}
+
+                                                {% if buyPriceExist is defined and setting.withPurchasePrice %}
+                                                    <td>{{ product.buyPrice|formated }}</td>
+                                                {% endif %}
+
+                                                {% if sellPriceExist is defined %}
+                                                    <td>{{ product.sellPrice|formated }}</td>
+                                                {% endif %}
+
+                                                {% if stockExist is defined %}
+                                                    <td>{{ product.stock|formatedInt }}</td>
+                                                {% endif %}
+
+                                                {% if stockAlertExist is defined %}
+                                                    <td>{{ product.stockAlert|formatedInt }}</td>
+                                                {% endif %}
+                                            </tr>
+                                        {% endfor %}
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12 text-center">
+                                <form action="" method="post">
+                                    <button type="submit" class="btn btn-success" name="validImport" value="valid">
+                                        <i class="fa fa-check-circle"></i> {{ 'product.import.validate'|trans }}
+                                    </button>
+                                    <button type="submit" class="btn btn-danger" name="cancel" value="cancel">
+                                        <i class="fa fa-close"></i> {{ 'product.import.cancel'|trans }}
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </form>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}

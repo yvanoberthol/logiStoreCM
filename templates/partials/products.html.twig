@@ -1,0 +1,55 @@
+{% set setting = app.session.get('setting') %}
+<table class="table" id="dataTable">
+    <thead>
+    <tr>
+        <th class="searchable">{{ 'sale.add.tr_reference'|trans({},'messages',app.session.get('_locale')) }}</th>
+        <th class="searchable">{{ 'sale.add.tr_barcode'|trans({},'messages',app.session.get('_locale')) }}</th>
+        <th class="not-sort" style="width: 40%;">{{ 'sale.add.tr_name'|trans({},'messages',app.session.get('_locale')) }}</th>
+        <th class="not-sort" style="width: 35%;">{{ 'sale.add.tr_price'|trans({},'messages',app.session.get('_locale')) }}</th>
+        <th style="width: 20%;">{{ 'sale.add.tr_stock'|trans({},'messages',app.session.get('_locale')) }}</th>
+        <th class="not-sort" style="width: 5%;"></th>
+    </tr>
+    </thead>
+    <tbody id="productList">
+        {% for product in products %}
+            <tr>
+                <td>
+                    {{ product.reference }}
+                </td>
+                <td>
+                    {{ product.qrCode }}
+                </td>
+                <td class="text-capitalize">
+                    {% if setting.withSubstitute  %}
+                    <a href="" data-product="{{ product.id }}"
+                       class="list-substitute font-weight-bold">
+                        {{product.name}}
+                    </a>
+                    {% else %}
+                        <span class="font-weight-bold">
+                            {{product.name}}
+                        </span>
+                    {% endif %}
+                </td>
+                <td>{{product.sellPrice|formated}}</td>
+                <td >
+                   <span class="{% if product.stockAlert >= product.stock %}bg-danger text-white p-2{% endif %}">
+                       {{ product.stock|formatedInt }}
+                   </span>
+                </td>
+                <td class="not-export">
+                    {% if product.stock > 0 %}
+                        <button name="add" data-product="{{ product.id  }}"
+                                class="addInCart btn-success mb-1 mr-1" type="button">
+                            <i class="fa fa-shopping-basket"></i>
+                        </button>
+                    {% else %}
+                        <span class="text-danger h5">
+                            <i class="fa fa-ban"></i>
+                        </span>
+                    {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,125 @@
+# Loco yaml export: Simple YAML object
+# Project: validators.fr.xlf conversion
+# Release: Working copy
+# Locale: fr, French
+# Exported by: yvano berthol
+# Exported at: Wed, 16 Oct 2019 00:04:50 +0100
+this value should be false: This value must be false.
+this value should be true: This value must be true.
+this value should be of type type: This value must be of type {{type}}.
+this value should be blank: This value must be empty.
+the value you selected is not a valid choice: This value must be one of the choices offered.
+you must select at least limit choice you must select at least limit choices: You must select at least {{limit}} choices. | You must select at least {{limit}} choices.
+you must select at most limit choice you must select at most limit choices: You must select at most {{limit}} choices. | You must select at most {{limit}} choices.
+one or more of the given values is invalid: One or more of the submitted values are invalid.
+this field was not expected: This field was not provided.
+this field is missing: This field is missing.
+this value is not a valid date: This value is not a valid date.
+this value is not a valid datetime: This value is not a valid date.
+this value is not a valid email address: This value is not a valid email address.
+the file could not be found: The file was not found.
+the file is not readable: The file cannot be read.
+the file is too large size suffix allowed maximum size is limit suffix: The file is too large ({{size}} {{suffix}}). Its size must not exceed {{limit}} {{suffix}}.
+the mime type of the file is invalid type allowed mime types are types: The file type is invalid ({{type}}). Allowed types are {{types}}.
+this value should be limit or less: This value must be less than or equal to {{limit}}.
+this value is too long it should have limit character or less this value is too long it should have: This string is too long. It must be {{limit}} character at most. | This string is too long. It must have a maximum of {{limit}} characters.
+this value should be limit or more: This value must be greater than or equal to {{limit}}.
+this value is too short it should have limit character or more this value is too short it should hav: This string is too short. It must be at least {{limit}} character. | This string is too short. It must be at least {{limit}} characters long.
+this value should not be blank: This value must not be empty.
+this value should not be null: This value must not be zero.
+this value should be null: This value must be zero.
+this value is not valid: This value is not valid.
+this value is not a valid time: This value is not a valid time.
+this value is not a valid url: This value is not a valid URL.
+the two values should be equal: The two values must be the same.
+the file is too large allowed maximum size is limit suffix: The file is too large. Its size must not exceed {{limit}} {{suffix}}.
+the file is too large: The file is too large.
+the file could not be uploaded: Downloading of this file is not possible.
+this value should be a valid number: This value must be a number.
+this file is not a valid image: This file is not a valid image.
+this is not a valid ip address: This IP address is not valid.
+this value is not a valid language: This language is not valid.
+this value is not a valid locale: This locale is not valid.
+this value is not a valid country: This country is not valid.
+this value is already used: This value is already in use.
+the size of the image could not be detected: The size of the image could not be detected.
+the image width is too big width px allowed maximum width is max width px: The width of the image is too large ({{width}} px). The maximum allowed width is {{max_width}} px.
+the image width is too small width px minimum width expected is min width px: The width of the image is too small ({{width}} px). The minimum expected width is {{min_width}} px.
+the image height is too big height px allowed maximum height is max height px: The height of the image is too large ({{height}} px). The maximum height allowed is {{max_height}} px.
+the image height is too small height px minimum height expected is min height px: The height of the image is too small ({{height}} px). The minimum expected height is {{min_height}} px.
+this value should be the users current password: This value should be the user's current password.
+this value should have exactly limit character this value should have exactly limit characters: This string must be exactly {{limit}} characters long. | This string must be exactly {{limit}} characters long.
+the file was only partially uploaded: The file has been partially transferred.
+no file was uploaded: No files have been transferred.
+no temporary folder was configured in php ini: No temporary directory has been configured in the php.ini.
+cannot write temporary file to disk: Unable to write temporary file to disk.
+a php extension caused the upload to fail: A PHP extension prevented the file from being transferred.
+this collection should contain limit element or more this collection should contain limit elements o: This collection must contain {{limit}} elements or more. | This collection must contain {{limit}} elements or more.
+this collection should contain limit element or less this collection should contain limit elements o: This collection must contain {{limit}} elements or less. | This collection must contain {{limit}} elements or less.
+this collection should contain exactly limit element this collection should contain exactly limit el: This collection must contain exactly {{limit}} elements. | This collection must contain exactly {{limit}} elements.
+invalid card number: Invalid card number.
+unsupported card type or invalid card number: Card type not supported or invalid number.
+this is not a valid international bank account number iban: The IBAN (International Bank Account Number) entered is not valid.
+this value is not a valid isbn 10: This value is not a valid ISBN-10 code.
+this value is not a valid isbn 13: This value is not a valid ISBN-13 code.
+this value is neither a valid isbn 10 nor a valid isbn 13: This value is neither a valid ISBN-10 nor a valid ISBN-13 code.
+this value is not a valid issn: This value is not a valid ISSN code.
+this value is not a valid currency: This value is not a valid currency.
+this value should be equal to compared value: This value must be equal to {{compared_value}}.
+this value should be greater than compared value: This value must be greater than {{compared_value}}.
+this value should be greater than or equal to compared value: This value must be greater than or equal to {{compared_value}}.
+this value should be identical to compared value type compared value: This value must be the same as {{compared_value_type}} {{compared_value}}.
+this value should be less than compared value: This value must be less than {{compared_value}}.
+this value should be less than or equal to compared value: This value must be less than or equal to {{compared_value}}.
+this value should not be equal to compared value: This value must not be equal to {{compared_value}}.
+this value should not be identical to compared value type compared value: This value should not be the same as {{compared_value_type}} {{compared_value}}.
+the image ratio is too big ratio allowed maximum ratio is max ratio: The aspect ratio of the image is too large ({{ratio}}). The maximum allowed ratio is {{max_ratio}}.
+the image ratio is too small ratio minimum ratio expected is min ratio: The aspect ratio of the image is too small ({{ratio}}). The minimum expected ratio is {{min_ratio}}.
+the image is square width x height px square images are not allowed: The image is square ({{width}} x {{height}} px). Square images are not allowed.
+the image is landscape oriented width x height px landscape oriented images are not allowed: The image is in landscape format ({{width}} x {{height}} px). Landscape images are not allowed.
+the image is portrait oriented width x height px portrait oriented images are not allowed: The image is in portrait format ({{width}} x {{height}} px). Portrait format images are not allowed.
+an empty file is not allowed: An empty file is not allowed.
+the host could not be resolved: The domain name could not be resolved.
+this value does not match the expected charset charset: This value does not match the expected {{charset}} character set.
+this is not a valid business identifier code bic: This is not a valid Universal Bank Identification Code (BIC).
+Error: Fault
+this is not a valid uuid: This is not a valid UUID.
+this value should be a multiple of compared value: This value must be a multiple of {{compared_value}}.
+this business identifier code bic is not associated with iban iban: This company identification code (BIC) is not associated with the IBAN {{iban}}.
+this value should be valid json: This value must be valid JSON.
+this collection should contain only unique elements: This collection must not contain any duplicates.
+this value should be positive: This value must be strictly positive.
+this value should be either positive or zero: This value must be greater than or equal to zero.
+this value should be negative: This value must be strictly negative.
+this value should be either negative or zero: This value must be less than or equal to zero.
+this value is not a valid timezone: This value is not a valid time zone.
+this password has been leaked in a data breach it must not be used please use another password: This password was leaked during a data breach, it should no longer be used. Please use a different password.
+this value should be between min and max: This value must be between {{min}} and {{max}}.
+this form should not contain extra fields: This form should not contain additional fields.
+the uploaded file was too large please try to upload a smaller file: The downloaded file is too large. Please try to upload a smaller file.
+the csrf token is invalid please try to resubmit the form: The CSRF token is invalid. Please resend the form.
+
+entity:
+  productPackaging:
+    name: This packaging already exists
+  productCategory:
+    name: this category already exists
+  supplier:
+    name: There is already a supplier with this name
+  product:
+    sellPrice: The sale Price must be greater than the purchase price
+    name: There is already a product with this name
+  passwordUpdate:
+    newpassword: Password must contain at least 8 characters
+    confirmpassword: Incorrect confirmation password
+  store:
+    email: Enter a valid email address
+  lossType:
+    name: this type of loss already exists
+  user:
+    email:
+      unique: a user already has this email address
+      valide: Enter a valid email address
+    name: Name must not be empty
+    phone:
+      positive: Enter a valid phone number

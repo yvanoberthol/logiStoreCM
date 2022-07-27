@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=0, minimal-ui">
+    <title>{% block title %}{% endblock %}</title>
+    <meta content="Store management system" name="description" />
+    <meta content="Yvano Berthol" name="author" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <link rel="shortcut icon" href="{{ asset('dist/images/logo.jpg') }}">
+    <style>
+        :root{
+            --uyblue:{{ general_color_light }};
+            --uybluedark:{{ general_color_dark }};
+            --uygrey:#847E8A;
+            --blackmiddledark:{{ back_color_sidemenu }};
+            --blackdark:{{ back_color_sidemenu_link }};
+            --blacknonedark:#3E454C;
+        }
+
+        .pointer{
+            cursor: pointer;
+        }
+    </style>
+    <link href="{{ asset('dist/css/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('dist/css/icons.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('dist/css/style.css') }}" rel="stylesheet" type="text/css">
+    <link href="{{ asset('dist/plugins/flaticon/flaticon.css') }}" rel="stylesheet" type="text/css">
+
+    {% block stylesheets %}{% endblock %}
+</head>
+<body>
+    <!-- Loader -->
+    <div id="preloader"><div id="status"><div class="spinner"></div></div></div>
+
+    <!-- Begin page -->
+    <div id="wrapper">
+        <div class="container-fluid">
+            {% block body %}{% endblock %}
+        </div>
+        <script src="{{ asset('dist/js/jquery.min.js') }}"></script>
+        <script src="{{ asset('dist/js/popper.min.js') }}"></script>
+        <script src="{{ asset('dist/js/bootstrap.min.js') }}"></script>
+        <script src="{{ asset('dist/js/modernizr.min.js') }}"></script>
+        <script src="{{ asset('dist/js/detect.js') }}"></script>
+        <script src="{{ asset('dist/js/fastclick.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.slimscroll.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.blockUI.js') }}"></script>
+        <script src="{{ asset('dist/js/waves.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.nicescroll.js') }}"></script>
+        <script src="{{ asset('dist/js/jquery.scrollTo.min.js') }}"></script>
+        <script src="{{ asset('dist/plugins/alertify/js/alertify.js') }}"></script>
+        {% block javascripts %} {% endblock %}
+        {% include 'partials/flashBag.html.twig' %}
+        <script src="{{ asset('dist/js/app.js') }}"></script>
+    </div>
+
+    </body>
+</html>

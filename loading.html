@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Loading</title>
+    <style>
+        #preloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(239, 243, 246, 0.49);
+            z-index: 9999999;
+        }
+    </style>
+</head>
+<body>
+<!-- Loader -->
+<div id="preloader"><div id="status"><div class="spinner"></div></div></div>
+<script src="logiPharma/public/dist/js/jquery.min.js"></script>
+<script>
+    $(window).load(function() {
+        $('#status').fadeOut();
+        $('#preloader').delay(350).fadeOut('slow');
+        $('body').delay(350).css({
+            'overflow': 'visible'
+        });
+    });
+</script>
+</body>
+</html>

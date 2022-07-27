@@ -1,0 +1,120 @@
+{% extends 'base.html.twig' %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $(document).ready(function(){
+            getDataTable($('#dataTable'),true);
+        });
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'store.value.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            {% if products is not empty %}
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                            <table class="table " style="width: 100%;" id="dataTable">
+                                <thead>
+                                    <tr class="font-weight-bold">
+                                    {% if setting.withBarcode  %}
+                                        <th>{{ 'report.saleByProduct.tr_barcode'|trans }}</th>
+                                    {% endif %}
+                                    <th>{{ 'store.value.tr_product'|trans }}</th>
+                                    <th>
+                                        {{ 'store.value.tr_qty'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'store.value.tr_sellPrice'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'store.value.tr_salePrice'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'store.value.tr_unitProfit'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'store.value.tr_profit'|trans }}
+                                    </th>
+                                    <th>
+                                        {{ 'store.value.tr_percentProfit'|trans }}
+                                    </th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                {% set totalAmount = 0 %}
+                                {% set totalProfit = 0 %}
+                                {% for product in products|sort((a,b) => a.qty <=> b.qty)|reverse   %}
+                                    <tr>
+                                        {% if setting.withBarcode  %}
+                                            <td>{{ product.barcode }}</td>
+                                        {% endif %}
+                                        <td>
+                                            <a class="text-capitalize"
+                                               href="{{ path('product_detail',{id:product.id}) }}">
+                                                {{ product.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ product.qty|formatedInt }}</td>
+                                        <td>{{ product.sellPrice|formated }}</td>
+                                        <td>
+                                            {{ product.salePrice|formated }}
+                                        </td>
+                                        <td>
+                                            {{ product.unitProfit|formated }}
+                                        </td>
+                                        <td>
+                                            {{ product.profit|formated }}
+                                        </td>
+                                        <td>
+                                            {{ product.percentProfit}}
+                                        </td>
+                                    </tr>
+                                    {% set totalAmount = totalAmount + product.salePrice %}
+                                    {% set totalProfit = totalProfit + product.profit %}
+                                {% endfor %}
+                                </tbody>
+                                {% if products|length > 0 %}
+                                    <tfoot>
+                                    <tr class="font-weight-bold">
+                                        {% if setting.withBarcode  %}
+                                            <td></td>
+                                        {% endif %}
+                                        <td></td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>{{ totalAmount|formated }}</td>
+                                        {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                            <td></td>
+                                            <td>{{ totalProfit|formated }}</td>
+                                            <td>{{ ((totalProfit * 100)/ totalAmount)|round(2) }}</td>
+                                        {% endif %}
+                                    </tr>
+                                    </tfoot>
+                                {% endif %}
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+{% endblock %}
+
+{% block title %}
+    {{ 'store.value.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}

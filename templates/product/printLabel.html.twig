@@ -1,0 +1,132 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.printLabel.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        let product = $('#product');
+
+        product.select2({
+            placeholder: "{{ 'product.printLabel.select_product'|trans }}",
+            allowClear: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+        product.val([]).trigger('change');
+
+        {% if product is defined %}
+        product.val({{ product.id }}).trigger('change');
+        {% else %}
+        product.val([]).trigger('change');
+        {% endif %}
+
+
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'product.printLabel.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right"></span>
+            </h5>
+            <div class="row">
+                <table class="table">
+                    <tr>
+                        <td></td>
+                        <td colspan="3" class="">
+                               {% if product is defined %}
+                                <form action="{{ path('product_print_label') }}"
+                                      method="post" class="form-inline" target="_blank">
+                                   <div class="row">
+                                       <div class="col-md-12 text-center">
+                                           <input type="hidden" class="form-control"
+                                                  value="{{ product.id  }}" name="product">
+                                           <input type="number" class="form-control mr-2"
+                                                  value="{{ size }}"  name="size" style="width: 20%!important;">
+                                           <span class="h5 mr-2"> x</span>
+                                           <input type="number" class="form-control mr-2"
+                                                  value="5" disabled style="width: 20%!important;">
+                                           <input type="hidden" name="print" value="print">
+                                           <button type="submit" class="btn btn-uyblue">
+                                               <i class="fa fa-print"></i>
+                                           </button>
+                                       </div>
+                                   </div>
+                                </form>
+                               {% else %}
+                                <form action="{{ path('product_print_label') }}" method="post" class="form-inline">
+                                   <div class="row align-items-center">
+                                       <div class="col-md-5">
+                                           <select class="mr-1 my-1 select2" required style="width: 100%!important;"
+                                                   name="product" id="product">
+                                               {% for product in products  %}
+                                                   <option value="{{ product.id }}">
+                                                       {{ product.nameWithCategory }}
+                                                   </option>
+                                               {% endfor %}
+                                           </select>
+                                       </div>
+                                       <div class="col-md-7">
+                                           <input type="number" class="form-control mr-2"
+                                                  value="{{ size }}"  name="size" style="width: 20%!important;">
+                                           <span class="h5 mr-2"> x</span>
+                                           <input type="number" class="form-control mr-2"
+                                                  value="5" disabled style="width: 20%!important;">
+                                           <input type="hidden" name="display" value="display">
+                                           <button type="submit" class="btn btn-outline-uyblue">
+                                               <i class="fa fa-eye"></i>
+                                           </button>
+                                       </div>
+                                   </div>
+
+                                </form>
+                               {% endif %}
+
+                        </td>
+                        <td></td>
+                    </tr>
+                    {% if product is defined %}
+                        <tr class="py-3">
+                            <td colspan="5" class="text-center text-capitalize h3 text-info">
+                                {{ product.nameWithCategory }}
+                            </td>
+                        </tr>
+                        {% set l = 0 %}
+                        {% for i in 1..size %}
+                            <tr>
+                                {% for j in 1..5 %}
+                                    <td class="p-2 text-center" style="border-top: dashed;border-left: dashed;
+                                    {% if loop.last %}border-right: dashed;{% endif %}
+                                            {% if (size - 5) <= (i * j) %}border-bottom: dashed;{% endif %}">
+                                        <img style="width: 125px; height: 50px;" alt="{{ product.qrCode }}"
+                                             src="data:image/png;base64,{{ product.barCode }}"><br>
+                                        <span style="font-size: 8px; font-weight: bold;margin-top: 0">
+                                            {{ product.qrCode }}
+                                        </span>
+                                    </td>
+                                    {% set l = i * j %}
+                                {% endfor %}
+                            </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td class="text-center" colspan="5">
+                                <div class="alert alert-info">
+                                   <i class="fa fa-info-circle"></i> {{ 'product.printLabel.tr_select_product'|trans }}
+                                </div>
+                            </td>
+                        </tr>
+                    {% endif %}
+
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

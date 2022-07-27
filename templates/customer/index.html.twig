@@ -1,0 +1,169 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'customer.index.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        getDataTable($('#dataTable'));
+
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+
+        const body = $('body');
+        body.on('click', '.detail-saleDebt', function (e) {
+            e.preventDefault();
+            const customerId = $(this).attr('data-customer');
+            const link = '{{ path('rest_customer_saleDebt_modal') }}';
+            modalSaleDebt(customerId,link);
+
+        });
+
+        function modalSaleDebt(customerId,link) {
+            let data = new FormData();
+            data.append("id", customerId + '');
+
+            $('#saleDebtmodal').html("");
+            fetch(link, {
+                method: 'POST',
+                credentials: 'include',
+                body: data,
+            }).then(async response => {
+                try {
+                    const data = await response.json();
+                    $('#saleDebtmodal').html(data.content);
+                    getDataTable($('#dataTable2'));
+                    $('.saleDebtmodal').modal('show');
+                    return false;
+                } catch (reason) {
+                    console.log(reason);
+                }
+            }).catch(function (reason) {
+                console.log(reason);
+            })
+        }
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'customer.index.block_title'|trans }}
+                ({{ customers|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'CUSTOMER_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('customer_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                <thead>
+                <tr>
+                    <th>{{ 'customer.index.tr_name'|trans }}</th>
+                    <th class="not-sort">{{ 'customer.index.tr_tel'|trans }}</th>
+                    <th class="not-sort">{{ 'customer.index.tr_email'|trans }}</th>
+                    <th>{{ 'customer.index.tr_gender'|trans }}</th>
+                    <th>{{ 'customer.index.tr_type'|trans }}</th>
+                    <th>{{ 'customer.index.tr_amountDebt'|trans }}</th>
+                    {#<th>{{ 'customer.index.tr_bloodGroup'|trans }}</th>#}
+                    <th class="not-export not-sort">{{ 'customer.index.tr_actions'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for customer in customers %}
+                    <tr>
+                        <td class="text-capitalize">
+                            <a href="{{ path('performance_customer',{id: customer.id}) }}">
+                                {{ customer.name }}
+                            </a>
+                        </td>
+                        <td>{{ customer.phoneNumber }}</td>
+                        <td>
+                            {% if customer.email %}
+                                {{ customer.email }}
+                            {% else %}
+                                //
+                            {% endif %}
+                        </td>
+                        {#<td>
+                            {% if customer.bloodGroup %}
+                                {{ customer.bloodGroup }}
+                            {% else %}
+                                //
+                            {% endif %}
+
+                        </td>#}
+                        <td>{{ customer.gender|trans }}</td>
+                        <td>
+                            <span class="badge badge-info p-2">
+                                {{ customer.type }}
+                            </span>
+                        </td>
+                        <td >
+                            <a class="detail-saleDebt"
+                               href="#salesDebtModal{{customer.id}}"
+                               data-customer="{{ customer.id }}">
+                                {{ 'customer.index.tr_seeMore'|trans }}
+                            </a>
+                        </td>
+                        <td>
+                            {% if is_granted(permission_verify,'CUSTOMER_EDIT') %}
+                            <a href="{{ path('customer_edit',{'id': customer.id}) }}" class="p-2 badge badge-uyblue">
+                                <i class="fa fa-pencil"></i>
+                            </a>
+                            {% endif %}
+                            {% if is_granted(permission_verify,'CUSTOMER_DELETE') %}
+                            <a href="#deleteModal{{customer.id}}" data-toggle="modal" class="p-2 badge badge-danger ">
+                                <i class="fa fa-remove"></i>
+                            </a>
+                            <!-- Delete Modal -->
+                            <div class="modal fade" id="deleteModal{{customer.id}}" tabindex="-1" role="dialog"
+                                 aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                <div class="modal-dialog" role="document">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="exampleModalLabel">{{ 'customer.index.modal.title'|trans }}</h5>
+                                            <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                <span aria-hidden="true">×</span>
+                                            </button>
+                                        </div>
+                                        <div class="modal-body">
+                                            {{ 'customer.index.modal.body'|trans }}
+                                            <span class="text-info">{{ customer.name }}</span>?
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                {{ 'cancel'|trans }}
+                                            </button>
+                                            <a class="btn btn-danger" href="{{path('customer_delete',{'id':customer.id})}}">
+                                                <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+    </div>
+    <!-- sale debt Modal -->
+    <div id="saleDebtmodal"></div>
+{% endblock %}

@@ -1,0 +1,126 @@
+# Loco yaml export: Simple YAML object
+# Project: validators.fr.xlf conversion
+# Release: Working copy
+# Locale: fr, French
+# Exported by: yvano berthol
+# Exported at: Wed, 16 Oct 2019 00:04:50 +0100
+   
+this value should be false: Cette valeur doit être fausse.
+this value should be true: Cette valeur doit être vraie.
+this value should be of type type: Cette valeur doit être de type {{ type }}.
+this value should be blank: Cette valeur doit être vide.
+the value you selected is not a valid choice: Cette valeur doit être l'un des choix proposés.
+you must select at least limit choice you must select at least limit choices: Vous devez sélectionner au moins {{ limit }} choix.|Vous devez sélectionner au moins {{ limit }} choix.
+you must select at most limit choice you must select at most limit choices: Vous devez sélectionner au maximum {{ limit }} choix.|Vous devez sélectionner au maximum {{ limit }} choix.
+one or more of the given values is invalid: Une ou plusieurs des valeurs soumises sont invalides.
+this field was not expected: Ce champ n'a pas été prévu.
+this field is missing: Ce champ est manquant.
+this value is not a valid date: Cette valeur n'est pas une date valide.
+this value is not a valid datetime: Cette valeur n'est pas une date valide.
+this value is not a valid email address: Cette valeur n'est pas une adresse email valide.
+the file could not be found: Le fichier n'a pas été trouvé.
+the file is not readable: Le fichier n'est pas lisible.
+the file is too large size suffix allowed maximum size is limit suffix: Le fichier est trop volumineux ({{ size }} {{ suffix }}). Sa taille ne doit pas dépasser {{ limit }} {{ suffix }}.
+the mime type of the file is invalid type allowed mime types are types: Le type du fichier est invalide ({{ type }}). Les types autorisés sont {{ types }}.
+this value should be limit or less: Cette valeur doit être inférieure ou égale à {{ limit }}.
+this value is too long it should have limit character or less this value is too long it should have : Cette chaîne est trop longue. Elle doit avoir au maximum {{ limit }} caractère.|Cette chaîne est trop longue. Elle doit avoir au maximum {{ limit }} caractères.
+this value should be limit or more: Cette valeur doit être supérieure ou égale à {{ limit }}.
+this value is too short it should have limit character or more this value is too short it should hav: Cette chaîne est trop courte. Elle doit avoir au minimum {{ limit }} caractère.|Cette chaîne est trop courte. Elle doit avoir au minimum {{ limit }} caractères.
+this value should not be blank: Cette valeur ne doit pas être vide.
+this value should not be null: Cette valeur ne doit pas être nulle.
+this value should be null: Cette valeur doit être nulle.
+this value is not valid: Cette valeur n'est pas valide.
+this value is not a valid time: Cette valeur n'est pas une heure valide.
+this value is not a valid url: Cette valeur n'est pas une URL valide.
+the two values should be equal: Les deux valeurs doivent être identiques.
+the file is too large allowed maximum size is limit suffix: Le fichier est trop volumineux. Sa taille ne doit pas dépasser {{ limit }} {{ suffix }}.
+the file is too large: Le fichier est trop volumineux.
+the file could not be uploaded: Le téléchargement de ce fichier est impossible.
+this value should be a valid number: Cette valeur doit être un nombre.
+this file is not a valid image: Ce fichier n'est pas une image valide.
+this is not a valid ip address: Cette adresse IP n'est pas valide.
+this value is not a valid language: Cette langue n'est pas valide.
+this value is not a valid locale: Ce paramètre régional n'est pas valide.
+this value is not a valid country: Ce pays n'est pas valide.
+this value is already used: Cette valeur est déjà utilisée.
+the size of the image could not be detected: La taille de l'image n'a pas pu être détectée.
+the image width is too big width px allowed maximum width is max width px: La largeur de l'image est trop grande ({{ width }}px). La largeur maximale autorisée est de {{ max_width }}px.
+the image width is too small width px minimum width expected is min width px: La largeur de l'image est trop petite ({{ width }}px). La largeur minimale attendue est de {{ min_width }}px.
+the image height is too big height px allowed maximum height is max height px: La hauteur de l'image est trop grande ({{ height }}px). La hauteur maximale autorisée est de {{ max_height }}px.
+the image height is too small height px minimum height expected is min height px: La hauteur de l'image est trop petite ({{ height }}px). La hauteur minimale attendue est de {{ min_height }}px.
+this value should be the users current password: Cette valeur doit être le mot de passe actuel de l'utilisateur.
+this value should have exactly limit character this value should have exactly limit characters: Cette chaîne doit avoir exactement {{ limit }} caractère.|Cette chaîne doit avoir exactement {{ limit }} caractères.
+the file was only partially uploaded: Le fichier a été partiellement transféré.
+no file was uploaded: Aucun fichier n'a été transféré.
+no temporary folder was configured in php ini: Aucun répertoire temporaire n'a été configuré dans le php.ini.
+cannot write temporary file to disk: Impossible d'écrire le fichier temporaire sur le disque.
+a php extension caused the upload to fail: Une extension PHP a empêché le transfert du fichier.
+this collection should contain limit element or more this collection should contain limit elements o: Cette collection doit contenir {{ limit }} élément ou plus.|Cette collection doit contenir {{ limit }} éléments ou plus.
+this collection should contain limit element or less this collection should contain limit elements o: Cette collection doit contenir {{ limit }} élément ou moins.|Cette collection doit contenir {{ limit }} éléments ou moins.
+this collection should contain exactly limit element this collection should contain exactly limit el: Cette collection doit contenir exactement {{ limit }} élément.|Cette collection doit contenir exactement {{ limit }} éléments.
+invalid card number: Numéro de carte invalide.
+unsupported card type or invalid card number: Type de carte non supporté ou numéro invalide.
+this is not a valid international bank account number iban: Le numéro IBAN (International Bank Account Number) saisi n'est pas valide.
+this value is not a valid isbn 10: Cette valeur n'est pas un code ISBN-10 valide.
+this value is not a valid isbn 13: Cette valeur n'est pas un code ISBN-13 valide.
+this value is neither a valid isbn 10 nor a valid isbn 13: Cette valeur n'est ni un code ISBN-10, ni un code ISBN-13 valide.
+this value is not a valid issn: Cette valeur n'est pas un code ISSN valide.
+this value is not a valid currency: Cette valeur n'est pas une devise valide.
+this value should be equal to compared value: Cette valeur doit être égale à {{ compared_value }}.
+this value should be greater than compared value: Cette valeur doit être supérieure à {{ compared_value }}.
+this value should be greater than or equal to compared value: Cette valeur doit être supérieure ou égale à {{ compared_value }}.
+this value should be identical to compared value type compared value: Cette valeur doit être identique à {{ compared_value_type }} {{ compared_value }}.
+this value should be less than compared value: Cette valeur doit être inférieure à {{ compared_value }}.
+this value should be less than or equal to compared value: Cette valeur doit être inférieure ou égale à {{ compared_value }}.
+this value should not be equal to compared value: Cette valeur ne doit pas être égale à {{ compared_value }}.
+this value should not be identical to compared value type compared value: Cette valeur ne doit pas être identique à {{ compared_value_type }} {{ compared_value }}.
+the image ratio is too big ratio allowed maximum ratio is max ratio: Le rapport largeur/hauteur de l'image est trop grand ({{ ratio }}). Le rapport maximal autorisé est {{ max_ratio }}.
+the image ratio is too small ratio minimum ratio expected is min ratio: Le rapport largeur/hauteur de l'image est trop petit ({{ ratio }}). Le rapport minimal attendu est {{ min_ratio }}.
+the image is square width x height px square images are not allowed: L'image est carrée ({{ width }}x{{ height }}px). Les images carrées ne sont pas autorisées.
+the image is landscape oriented width x height px landscape oriented images are not allowed: L'image est au format paysage ({{ width }}x{{ height }}px). Les images au format paysage ne sont pas autorisées.
+the image is portrait oriented width x height px portrait oriented images are not allowed: L'image est au format portrait ({{ width }}x{{ height }}px). Les images au format portrait ne sont pas autorisées.
+an empty file is not allowed: Un fichier vide n'est pas autorisé.
+the host could not be resolved: Le nom de domaine n'a pas pu être résolu.
+this value does not match the expected charset charset: Cette valeur ne correspond pas au jeu de caractères {{ charset }} attendu.
+this is not a valid business identifier code bic: Ce n'est pas un code universel d'identification des banques (BIC) valide.
+Error: Erreur
+this is not a valid uuid: Ceci n'est pas un UUID valide.
+this value should be a multiple of compared value: Cette valeur doit être un multiple de {{ compared_value }}.
+this business identifier code bic is not associated with iban iban: Ce code d'identification d'entreprise (BIC) n'est pas associé à l'IBAN {{ iban }}.
+this value should be valid json: Cette valeur doit être un JSON valide.
+this collection should contain only unique elements: Cette collection ne doit pas comporter de doublons.
+this value should be positive: Cette valeur doit être strictement positive.
+this value should be either positive or zero: Cette valeur doit être supérieure ou égale à zéro.
+this value should be negative: Cette valeur doit être strictement négative.
+this value should be either negative or zero: Cette valeur doit être inférieure ou égale à zéro.
+this value is not a valid timezone: Cette valeur n'est pas un fuseau horaire valide.
+this password has been leaked in a data breach it must not be used please use another password: Ce mot de passe a été divulgué lors d'une fuite de données, il ne doit plus être utilisé. Veuillez utiliser un autre mot de passe.
+this value should be between min and max: Cette valeur doit être comprise entre {{ min }} et {{ max }}.
+this form should not contain extra fields: Ce formulaire ne doit pas contenir des champs supplémentaires.
+the uploaded file was too large please try to upload a smaller file: Le fichier téléchargé est trop volumineux. Merci d'essayer d'envoyer un fichier plus petit.
+the csrf token is invalid please try to resubmit the form: Le jeton CSRF est invalide. Veuillez renvoyer le formulaire.
+
+entity:
+  productPackaging:
+    name: Ce conditionnement existe déjà
+  productCategory:
+    name: cette catégorie existe déjà
+  supplier:
+    name: Il y'a déja un fournisseur avec ce nom
+  product:
+    sellPrice: Le prix de vente doit être plus grand que le prix d'achat
+    name: Il y'a déja un produit avec ce nom
+  passwordUpdate:
+    newpassword: Le mot de passe doit contenir au moins 6 caractères
+    confirmpassword: Mot de passe de confirmation incorrect
+  store:
+    email: Entrez une adresse e-mail valide
+  lossType:
+    name: ce type de perte existe déjà
+  user:
+    email:
+      unique: un utilisateur possède déjà cette adresse email
+      valide: Entrez une adresse e-mail valide
+    name: Le nom ne doit pas être vide
+    phone:
+      positive: Entrez un numéro de téléphone valide

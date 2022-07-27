@@ -1,0 +1,504 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'sale.index.title'|trans({},'messages',app.session.get('_locale')) }} {{ start | longDate }} - {{ end | longDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+
+    <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+    <script src="{{ asset('dist/js/downloadChart.js') }}"></script>
+    <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+    <script src="{{ asset('dist/js/allMonth.js') }}"></script>
+    <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+    <script src="{{ asset('dist/js/statFunction.js') }}"></script>
+    <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+    <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+    <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/bootstrap-datetimepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-date-time-picker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datetimepicker({
+                format: '{{ app.session.get('setting').dateLongPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true);
+            getDataTable($('#dataTable2'),true);
+            getDataTable($('#dataTable3'),true);
+
+            $('#dataTable tbody').on( 'click', 'tr', function () {
+                $(this).toggleClass('selected bg-light');
+            } );
+
+        });
+    </script>
+    <script type="text/javascript">
+        let saleAmountByHours = [];
+        let saleNumberByHours = [];
+        {% for k,saleHour in saleByHours %}
+        saleAmountByHours.push({date: '{{ k }}:00 - {{ k }}:59',amount: {{ saleHour[0]}} });
+        saleNumberByHours.push({date: '{{ k }}:00 - {{ k }}:59',amount: {{ saleHour[1]}} });
+        {% endfor %}
+
+        let elemAreaAmountChart = "myAreaChartAmountByHour";
+
+        const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+        const locale = "{{ app.session.get('_locale') }}";
+
+        const loadAreaAmount= loadMultipleAreaChart(elemAreaAmountChart, [saleAmountByHours,saleNumberByHours],
+            ["{{ 'sale.index.stat_hour_title'|trans }}","{{ 'sale.index.stat_hourNumber_title'|trans }}"],
+            thousandSeparator,areacolors);
+
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'sale.index.block_title'|trans }} ({{ sales|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'SALE_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('sale_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-11">
+                    <form action="{{ path('sale_index') }}" method="post" class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|longDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|longDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue" >
+                           <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+            <div>
+                <div class="row align-items-center mb-5 carousel-slide">
+                    <div class="col-md-4 offset-md-1">
+                        <div class="row">
+                            <div class="col-md-12 col-xl-12 mb-1">
+                                <div class="mini-stat clearfix bg-success">
+                                    <span class="mini-stat-icon"><i class="fa fa-shopping-cart"></i></span>
+                                    <div class="mini-stat-info text-right text-light">
+                                    <span class="counter text-white">
+                                        {{ sales|length|formatedInt }}
+                                    </span> {{ 'sale.index.card_title_1'|trans }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-xl-12">
+                                <div class="mini-stat clearfix bg-uyblue">
+                                    <span class="mini-stat-icon"><i class="fa fa-money"></i></span>
+                                    <div class="mini-stat-info text-right text-light">
+                            <span class="counter text-white">
+                                {{ totalAmount|customCurrency}}
+                            </span>
+                                        {{ 'sale.index.card_title_2'|trans }}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-xl-12">
+                                <div class="mini-stat clearfix bg-danger">
+                                    <span class="mini-stat-icon"><i class="fa fa-money"></i></span>
+                                    <div class="mini-stat-info text-right text-light">
+                                        <a href="#modalDebt" class="text-white"
+                                           data-toggle="modal">
+                                            <span class="counter text-white">
+                                                {{ totalAmountDebt|customCurrency}}
+                                            </span>
+                                            {{ 'sale.index.card_title_4'|trans }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% if setting.withDiscount or totalDiscount > 0 %}
+                            <div class="col-md-12 col-xl-12">
+                                <div class="mini-stat clearfix bg-primary">
+                                    <span class="mini-stat-icon"><i class="fa fa-minus-circle"></i></span>
+                                    <div class="mini-stat-info text-right text-light">
+                                        <a href="#modalDiscount" class="text-white"
+                                           data-toggle="modal">
+                                            <span class="counter text-white">
+                                                {{ totalDiscount|customCurrency}}
+                                            </span>
+                                            {{ 'sale.index.card_title_5'|trans }}
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="row">
+                            <div class="col-md-12 col-xl-12">
+                                <div class="mini-stat-2 clearfix bg-secondary">
+                                    <div class="mini-stat-info text-right">
+                                        <table class="table table-bordered text-white" style="font-size: 14px">
+                                            <tr class="text-white font-weight-bold">
+                                                <td>{{ 'sale.index.tr_name'|trans }}</td>
+                                                <td>{{ 'sale.index.tr_nbSales'|trans }}</td>
+                                                <td>
+                                                    {{ 'sale.index.tr_amountType'|trans }}
+                                                    ({{ 'sale.index.tr_amountType2'|trans }})
+                                                </td>
+                                            </tr>
+                                            {% set amountCollected = 0 %}
+                                            {% set amountSettled = 0 %}
+                                            {% for type in paymentMethods %}
+                                                <tr>
+                                                    <td>{{ type.name }}</td>
+                                                    <td>{{ type.nbSales|formatedInt }}</td>
+                                                    <td>
+                                                        {{ type.amountPerceived|formated }}
+                                                        {% if type.amountSettled > 0 %}
+                                                            ({{ type.amountSettled|formated }})
+                                                        {% endif %}
+                                                    </td>
+                                                </tr>
+                                                {% set amountCollected = amountCollected + type.amountPerceived %}
+                                                {% set amountSettled = amountSettled + type.amountSettled %}
+                                            {% endfor %}
+                                            <tr class="font-weight-bold h6">
+                                                <td></td>
+                                                <td></td>
+                                                <td>{{ amountCollected|formated }}
+                                                    {% if amountSettled > 0 %}
+                                                        ({{ amountSettled|formated }})
+                                                    {% endif %}
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-5 carousel-slide">
+                    <div class="col-md-10 offset-md-1">
+                        <canvas id="myAreaChartAmountByHour" width="100%" height="30"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>{{ 'sale.index.tr_date'|trans }}</th>
+                            <th>{{ 'sale.index.tr_amount'|trans }}</th>
+                            {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                            <th>{{ 'sale.index.tr_profit'|trans }}</th>
+                            {% endif %}
+                            <th>{{ 'sale.index.tr_type'|trans }}</th>
+                            <th>{{ 'sale.index.tr_recorder'|trans }}</th>
+                            <th class="not-export not-sort">
+                                {{ 'sale.index.tr_actions'|trans }}
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for sale in sales|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td>
+                                <a href="{{path('sale_detail',{'id': sale.id})}}">
+                                    {{ sale.addDate|longDate }}
+                                </a>
+                            </td>
+                            <td>
+                                {{ sale.amount|formated }}
+                                {% if sale.amountDebt > 0 %}
+                                    <span class="h6 text-danger font-weight-bold">**</span>
+                                {% endif %}
+
+                            </td>
+                            {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                            <td>{{ sale.profit|formated }}</td>
+                            {% endif %}
+                            <td>{{ sale.paymentMethod.name }}</td>
+                            <td class="text-capitalize">
+                                {{ sale.recorder.name }}
+                            </td>
+                            <td>
+                                {% if is_granted(permission_verify,'SALE_PRINT') %}
+                                <a target="_blank" class="p-2 badge badge-success"
+                                   href="{{ path('sale_print',{'id': sale.id}) }}">
+                                    <i class="fa fa-print"></i>
+                                </a>
+                                {% endif %}
+                                {% if is_granted('SALE_DELETE',sale) %}
+                                    <a href="#deleteModal{{sale.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    {% if setting.withSoftDelete == false %}
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{sale.id}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <form action="{{path('sale_delete')}}" method="post">
+                                                        <input type="hidden" name="id" value="{{ sale.id }}">
+                                                        <input type="hidden" name="start" value="{{ start|longDate }}">
+                                                        <input type="hidden" name="end" value="{{ end|longDate  }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.index.modal.delete.title'|trans }}</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        {{ 'sale.index.modal.delete.body1'|trans }} <span class="text-uyblue">{{ sale.amount|formated }}</span> XAF
+                                                        {{ 'sale.index.modal.delete.body2'|trans }} {{ sale.addDate|longDate }}
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="fa fa-trash"></i> {{ 'delete'|trans }}
+                                                        </button>
+                                                    </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% else %}
+                                        <!-- Delete Modal -->
+                                        <div class="modal fade" id="deleteModal{{sale.id}}" tabindex="-1" role="dialog"
+                                             aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog" role="document">
+                                                <div class="modal-content">
+                                                    <form action="{{path('sale_soft_delete')}}" method="post">
+                                                        <input type="hidden" name="id" value="{{ sale.id }}">
+                                                        <input type="hidden" name="start" value="{{ start|longDate }}">
+                                                        <input type="hidden" name="end" value="{{ end|longDate  }}">
+                                                    <div class="modal-header">
+                                                        <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.index.modal.delete.title'|trans }}</h5>
+                                                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                            <span aria-hidden="true">×</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <div class="mb-3">
+                                                            {{ 'sale.index.modal.delete.body1'|trans }} <span class="text-uyblue">{{ sale.amount|formated }}</span> XAF
+                                                            {{ 'sale.index.modal.delete.body2'|trans }} {{ sale.addDate|longDate }}
+                                                        </div>
+                                                        <div class="form-group">
+                                                            <label for="reason">
+                                                                {{ 'sale.index.modal.delete.form.reason'|trans }}
+                                                            </label>
+                                                            <textarea class="form-control" name="reason"
+                                                                      id="reason" cols="30" rows="6"
+                                                                      placeholder="{{ 'sale.index.modal.delete.form.reason'|trans }}"
+                                                                      required></textarea>
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                            {{ 'cancel'|trans }}
+                                                        </button>
+                                                        <button type="submit" class="btn btn-danger">
+                                                            <i class="fa fa-trash"></i>
+                                                            {{ 'delete'|trans }}
+                                                        </button>
+                                                    </div>
+                                                    </form>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% if setting.withDiscount or totalDiscount > 0 %}
+    <!-- Discount Modal -->
+    <div class="modal fade" id="modalDiscount" tabindex="-1" role="dialog"
+         aria-labelledby="modalDiscountLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.index.modal.discount.title'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center text-uyblue-dark">
+                        {{ start|longDate }} || {{ end|longDate }}
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-striped " style="width: 100%;" id="dataTable2">
+                        <thead>
+                            <tr>
+                                <th>{{ 'sale.index.tr_date'|trans }}</th>
+                                <th>{{ 'sale.index.tr_amount'|trans }}</th>
+                                {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                    <th>{{ 'sale.index.tr_profit'|trans }}</th>
+                                {% endif %}
+                                <th>{{ 'sale.index.tr_discount'|trans }}</th>
+                                <th>{{ 'sale.index.tr_type'|trans }}</th>
+                                <th>{{ 'sale.index.tr_recorder'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for saleDiscount in salesDiscount %}
+                            <tr>
+                                <td>
+                                    <a href="{{path('sale_detail',{'id': saleDiscount.id})}}">
+                                        {{ saleDiscount.addDate|longDate }}
+                                    </a>
+                                </td>
+                                <td>
+                                    {{ saleDiscount.amount|formated }}
+                                    {% if saleDiscount.amountDebt > 0 %}
+                                        <span class="h6 text-danger font-weight-bold">**</span>
+                                    {% endif %}
+
+                                </td>
+                                {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                    <td>{{ saleDiscount.profit|formated }}</td>
+                                {% endif %}
+                                <td>{{ saleDiscount.discount }}</td>
+                                <td>{{ saleDiscount.paymentMethod.name }}</td>
+                                <td class="text-capitalize">
+                                    {{ saleDiscount.recorder.name }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Debt Modal -->
+    <div class="modal fade" id="modalDebt" tabindex="-1" role="dialog"
+         aria-labelledby="modalDebtLabel" aria-hidden="true">
+        <div class="modal-dialog modal-xl" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">{{ 'sale.index.modal.debt.title'|trans }}</h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-center text-uyblue-dark">
+                        {{ start|longDate }} || {{ end|longDate }}
+                    </p>
+                    <div class="table-responsive">
+                        <table class="table table-striped " style="width: 100%;" id="dataTable3">
+                            <thead>
+                            <tr>
+                                <th>{{ 'sale.index.tr_date'|trans }}</th>
+                                <th>{{ 'sale.index.tr_amount'|trans }}</th>
+                                {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                    <th>{{ 'sale.index.tr_profit'|trans }}</th>
+                                {% endif %}
+                                {% if setting.withDiscount or totalDiscountDebt > 0 %}
+                                    <th>{{ 'sale.index.tr_discount'|trans }}</th>
+                                {% endif %}
+                                <th>{{ 'sale.index.tr_type'|trans }}</th>
+                                <th>{{ 'sale.index.tr_customer'|trans }}</th>
+                                <th>{{ 'sale.index.tr_recorder'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for saleDebt in salesDebt %}
+                                <tr>
+                                    <td>
+                                        <a href="{{path('sale_detail',{'id': saleDebt.id})}}">
+                                            {{ saleDebt.addDate|longDate }}
+                                        </a>
+                                    </td>
+                                    <td>
+                                        {{ saleDebt.amount|formated }}
+                                        {% if saleDebt.amountDebt > 0 %}
+                                            <span class="h6 text-danger font-weight-bold">**</span>
+                                        {% endif %}
+
+                                    </td>
+                                    {% if is_granted(permission_verify,'SALE_PROFIT') %}
+                                        <td>{{ saleDebt.profit|formated }}</td>
+                                    {% endif %}
+                                    {% if setting.withDiscount or totalDiscountDebt > 0 %}
+                                        <td>{{ saleDebt.discount }}</td>
+                                    {% endif %}
+                                    <td>
+                                        {% if saleDebt.paymentMethod %}
+                                            {{ saleDebt.paymentMethod.name }}
+                                        {% else %}
+                                            /
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if saleDebt.customer %}
+                                            {{ saleDebt.customer.name }}
+                                        {% else %}
+                                            /
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-capitalize">
+                                        {% if saleDebt.recorder %}
+                                            {{ saleDebt.recorder.name }}
+                                        {% else %}
+                                            /
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,109 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'product.productWithWholePrice.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+       const table = getDataTable($('#dataTable'),true);
+
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+    </script>
+{% endblock %}
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'product.productWithWholePrice.block_title'|trans }} ({{ products|length|formatedInt }})
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                <span class="pull-right">
+                    {% if is_granted(permission_verify,'PRODUCT_PRICE_IMPORT') %}
+                        <a class="btn btn-success mr-2" href="{{ path('product_price_import') }}">
+                            <i class="fa fa-upload"></i> {{ 'product.index.form_import'|trans }}
+                        </a>
+                    {% endif %}
+                </span>
+            </h5>
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                <thead>
+                <tr>
+                    {% if setting.withBarcode  %}
+                    <th>
+                        {{ 'product.index.tr_barcode'|trans }}
+                    </th>
+                    {% endif %}
+                    <th>{{ 'product.index.tr_name'|trans }}</th>
+                    <th class="not-export not-sort">{{ 'product.index.tr_qtys'|trans }}</th>
+                    <th class="searchable">{{ 'product.index.tr_qtys'|trans }}</th>
+                    <th class="not-export not-sort">{{ 'product.index.tr_prices'|trans }}</th>
+                    <th class="searchable">{{ 'product.index.tr_prices'|trans }}</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for product in products %}
+                    <tr>
+                        {% if setting.withBarcode  %}
+                        <td>
+                            {{ product.qrCode }}
+                        </td>
+                        {% endif %}
+                        <td>
+                            <a class="text-capitalize text-uyblue-dark"
+                               href="{{ path('product_detail',{id:product.id}) }}">
+                                {{ product.name }}
+                            </a>
+                        </td>
+                        <td>
+                            {% for productPrice in product.productPrices  %}
+                                {{ productPrice.qty }}{% if loop.last == false %}, {% endif %}
+                            {% endfor %}
+                        </td>
+                        {% set qtys = '' %}
+                        {% set unitPrices = '' %}
+                        {% for productPrice in product.productPrices  %}
+                            {% set qtys = qtys~productPrice.qty %}
+                            {% set unitPrices = unitPrices~productPrice.unitPrice %}
+                            {% if loop.last == false %}
+                                {% set qtys = qtys~'_' %}
+                                {% set unitPrices = unitPrices~'_' %}
+                            {% endif %}
+                        {% endfor %}
+                        <td>
+                            {{ qtys }}
+                        </td>
+                        <td>
+                            {% for productPrice in product.productPrices  %}
+                                {{ productPrice.unitPrice }}{% if loop.last == false %},{% endif %}
+                            {% endfor %}
+                        </td>
+
+                        <td>
+                            {{ unitPrices }}
+                        </td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            </div>
+        </div>
+        <div id="modal"></div>
+    </div>
+{% endblock %}

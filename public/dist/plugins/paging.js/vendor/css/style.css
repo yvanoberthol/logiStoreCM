@@ -1,0 +1,108 @@
+
+.header {
+	width: 100%;
+	background: #980224;
+	text-align: center;
+	display: inline-table;
+	color: #fff;
+}
+
+.pagination_wrapper {
+	width: 47.5%;
+	float: left;
+	padding: 4% 0;
+	margin: 15px;
+	border: 1px ridge #ccc;
+	box-sizing: border-box;
+	box-shadow: 0px 0px 5px 0px #ccc;
+	-webkit-transform: rotate(-1deg);
+	-moz-transform: rotate(-1deg);
+	-ms-transform: rotate(-1deg);
+}
+.pagination_wrapper.right {
+	-webkit-transform: rotate(1deg);
+	-moz-transform: rotate(1deg);
+	-ms-transform: rotate(1deg);
+}
+.pagination_wrapper .pagination {
+	margin: 0 auto;
+	padding-left: 0;
+	display: table;
+}
+.pagination_wrapper ul.pagination li {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #ccc;
+	margin: 5px;
+	box-shadow: #CCC 3px 5px 9px 1px;
+}
+.pagination_wrapper ul.pager li {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #ccc;
+}
+.pagination_wrapper .pagination img {
+	height: 100px;
+	width: 100px;
+}
+.pagination_wrapper .pagination > div {
+	display: inline-block;
+	padding: 10px;
+	border: 1px solid #ccc;
+	margin: 5px;
+	box-shadow: #CCC 3px 5px 9px 1px;
+	text-align: center;
+}
+.pagination_wrapper ul li div {
+	text-align: center;
+}
+.icons-courtesy {
+	padding: 10px;
+}
+.horizontal {
+	border: 1px solid #ccc;
+	width: 97%;
+}
+
+.documentation {
+	float: left;
+	width: 100%;
+}
+.documentation .doc {
+	width: 46%;
+	margin: 10px;
+	border: 1px solid #ccc;
+	float: left;
+	padding: 15px;
+	min-height: 200px;
+	font-size: 13px;
+	color: #222;
+	box-shadow: 3px 4px 10px 2px #ccc;
+}
+.documentation .doc > div {
+	margin-top: 10px;
+}
+.tabindent1 {
+	text-indent: 10px;
+}
+.tabindent2 {
+	text-indent: 20px;
+}
+.git_link {
+	position: absolute;
+	top: 26px;
+	right: 25px;
+	padding: 3px;
+	text-decoration: none;
+	background: #fff;
+	color: brown;
+	border-radius: 3px;
+	border: 1px solid brown;
+}
+.social_plugin {
+	float: left;
+	width: 30%;
+	position: absolute;
+	top: 25px;
+	left: 25px;
+}

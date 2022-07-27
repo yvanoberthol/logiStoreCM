@@ -1,0 +1,52 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'noticeBoard.edit.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+{% block body %}
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    {{ 'noticeBoard.edit.block_title'|trans }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                </h5>
+                {{ form_start(form) }}
+                {{ form_widget(form) }}
+                <div class="form-group mt-2">
+                    <button class="btn btn-uyblue">
+                        <i class="fa fa-edit"></i> &nbsp; {{ 'noticeBoard.edit.btn_add'|trans }}
+                    </button>
+                </div>
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script>
+        $(document).ready(function () {
+            const datepicker = $('.datepicker');
+            datepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+            datepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                startDate: date,
+                calendarWeeks: true,
+                clearBtn: true,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+        });
+    </script>
+{% endblock %}

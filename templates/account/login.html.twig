@@ -1,0 +1,90 @@
+{% extends 'baseFront.html.twig' %}
+{% block title %}
+    {{ 'login.title'|trans }}
+{% endblock %}
+
+{% block javascripts %}
+    {% if app_mode == 'demo' %}
+    <script>
+        $('.pointer').click(function (e) {
+           e.preventDefault();
+           const userId = $(this).attr('data-user');
+           const line = $('#user'+userId).children();
+           $('#email').val(line[0].outerText);
+           $('#password').val(line[1].outerText);
+        })
+    </script>
+    {% endif %}
+{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <div class="col-md-8 offset-md-2 col-xl-6 offset-xl-3 horizontal-center">
+            <div class="card">
+                <div class="card-header">
+                    <div class="card-title h3 text-black-50 text-center">
+                        {{ render(path('imageLogo')) }}
+                        <p class="mt-2">{{ 'login.block_title'|trans }}</p>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <h2>{{ 'login.card_title'|trans }}</h2>
+                    {% if error %}
+                        <div class="alert alert-danger text-center font-weight-bold">
+                            <i class="fa fa-close"></i>
+                            {{ error.messageKey|trans(error.messageData, 'security') }}
+                        </div>
+                    {% endif %}
+                    <form action="{{ path('account_login') }}" method="post">
+                        <div class="form-group">
+                            <input type="text" class="form-control form-control-lg" name="_username" id="email"
+                                   placeholder="{{ 'login.form_username'|trans }}" value="{{ username }}" required>
+                        </div>
+                        <div class="form-group">
+                            <input type="password" class="form-control form-control-lg" name="_password" id="password"
+                                   placeholder="{{ 'login.form_password'|trans }}" required>
+                        </div>
+                        <input type="hidden" name="_csrf_token"
+                               value="{{ csrf_token('authenticate') }}"
+                        >
+                        <div class="form-group">
+                            <button class="btn btn-lg btn-uyblue">
+                                <i class="fa fa-sign-in"></i> {{ 'login.form_btn_connexion'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                    {% if app_mode == 'demo' %}
+                        <table class="table table-bordered mt-3">
+                            {% for user in users  %}
+                                <tr id="user{{ user.id }}">
+                                    <td>{{ user.name }}</td>
+                                    <td>{{ user.plainPassword}}</td>
+                                    <td>
+                                        {{ user.role.title }}
+                                        {% if user.enabled %}
+                                            <span class="text-success">
+                                                <i class="fa fa-toggle-on"></i>
+                                            </span>
+                                        {% else %}
+                                            <span class="text-danger">
+                                                <i class="fa fa-toggle-off"></i>
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                    <span data-user="{{ user.id }}" class="badge badge-primary pointer">
+                                        {{ 'login.select'|trans }}
+                                    </span>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                        </table>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+

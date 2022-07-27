@@ -1,0 +1,134 @@
+@font-face {
+  font-family: "Flaticon";
+  src: url("./Flaticon.eot");
+  src: url("./Flaticon.eot?#iefix") format("embedded-opentype"),
+       url("./Flaticon.woff2") format("woff2"),
+       url("./Flaticon.woff") format("woff"),
+       url("./Flaticon.ttf") format("truetype"),
+       url("./Flaticon.svg#Flaticon") format("svg");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@media screen and (-webkit-min-device-pixel-ratio:0) {
+  @font-face {
+    font-family: "Flaticon";
+    src: url("./Flaticon.svg#Flaticon") format("svg");
+  }
+}
+
+.fimanager:before {
+  display: inline-block;
+  font-family: "Flaticon";
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  line-height: 1;
+  text-decoration: inherit;
+  text-rendering: optimizeLegibility;
+  text-transform: none;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-font-smoothing: antialiased;
+  font-smoothing: antialiased;
+    display: block;
+}
+
+.flaticon-001-ambulance:before { content: "\f100"; }
+.flaticon-002-location:before { content: "\f101"; }
+.flaticon-003-medical:before { content: "\f102"; }
+.flaticon-004-patient:before { content: "\f103"; }
+.flaticon-005-bandage:before { content: "\f104"; }
+.flaticon-006-blood-donation:before { content: "\f105"; }
+.flaticon-007-x-ray:before { content: "\f106"; }
+.flaticon-008-ribbon:before { content: "\f107"; }
+.flaticon-009-cannula:before { content: "\f108"; }
+.flaticon-010-cotton-buds:before { content: "\f109"; }
+.flaticon-011-surgeon:before { content: "\f10a"; }
+.flaticon-012-operation:before { content: "\f10b"; }
+.flaticon-013-woman:before { content: "\f10c"; }
+.flaticon-014-fever:before { content: "\f10d"; }
+.flaticon-015-running-nose:before { content: "\f10e"; }
+.flaticon-016-pain:before { content: "\f10f"; }
+.flaticon-017-heart-beat:before { content: "\f110"; }
+.flaticon-018-refresh:before { content: "\f111"; }
+.flaticon-019-bed:before { content: "\f112"; }
+.flaticon-020-hospital-bed:before { content: "\f113"; }
+.flaticon-021-bed:before { content: "\f114"; }
+.flaticon-022-hospital:before { content: "\f115"; }
+.flaticon-023-hospital:before { content: "\f116"; }
+.flaticon-024-hospital-building:before { content: "\f117"; }
+.flaticon-025-chat:before { content: "\f118"; }
+.flaticon-026-symbol:before { content: "\f119"; }
+.flaticon-027-clipboard:before { content: "\f11a"; }
+.flaticon-028-healthcare:before { content: "\f11b"; }
+.flaticon-029-desktop-computer:before { content: "\f11c"; }
+.flaticon-030-file:before { content: "\f11d"; }
+.flaticon-031-laptop:before { content: "\f11e"; }
+.flaticon-032-location:before { content: "\f11f"; }
+.flaticon-033-laptop:before { content: "\f120"; }
+.flaticon-034-mobile:before { content: "\f121"; }
+.flaticon-035-monitor:before { content: "\f122"; }
+.flaticon-036-phone-call:before { content: "\f123"; }
+.flaticon-037-sharing:before { content: "\f124"; }
+.flaticon-038-signal:before { content: "\f125"; }
+.flaticon-039-signboard:before { content: "\f126"; }
+.flaticon-040-mobile-phones:before { content: "\f127"; }
+.flaticon-041-smartwatch:before { content: "\f128"; }
+.flaticon-042-square:before { content: "\f129"; }
+.flaticon-043-briefcase:before { content: "\f12a"; }
+.flaticon-044-reload:before { content: "\f12b"; }
+.flaticon-045-patient:before { content: "\f12c"; }
+.flaticon-046-inhaler:before { content: "\f12d"; }
+.flaticon-047-vaccine:before { content: "\f12e"; }
+.flaticon-048-life-guard:before { content: "\f12f"; }
+.flaticon-049-patient:before { content: "\f130"; }
+.flaticon-050-male:before { content: "\f131"; }
+.flaticon-051-male:before { content: "\f132"; }
+.flaticon-052-medical-mask:before { content: "\f133"; }
+.flaticon-053-nausea:before { content: "\f134"; }
+.flaticon-054-hat:before { content: "\f135"; }
+.flaticon-055-pharmacy:before { content: "\f136"; }
+.flaticon-056-injury:before { content: "\f137"; }
+.flaticon-057-online:before { content: "\f138"; }
+.flaticon-058-message:before { content: "\f139"; }
+.flaticon-059-clipboard:before { content: "\f13a"; }
+.flaticon-060-desktop:before { content: "\f13b"; }
+.flaticon-061-file:before { content: "\f13c"; }
+.flaticon-062-laptop:before { content: "\f13d"; }
+.flaticon-063-mobile:before { content: "\f13e"; }
+.flaticon-064-monitor:before { content: "\f13f"; }
+.flaticon-065-monitor:before { content: "\f140"; }
+.flaticon-066-share:before { content: "\f141"; }
+.flaticon-067-smartphone:before { content: "\f142"; }
+.flaticon-068-smartwatch:before { content: "\f143"; }
+.flaticon-069-suitcase:before { content: "\f144"; }
+.flaticon-070-patient:before { content: "\f145"; }
+.flaticon-071-web-browser:before { content: "\f146"; }
+.flaticon-072-chat:before { content: "\f147"; }
+.flaticon-073-clipboard:before { content: "\f148"; }
+.flaticon-074-desktop-computer:before { content: "\f149"; }
+.flaticon-075-file:before { content: "\f14a"; }
+.flaticon-076-laptop:before { content: "\f14b"; }
+.flaticon-077-smartphone:before { content: "\f14c"; }
+.flaticon-078-monitor:before { content: "\f14d"; }
+.flaticon-079-share:before { content: "\f14e"; }
+.flaticon-080-smartphone:before { content: "\f14f"; }
+.flaticon-081-smartwatch:before { content: "\f150"; }
+.flaticon-082-suitcase:before { content: "\f151"; }
+.flaticon-083-user:before { content: "\f152"; }
+.flaticon-084-scalpel:before { content: "\f153"; }
+.flaticon-085-cough:before { content: "\f154"; }
+.flaticon-086-stethoscope:before { content: "\f155"; }
+.flaticon-087-lights:before { content: "\f156"; }
+.flaticon-088-bed:before { content: "\f157"; }
+.flaticon-089-injection:before { content: "\f158"; }
+.flaticon-090-measuring:before { content: "\f159"; }
+.flaticon-091-fluid:before { content: "\f15a"; }
+.flaticon-092-tweezers:before { content: "\f15b"; }
+.flaticon-093-symbols:before { content: "\f15c"; }
+.flaticon-094-chat:before { content: "\f15d"; }
+.flaticon-095-sick:before { content: "\f15e"; }
+.flaticon-096-scale:before { content: "\f15f"; }
+.flaticon-097-wheelchair:before { content: "\f160"; }
+.flaticon-098-disabled:before { content: "\f161"; }
+.flaticon-099-chest:before { content: "\f162"; }

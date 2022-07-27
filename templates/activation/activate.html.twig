@@ -1,0 +1,48 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'activation.activate.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+
+{% block body %}
+    {% if app.session.get('setting').withSubscription == false or (subscription is defined and subscription.enabled == false) %}
+        <div class="col-sm-12 text-center">
+            <span class="horizontal-center-parent h5">
+                <a href="{{path('home')}}" class="logo">
+                    {{ render(path('imageLogo')) }}
+                </a><br>
+                <span class="mb-2"></span><br>
+                <span class="text-success">
+                  <i class="fa fa-check-circle"></i>
+                </span>
+                {{ 'activation.activate.keyactivated'|trans }}
+            </span>
+        </div>
+    {% else %}
+        <div class="col-md-8 offset-md-2 col-xl-8 offset-xl-2">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mt-0 header-title">
+                        {{ 'activation.activate.block_title'|trans }}
+                        <span class="triangle-border-left pull-left"></span>
+                        <span class="triangle-border-right pull-right"></span>
+                    </h5>
+                    <form action="{{ path('activation') }}" method="post">
+                        <div class="form-group">
+                            <label for="key">{{ 'activation.activate.form.label'|trans }}</label>
+                            <input type="text" class="form-control" name="key" id="key" required>
+                        </div>
+                        <div class="form-group mt-2">
+                            <button class="btn btn-uyblue">
+                                <i class="fa fa-check-circle"></i> &nbsp; {{ 'activation.activate.btn_activate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                    <div class="alert alert-link alert-info">
+                        <i class="fa fa-info-circle"></i>
+                        {{ 'activation.activate.alert_warning'|trans }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+
+{% endblock %}

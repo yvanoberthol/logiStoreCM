@@ -1,0 +1,77 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'adjustment.detail.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-date-time-picker/css/bootstrap-datetimepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block body %}
+
+    <div class="col-md-10 offset-md-1">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="mt-0 header-title">
+                    <span class="mx-2">
+                       <a class="btn btn-light" href="#" onclick="document.getElementById('returnIndex').submit()">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                    {{ 'adjustment.detail.block_title'|trans }} N° {{ adjustment.code }}
+                    <span class="triangle-border-left pull-left"></span>
+                    <span class="triangle-border-right pull-right"></span>
+                </h5>
+                <div class="table-responsive">
+                    <table class="table table-bordered " style="width: 100%;">
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'adjustment.index.modal.detail.body.tr_date'|trans }}
+                            </td>
+                            <td>
+                                {{adjustment.addDate | mediumDate}}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">
+                                {{ 'adjustment.index.modal.detail.body.tr_productList'|trans }}
+                                ({{ adjustment.productAdjusts|length }})
+                            </td>
+                            <td>
+                                <table class="table table-striped">
+                                    <tr class="font-weight-bold">
+                                        <td style="width: 40%;">{{ 'adjustment.index.modal.detail.body.tr_product'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'adjustment.index.modal.detail.body.tr_qtyBeforeAdjust'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'adjustment.index.modal.detail.body.tr_newQty'|trans }}</td>
+                                        <td style="width: 20%;">{{ 'adjustment.index.modal.detail.body.tr_qty'|trans }}</td>
+                                    </tr>
+                                    {% for productAdjust in adjustment.productAdjusts|sort((a,b) => a.product.name <=> b.product.name)  %}
+                                        <tr>
+                                            <td>{{ productAdjust.product.name }}</td>
+                                            <td>{{ productAdjust.qtyBeforeAdjust|formatedInt }}</td>
+                                            <td>{{ productAdjust.newQty|formatedInt }}</td>
+                                            <td>{{ productAdjust.qty|formatedInt }}</td>
+                                        </tr>
+                                    {% endfor %}
+                                </table>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td class="font-weight-bold h6">{{ 'adjustment.index.modal.detail.body.tr_recorder'|trans }}</td>
+                            <td class="text-capitalize">{{adjustment.recorder.name}}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <form action="{{ path('adjustment_index') }}" method="post" id="returnIndex">
+        <input type="hidden" name="start" value="{{ adjustment.addDate|mediumDate}}">
+        <input type="hidden" name="end" value="{{ adjustment.addDate|mediumDate }}">
+    </form>
+{% endblock %}
+{% block javascripts %}
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+{% endblock %}

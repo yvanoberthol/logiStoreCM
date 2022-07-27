@@ -1,0 +1,621 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+
+    <div class="row mb-3 align-items-center">
+        <div class="col-md-4 text-center mb-2">
+            <div class="avatar avatar-lg">
+                    <span class="avatar-text avatar-text-indigo rounded-circle">
+                        <span class="initial-wrap">
+                            <span>{{supplier.initials}}</span>
+                        </span>
+                    </span>
+            </div>
+            <h3 class="text-capitalize">{{ supplier.name|upper }}</h3>
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header bg-white p-0">
+                    <span class="triangle-border-right pull-right"></span>
+                    <span>
+                       <a class="btn btn-light" href="{{ path('supplier_index') }}">
+                            <i class="fa fa-arrow-left"></i>
+                        </a>
+                    </span>
+                </div>
+                <div class="card-body">
+                    <table class="table table-bordered font-weight-bold h6">
+                        <tr>
+                            <td></td>
+                            <td>
+                                <form action="" class="form-inline">
+                                    <select class="form-control mr-2" name="supplierSearch" id="supplier"
+                                            style="width:60% !important;">
+                                        {% for supplier in suppliers %}
+                                            <option value="{{ supplier.id }}">
+                                                {{ supplier.name }}
+                                            </option>
+                                        {% endfor %}
+                                    </select>
+                                    <button class="btn btn-info ml-2">
+                                        <i class="fa fa-search"></i>
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% if supplier.email %}
+                            <tr>
+                                <td>{{ 'performance.performanceEmployee.tr_email'|trans }}</td>
+                                <td>{{ supplier.email }}</td>
+                            </tr>
+                        {% endif %}
+                        {% if supplier.firstPhoneNumber or supplier.secondPhoneNumber %}
+                        <tr>
+                            <td>{{ 'performance.performanceEmployee.tr_tel'|trans }}</td>
+                            <td>{{ supplier.firstPhoneNumber }} // {{ supplier.secondPhoneNumber }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if supplier.type %}
+                        <tr>
+                            <td>{{ 'performance.performanceSupplier.tr_type'|trans }}</td>
+                            <td>{{ supplier.type|trans }}</td>
+                        </tr>
+                        {% endif %}
+                        {% if setting.withSettlement %}
+                        <tr>
+                            <td>{{ 'performance.performanceSupplier.tr_amountDebt'|trans }}</td>
+                            <td>
+                                <i class="h5">
+                                    <span class="badge {% if supplier.amountDebt > 0 %}badge-danger{% else %}badge-info{% endif %}">
+                                        {{ supplier.amountDebt|formated }}
+                                    </span>
+                                </i>
+                                {% if supplier.amountDebt > 0 and is_granted(permission_verify,'STOCK_PAYMENT_ADD')%}
+                                    <a href="#addStockPaymentModal" data-toggle="modal">
+                                       <i class="fa fa-plus"></i>
+                                        {{ 'performance.performanceSupplier.tr_addStockPayment'|trans }}
+                                    </a>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>{{ 'performance.performanceSupplier.tr_nbOrders'|trans }}</td>
+                            <td>
+                                {% for stockYear in stocksYear %}
+                                <i class="h5">
+                                    <span class="badge badge-secondary" data-original-title="{{ stockYear.year }}"
+                                          data-toggle="tooltip-violet" data-placement="top">
+                                            {{ stockYear.nbStocks|formatedInt }}
+                                    </span>
+                                </i>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceSupplier.tr_amount'|trans }}</td>
+                            <td>
+                                {% for stockYear in stocksYear %}
+                                <i class="h5">
+                                    <span class="badge badge-secondary" data-original-title="{{ stockYear.year }}"
+                                          data-toggle="tooltip-purple" data-placement="top">
+                                            {{ stockYear.amount|formated }}
+                                    </span>
+                                </i>
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>{{ 'performance.performanceSupplier.tr_history'|trans }}</td>
+                            <td>
+                                <ul>
+                                    <li>
+                                        <a href="#productHistory" data-toggle="modal">
+                                            {{ 'performance.performanceSupplier.tr_product_history'|trans }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#stockHistory" data-toggle="modal">
+                                            {{ 'performance.performanceSupplier.tr_stock_history'|trans }}
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#stockPaymentHistory" data-toggle="modal">
+                                            {{ 'performance.performanceSupplier.tr_stock_payment_history'|trans }}
+                                        </a>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-3">
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-header">
+                    <h4 class="mt-0 header-title">
+                        {{ 'performance.performanceSupplier.card_title_month'|trans }}
+                        <div class="float-right">
+                            <form class="form-inline">
+                                <select name="month_area" id="month_area" class="form-control mr-1 mb-1">
+                                    {% for key,month in months %}
+                                        <option value="{{ key - 1 }}" {% if key == monthNow %}selected{% endif %}>
+                                            {{month|trans({},'month')}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input name="year_area" id="year_area" class="form-control mr-1 mb-1" value="{{ year }}">
+                                <button class="btn btn-outline-uyblue" id="btnForAreaChart">
+                                    <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6 mb-2">
+                            <canvas id="myAreaChartStock" width="100%" height="50"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="myAreaChartStockAmount" width="100%" height="50"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12 mb-2">
+            <div class="card">
+                <span class="triangle-border-left pull-left"></span>
+                <div class="card-header">
+                    <h4 class="mt-0 header-title">
+                        {{ 'performance.performanceSupplier.card_title_year'|trans }}
+                        <div class="float-right">
+                            <form class="form-inline">
+                                <input name="year_bar" id="year_bar"
+                                       class="form-control mr-1 mb-1" value="{{ year }}">
+                                <button class="btn btn-outline-uyblue" id="btnForBarChart">
+                                    <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <canvas id="myBarChartStock" width="100%" height="60"></canvas>
+                        </div>
+                        <div class="col-md-6">
+                            <canvas id="myBarChartStockAmount" width="100%" height="60"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade addModal"
+         id="productHistory" tabindex="-1" role="dialog"
+         aria-labelledby="productHistoryLabel" aria-hidden="true">
+        <div class="modal-dialog {% if setting.withBarcode  %}modal-lg{% endif %}" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <span>
+                            {{ "performance.performanceSupplier.productHistoric.title"|trans }}
+                            <span class="text-capitalize text-info">{{ supplier.name }}</span>
+                        </span>
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" style="width: 100%;" id="productTable">
+                        <thead>
+                            <tr>
+                                {% if setting.withBarcode  %}
+                                <th>{{ 'product.index.tr_barcode'|trans }}</th>
+                                {% endif %}
+                                <th>{{ 'product.index.tr_name'|trans }}</th>
+                                <th>{{ 'product.index.tr_qty'|trans }}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                        {% for product in products  %}
+                            <tr>
+                                {% if setting.withBarcode  %}
+                                <td>{{ product[0].qrCode }}</td>
+                                {% endif %}
+                                <td>{{ product[0].name }}</td>
+                                <td>{{ product.qtyOrdered|formated }}</td>
+                            </tr>
+                        {% endfor %}
+
+                        </tbody>
+                    </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade addModal"
+         id="stockHistory" tabindex="-1" role="dialog"
+         aria-labelledby="stockHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <span class="text-capitalize">
+                          {{ "performance.performanceSupplier.stockHistoric.title"|trans }}
+                        </span>
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <form action="{{ path('performance_supplier',{id: supplier.id}) }}"
+                                  method="post" class="form-inline float-right">
+                                <input type="hidden" name="showModalStock" value="true">
+                                <input type="text" class="datepicker form-control mr-2 mb-1"
+                                       name="start" value="{{ start|mediumDate }}">
+                                <input type="text" class="datepicker form-control mr-2 mb-1"
+                                       name="end" value="{{end|mediumDate }}">
+                                <button type="submit" class="btn btn-outline-uyblue" >
+                                    <i class="fa fa-search"></i> {{ 'lb_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive" id="stockTableR">
+                        <table class="table table-striped" style="width: 100%;" id="stockTable">
+                            <thead>
+                            <tr>
+                                <th>{{ 'stock.index.tr_number'|trans }}</th>
+                                <th class="not-sort">{{ 'stock.index.tr_date'|trans }}</th>
+                                <th class="not-sort">{{ 'stock.index.tr_detail'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for stock in stocks  %}
+                                <tr>
+                                    <td>
+                                        <a href="{{ path('stock_detail',{id:stock.id}) }}">
+                                            {{ stock.code }}
+                                        </a>
+                                    </td>
+                                    <td>{{ stock.addDate|longDate }}</td>
+                                    <td>
+                                        <span class="h6 font-weight-bold">{{ stock.amount|customCurrency }}</span> <br>
+                                        {% for productStock in stock.productStocks %}
+                                           <span class="badge badge-uyblue">
+                                               {{ productStock.product.name~' x '~(productStock.qty|formated) }}
+                                           </span>
+                                        {% endfor %}
+                                    </td>
+                                </tr>
+                            {% endfor %}
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade addModal"
+         id="stockPaymentHistory" tabindex="-1" role="dialog"
+         aria-labelledby="stockPaymentHistoryModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        <span class="text-capitalize">
+                          {{ "performance.performanceSupplier.stockPaymentHistory.title"|trans }}
+                        </span>
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped" style="width: 100%;" id="stockPaymentTable">
+                            <thead>
+                            <tr>
+                                <th>{{ 'stock.index.tr_date'|trans }}</th>
+                                <th class="not-sort">{{ 'stock.index.tr_amount'|trans }}</th>
+                                <th class="not-sort">{{ 'stockPayment.index.tr_recorder'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                                {% for stockPayment in stockPayments %}
+                                    <tr>
+                                        <td>{{ stockPayment.date|mediumDate }}</td>
+                                        <td>
+                                            {{ stockPayment.amount|customCurrency }}
+                                        </td>
+                                        <td class="text-capitalize">
+                                            {{ stockPayment.recorderName }}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                        {{ 'cancel'|trans }}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if setting.withSettlement and supplier.amountDebt > 0 and is_granted(permission_verify,'STOCK_PAYMENT_ADD')%}
+        <!-- add payment Modal -->
+        <div class="modal fade" id="addStockPaymentModal" tabindex="-1" role="dialog"
+             aria-labelledby="addStockPaymentModal" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="exampleModalLabel">
+                            {{ 'performance.performanceSupplier.modal.addPayment.title'|trans }}
+                        </h5>
+                        <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">×</span>
+                        </button>
+                    </div>
+                    <form action="{{ path('supplier_stock_payment_add') }}" method="post">
+                        <input type="hidden" value="{{ supplier.id }}" name="supplier">
+                        <div class="modal-body">
+                            <div class="alert alert-info text-justify">
+                                <i class="fa fa-info-circle"></i>
+                                {{ 'performance.performanceSupplier.modal.addPayment.infoMessage'|trans }}
+                                <b>{{ supplier.amountDebt|customCurrency }}</b>
+                            </div>
+                            <div class="form-group">
+                                <label for="date">
+                                    {{ 'performance.performanceSupplier.modal.addPayment.form.date'|trans }}
+                                </label>
+                                <input type="text" class="form-control datepicker" name="date"
+                                       id="date" required value="{{ 'now'|mediumDate }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="amount">
+                                    {{ 'performance.performanceSupplier.modal.addPayment.form.amount'|trans }}
+                                </label>
+                                <input type="number" class="form-control" name="amount"
+                                       id="amount" value="{{ supplier.amountDebt}}" min="1" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="paymentMethod">
+                                    {{ 'performance.performanceSupplier.modal.addPayment.form.paymentMethod'|trans }}
+                                </label>
+                                <select class="form-control" name="paymentMethod" id="paymentMethod">
+                                    {% for type in paymentMethods  %}
+                                        <option value="{{ type.id }}">{{ type.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                {{ 'cancel'|trans }}
+                            </button>
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-check-circle"></i>
+                                {{ 'validate'|trans }}
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block title %}
+    {{ 'performance.performanceSupplier.title'|trans({},'messages',app.session.get('_locale')) }}
+{% endblock %}
+
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/select2/dist/css/select2.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/select2/dist/js/select2.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/select2/dist/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            const datepicker = $('.datepicker');
+            datepicker.on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+
+            datepicker.datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks: true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            const productTable = getDataTable($('#productTable'),true);
+            const stockTable = getDataTable($('#stockTable'),true);
+            const stockPaymentTable = getDataTable($('#stockPaymentTable'),true);
+
+            {% if showModalStock  %}
+                $("#stockHistory").modal({show: true});
+            {% endif %}
+
+        });
+    </script>
+
+    <script>
+        $(document).ready(function () {
+
+            let supplier = $('#supplier');
+            supplier.select2({
+                placeholder: "{{ 'performance.performanceSupplier.select_supplier'|trans }}",
+                allowClear: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+            {% if supplier is defined %}
+            supplier.val({{ supplier.id }}).trigger('change');
+            {% else %}
+            supplier.val([]).trigger('change');
+            {% endif %}
+
+        });
+    </script>
+
+    <script src="{{ asset('dist/js/tooltip-data.js') }}"></script>
+
+    {% if stockStats is not empty %}
+        <script src="{{ asset('dist/plugins/chart.js/chart.min.js') }}"></script>
+        <script src="{{ asset('dist/js/downloadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/formatNumber.js') }}"></script>
+        <script src="{{ asset('dist/js/allMonth.js') }}"></script>
+        <script src="{{ asset('dist/js/minAndMaxStat.js') }}"></script>
+        <script src="{{ asset('dist/js/statFunction.js') }}"></script>
+        <script src="{{ asset('dist/js/loadChart.js') }}"></script>
+        <script src="{{ asset('dist/js/percentageFunction.js') }}"></script>
+        <script src="{{ asset('dist/plugins/color/transparentize.js') }}"></script>
+
+        <script>
+            let stocksNumber = [];
+            let stocksAmount = [];
+            {% for stock in stockStats %}
+            stocksNumber.push({dateNotFormated: '{{ stock['date']|date('Y-m-d') }}',date: '{{ stock['date']|mediumDate }}',amount: {{ stock['nbStocks']}}});
+            stocksAmount.push({dateNotFormated: '{{ stock['date']|date('Y-m-d') }}',date: '{{ stock['date']|mediumDate }}',amount: {{ stock['amount']}}});
+            {% endfor %}
+
+            let elemAreaChart = "myAreaChartStock";
+            let elemAreaChartAmount = "myAreaChartStockAmount";
+            let elemBarChart = "myBarChartStock";
+            let elemBarChartAmount = "myBarChartStockAmount";
+
+            const thousandSeparator = "{{ app.session.get('setting').currencyThousandSeparator }}";
+            const locale = "{{ app.session.get('_locale') }}";
+
+            const loadArea = loadAreaChart(elemAreaChart, saleByMonth(stocksNumber,
+                new Date().getUTCMonth(),new Date().getFullYear()),"{{ 'performance.performanceSupplier.stat_title_number'|trans }}",
+                thousandSeparator,areacolors);
+
+            const loadAreaAmount = loadAreaChart(elemAreaChartAmount,
+                saleByMonth(stocksAmount,
+                    new Date().getUTCMonth(),new Date().getFullYear()),"{{ 'performance.performanceSupplier.stat_title_amount'|trans }}",
+                thousandSeparator,areacolors);
+
+            const loadBar = loadBarChart(elemBarChart,
+                saleByYear(stocksNumber,new Date().getFullYear()),"{{ 'performance.performanceSupplier.stat_title_number'|trans }}",
+                thousandSeparator,locale,barcolors);
+
+            const loadBarAmount = loadBarChart(elemBarChartAmount,
+                saleByYear(stocksAmount,new Date().getFullYear()),"{{ 'performance.performanceSupplier.stat_title_amount'|trans }}",
+                thousandSeparator,locale,barcolors);
+
+
+            function updateAreaChart(stocks,loadArea){
+                let color = "rgb(43,153,216)";
+
+                const data = stocks.map(stock => {return stock.amount});
+
+                loadArea.options.scales.y.max = 0;
+                if (data.length > 0){
+                    color = data.map(x => 'rgb(43,153,216)');
+                    color[argMax(data)] = 'rgb(2,3,216)';
+                    color[argMin(data)] = 'rgb(216,22,31)';
+                    const valueMax = data[argMax(data)];
+                    loadArea.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                loadArea.data.labels = stocks.map(stock => {
+                    return stock.date
+                });
+                loadArea.data.datasets[0].pointBackgroundColor = color;
+                loadArea.data.datasets[0].data = data;
+                loadArea.update();
+
+            }
+
+            function updateBarChart(data,loadBar){
+                loadBar.options.scales.y.max = 0;
+                if (data.length > 0){
+                    const valueMax = data[argMax(data)];
+                    loadBar.options.scales.y.max = percentageLimitChart(valueMax);
+                }
+
+                // loadBar.data.datasets[0].pointBackgroundColor = color;
+                loadBar.data.datasets[0].data = data;
+                loadBar.update();
+            }
+
+            // mettre à jour la vue du tableau statisque en fonction des critères
+            $('#btnForAreaChart').click(function (event) {
+                event.preventDefault();
+                const month_area = parseInt($('#month_area').val());
+                const year_area = parseInt($('#year_area').val());
+
+                const saleByMonthAmount = saleByMonth(stocksAmount,month_area,year_area);
+                const saleByMonthNumber = saleByMonth(stocksNumber,month_area,year_area);
+
+                updateAreaChart(saleByMonthNumber,loadArea);
+                updateAreaChart(saleByMonthAmount,loadAreaAmount);
+
+            });
+
+            $('#btnForBarChart').click(function (event) {
+                event.preventDefault();
+                const year_bar = parseInt($('#year_bar').val());
+
+                const dataNumber = saleByYear(stocksNumber,year_bar)
+                    .map(stock => {return stock.amount});
+
+                const dataAmount = saleByYear(stocksAmount,year_bar)
+                    .map(stock => {return stock.amount});
+
+                updateBarChart(dataNumber,loadBar);
+                updateBarChart(dataAmount,loadBarAmount);
+
+            });
+        </script>
+    {% endif %}
+{% endblock %}

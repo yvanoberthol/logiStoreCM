@@ -1,0 +1,26 @@
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteModal{{product.id}}" tabindex="-1" role="dialog"
+     aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">{{ 'product.index.modal.title'|trans({},'messages',app.session.get('_locale')) }}</h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                {{ 'product.index.modal.body'|trans({},'messages',app.session.get('_locale')) }}
+                <span class="text-info">{{ product.name }}</span> ?
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    {{ 'product.index.modal.footer.cancel'|trans({},'messages',app.session.get('_locale')) }}
+                </button>
+                <a class="btn btn-danger" href="{{path('product_delete',{'id':product.id})}}">
+                    <i class="fa fa-trash"></i> {{ 'product.index.modal.footer.delete'|trans({},'messages',app.session.get('_locale')) }}
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

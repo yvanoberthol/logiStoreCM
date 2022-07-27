@@ -1,0 +1,137 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}
+    {{ 'loss.index.title'|trans({},'messages',app.session.get('_locale')) }}
+    {{ start|mediumDate~' '~end|mediumDate }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script type="text/javascript">
+        $('.datepicker').on('focus', function(e) {
+            e.preventDefault();
+            $(this).attr("autocomplete", "off");
+        });
+        $('.datepicker').datepicker({
+            format: '{{ app.session.get('setting').dateMediumPicker }}',
+            autoclose: true,
+            calendarWeeks : true,
+            clearBtn: false,
+            disableTouchKeyboard: true,
+            language: "{{ app.session.get('_locale') }}"
+        });
+
+        getDataTable($('#dataTable'));
+        $('#dataTable tbody').on( 'click', 'tr', function () {
+            $(this).toggleClass('selected bg-light');
+        } );
+    </script>
+{% endblock %}
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'loss.index.block_title'|trans }} ({{ losses|length|formatedInt }})
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'LOSS_NEW') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue" href="{{ path('loss_new') }}">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+                <span class="triangle-border-left pull-left"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('loss_index') }}" method="post"
+                          class="form-inline float-right">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="start"
+                               value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1" name="end"
+                               value="{{ end|mediumDate }}">
+                        <button type="submit" class="btn btn-outline-uyblue mr-2" >
+                            <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="table-responsive">
+                <table class="table" style="width: 100%;" id="dataTable">
+                    <thead>
+                    <tr>
+                        <th class="not-sort">{{ 'loss.index.tr_date'|trans }}</th>
+                        <th>{{ 'loss.index.tr_product'|trans }}</th>
+                        <th>{{ 'loss.index.tr_quantity'|trans }}</th>
+                        <th>{{ 'loss.index.tr_type'|trans }}</th>
+                        <th>{{ 'loss.index.tr_recorder'|trans }}</th>
+                        <th class="not-export not-sort">{{ 'loss.index.tr_actions'|trans }}</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for loss in losses|sort((a,b) => a.addDate <=> b.addDate) %}
+                        <tr>
+                            <td class="text-capitalize">
+                                {{ loss.addDate|mediumDate }}
+                            </td>
+                            <td class="text-capitalize">
+                                {{ loss.product.name }}
+                            </td>
+                            <td>{{ loss.qty|formatedInt }}</td>
+                            <td>{{ loss.type.name|trans }}</td>
+                            <td>
+                                {% if loss.recorder %}
+                                    {{ loss.recorder.name }}
+                                {% else %}
+                                    //
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if is_granted('LOSS_DELETE',loss) %}
+                                    <a href="#deleteModal{{loss.id}}" data-toggle="modal" class="p-2 badge badge-danger">
+                                        <i class="fa fa-remove"></i>
+                                    </a>
+                                    <!-- Delete Modal -->
+                                    <div class="modal fade" id="deleteModal{{loss.id}}" tabindex="-1" role="dialog"
+                                         aria-labelledby="deleteModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog" role="document">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="exampleModalLabel">{{ 'loss.index.modal.delete.title'|trans }}</h5>
+                                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">×</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    {{ 'loss.index.modal.delete.body'|trans }} {{ loss.addDate|mediumDate }}?
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                                                        {{ 'loss.index.modal.delete.footer.cancel'|trans }}
+                                                    </button>
+                                                    <a class="btn btn-danger" href="{{path('loss_delete',{'id':loss.id})}}">
+                                                        <i class="fa fa-trash"></i> {{ 'loss.index.modal.delete.footer.delete'|trans }}
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

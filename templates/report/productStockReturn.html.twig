@@ -1,0 +1,190 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'report.productStockReturn.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.searchHighlight.css') }}">
+{% endblock %}
+
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-nobutton-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+            $('.datepicker').on('focus', function(e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks : true,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+
+            getDataTable($('#dataTable'),true,10,'frtip');
+
+            const body = $('body');
+            body.on('click', '.qtyReturn', function (e) {
+                e.preventDefault();
+                const productId = $(this).attr('data-product');
+                const link = '{{ path('rest_stock_return') }}';
+                modalProduct(productId,link);
+
+            });
+            function modalProduct(productId,link) {
+                let data = new FormData();
+                data.append("product", productId + '');
+                data.append("start", "{{ start|mediumDefaultDate }}");
+                data.append("end", "{{ end|mediumDefaultDate }}");
+
+                $('#modal').html("");
+                fetch(link, {
+                    method: 'POST',
+                    credentials: 'include',
+                    body: data,
+                }).then(async response => {
+                    try {
+                        const data = await response.json();
+                        $('#modal').html(data.content);
+                        $('.modal').modal('show');
+                        return false;
+                    } catch (reason) {
+                        console.log(reason);
+                    }
+                }).catch(function (reason) {
+                    console.log(reason);
+                })
+            }
+
+        });
+    </script>
+{% endblock %}
+
+{% block body %}
+
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                {{ 'report.productStockReturn.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+            </h5>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <form action="{{ path('report_stock_product_return') }}" method="post"
+                          class="form-inline">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="start" value="{{ start|mediumDate }}">
+                        <input type="text" class="datepicker form-control mr-2 mb-1"
+                               name="end" value="{{ end|mediumDate }}">
+                        <button type="submit" name="search"
+                                class="btn btn-outline-uyblue mr-2" >
+                            <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                        </button>
+                    </form>
+                    {% if products|length > 0 %}
+                    <form action="{{ path('report_stock_product_return') }}" method="post" target="_blank"
+                          class="pull-right">
+                        <input type="hidden" name="start" value="{{ start|longDate }}">
+                        <input type="hidden" name="end" value="{{ end|longDate }}">
+                        <button type="submit" name="print" value="print"
+                                class="btn btn-success" >
+                            <i class="fa fa-print"></i> {{ 'report.print'|trans }}
+                        </button>
+                    </form>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row title mt-5 mx-2">
+                <div class="text-center col-sm-4 col-md-4 col-lg-4 col-xl-4 py-2 rounded">
+                    <a href="{{path('home')}}" class="logo">
+                        {{ render(path('imageLogo')) }}
+                    </a><br>
+                    <b>{{ store.name }}</b><br>
+                    {% if store.phoneNumber is not empty %}
+                        {{ 'report.phone'|trans }}: {{ store.phoneNumber }}
+                    {% endif %}
+                </div>
+                <div class="col-sm-4 col-md-4 col-lg-4 col-xl-4 text-right offset-4">
+                    {{ 'report.doThe'|trans }}  {{ "now"|mediumDate }} <br>
+                    {{ 'report.agent'|trans }}: <span class="text-uppercase font-weight-bold">{{ app.user.name }}</span>
+                </div>
+            </div>
+            <div class="row mt-3 mb-2">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center">
+                    <span class="h6 text-uppercase">
+                        {{ 'report.reportSession'|trans }} /
+                        <i>{{ 'report.productStockReturn.productList'|trans }}</i>
+                    </span>
+                </div>
+            </div>
+            <div class="row mt-2 mb-2 text-uppercase">
+                <div class="col-sm-12 col-md-12 col-lg-12 col-xl-12 text-center py-2"
+                     style="border-top: #0a0c0d solid 2px;border-bottom: #0a0c0d solid 2px" >
+                    <span class="font-weight-bold">
+                        {{ start|mediumDate }} - {{ end|mediumDate }}
+                    </span>
+                </div>
+            </div>
+            <div class="table-responsive">
+                <table class="table " style="width: 100%;" id="dataTable">
+                    <thead>
+                        <tr>
+                            {% if setting.withBarcode  %}
+                                <th>{{ 'report.productStockReturn.tr_barcode'|trans }}</th>
+                            {% endif %}
+
+                            <th>{{ 'report.productStockReturn.tr_name'|trans }}</th>
+                            <th>{{ 'report.productStockReturn.tr_qtyReturn'|trans }}</th>
+                            <th>{{ 'report.productStockReturn.tr_amount'|trans }}</th>
+                            <th>{{ 'report.productStockReturn.tr_amount_repay'|trans }}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for product in products %}
+                        <tr>
+                            {% if setting.withBarcode  %}
+                                <td>{{ product[0].qrCode }}</td>
+                            {% endif %}
+                            <td>{{ product[0].name }}</td>
+                            <td>
+                                <span class="qtyReturn" data-product="{{ product[0].id }}">
+                                    {{ product.qtyReturn|formatedInt }}
+                                </span>
+                            </td>
+                            <td>{{ product.amount|formated }}</td>
+                            <td>{{ product.amountRepay|formated }}</td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                    {% if products|length > 0 %}
+                    <tfoot>
+                        <tr class="font-weight-bold">
+							{% if setting.withBarcode  %}
+								<td></td>
+							{% endif %}
+                            <td></td>
+                            <td>{{ totalQtyReturn|formated }}</td>
+                            <td>
+                                {{ totalAmount|formated }}
+                            </td>
+                            <td>{{ totalAmountRepay|formated }}</td>
+                        </tr>
+                    </tfoot>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+    <div id="modal"></div>
+{% endblock %}

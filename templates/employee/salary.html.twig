@@ -1,0 +1,251 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ 'employee.salary.title'|trans({},'messages',app.session.get('_locale')) }}{% endblock %}
+{% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/dataTables.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/buttons.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/datatables/responsive.bootstrap4.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('dist/plugins/bootstrap-datepicker/css/bootstrap-datepicker.min.css') }}">
+{% endblock %}
+{% block javascripts %}
+    {%  include 'partials/jsTable.html.twig' %}
+    <script src="{{ asset('dist/js/datatable/sb-datatables-'~app.session.get('_locale')~'.js') }}"></script>
+
+    <script src="{{ asset('dist/js/dateJs.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/bootstrap-datepicker.min.js') }}"></script>
+    <script src="{{ asset('dist/plugins/bootstrap-datepicker/js/i18n/'~app.session.get('_locale')~'.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $('.datepicker').on('focus', function (e) {
+                e.preventDefault();
+                $(this).attr("autocomplete", "off");
+            });
+            const date = dayjs(new Date()).format("{{ app.session.get('setting').mediumDateJs }}");
+            $('.datepicker').datepicker({
+                format: '{{ app.session.get('setting').dateMediumPicker }}',
+                autoclose: true,
+                calendarWeeks: true,
+                endDate: date,
+                clearBtn: false,
+                disableTouchKeyboard: true,
+                language: "{{ app.session.get('_locale') }}"
+            });
+            getDataTable($('#dataTable'));
+        });
+    </script>
+
+
+{% endblock %}
+
+{% block body %}
+    <div class="card">
+        <div class="card-body">
+            <h5 class="mt-0 header-title">
+                <span class="mx-2">
+                   <a class="btn btn-light" href="{{ path('employee_salary') }}">
+                        <i class="fa fa-arrow-left"></i>
+                    </a>
+                </span>
+                {{ 'employee.salary.block_title'|trans }}
+                <span class="triangle-border-left pull-left"></span>
+                <span class="triangle-border-right pull-right ml-3"></span>
+                {% if is_granted(permission_verify,'EMPLOYEE_SALARY_ADD') %}
+                    <span class="pull-right">
+                        <a class="btn btn-outline-uyblue"
+                           href="#addSalaryModal"
+                           data-toggle="modal">
+                            <i class="fa fa-plus"></i>
+                        </a>
+                    </span>
+                {% endif %}
+            </h5>
+
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="text-center">
+                                {% if employee.imageName is not empty %}
+                                    <img src="{{ asset(userPhoto)~employee.imageName }}"
+                                         alt="{{employee.allName}}" class="avatar-img rounded-circle">
+                                {% else %}
+                                    <div class="avatar">
+                                        <span class="avatar-text avatar-text-indigo rounded-circle">
+                                            <span class="initial-wrap">
+                                                <span>{{employee.initials}}</span>
+                                            </span>
+                                        </span>
+                                    </div>
+                                {% endif %}
+                            </div>
+                            <div class="mb-2">
+                                <table class="table table-striped text-center">
+                                    {% if employee.allName is not empty %}
+                                        <tr>
+                                            <td>{{ 'employee.salary.tr_name'|trans }}</td>
+                                            <td>{{ employee.allName }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if employee.email is not empty %}
+                                        <tr>
+                                            <td>{{ 'employee.salary.tr_email'|trans}}</td>
+                                            <td>{{ employee.email }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    {% if employee.gender is not empty %}
+                                        <tr>
+                                            <td>{{ 'employee.salary.tr_gender'|trans }}</td>
+                                            <td>{{ employee.gender }}</td>
+                                        </tr>
+                                    {% endif %}
+                                    <tr>
+                                        <td>{{ 'employee.salary.tr_salary'|trans }}</td>
+                                        <td>{{ employee.salary|customCurrency }}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-8">
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <form action="{{ path('employee_salary_index',{id:employee.id}) }}" method="post"
+                                  class="form-inline float-right">
+                                <select name="month" id="month"
+                                        class="form-control mr-2 mb-1">
+                                    <option value="0" {% if monthNow=='0' %}selected{% endif %}>
+                                        {{ 'employee.salary.form.month'|trans }}
+                                    </option>
+                                    {% for key,month in months %}
+                                        <option value="{{ key }}" {% if key == monthNow %}selected{% endif %}>
+                                            {{month|trans({},'month')}}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <input type="number" class="form-control mr-2 mb-1"
+                                       name="year" value="{{ year }}">
+                                <button type="submit" class="btn btn-outline-uyblue" >
+                                    <i class="fa fa-search"></i> {{ 'performance.performanceStore.form.btn_search'|trans }}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                            <tr>
+                                <th class="not-sort">{{ 'employee.salary.tr_date'|trans }}</th>
+                                <th class="not-sort">{{ 'employee.salary.tr_monthYear'|trans }}</th>
+                                <th class="not-sort">{{ 'employee.salary.tr_amount'|trans }}</th>
+                                <th class="not-sort">{{ 'employee.salary.tr_actions'|trans }}</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% set totalAmount = 0 %}
+                            {% set salary = 0 %}
+                            {% for payment in payments %}
+                                <tr>
+                                    <td>{{payment.addDate|mediumDate}}</td>
+                                    <td>{{payment.monthYear}}</td>
+                                    <td>{{payment.amount|formated}}</td>
+                                    <td>
+                                        {% if is_granted(permission_verify,'EMPLOYEE_SALARY_DELETE') %}
+                                        <a href="{{ path('employee_salary_delete',{id: payment.id}) }}" class="p-2 badge badge-danger">
+                                            <i class="fa fa-remove"></i>
+                                        </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% set totalAmount = totalAmount + payment.amount %}
+                                {% set salary = payment.salary %}
+                            {% endfor %}
+                            </tbody>
+                            {% if monthNow != '0' and totalAmount > 0%}
+                                {% set rest = salary - totalAmount%}
+                                <tfoot class="font-weight-bold">
+                                <tr>
+                                    <td></td>
+                                    <td>
+                                        {% if rest > 0 %}
+                                            {{ salary|customCurrency }}
+                                        {% endif %}
+                                    </td>
+                                    <td colspan="2">
+                                        {{totalAmount|customCurrency}}
+                                        {% if rest > 0 %}
+                                            (<span class="text-info">{{ rest|formated }}</span>)
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                </tfoot>
+                            {% endif %}
+
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <!-- add salary Modal -->
+    <div class="modal fade" id="addSalaryModal" tabindex="-1" role="dialog"
+         aria-labelledby="addSalaryModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">
+                        {{ 'sale.index.modal.addSalary.title'|trans }}
+                        <span class="text-uyblue-dark">
+                            {{ employee.allName }}
+                        </span>
+                    </h5>
+                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">×</span>
+                    </button>
+                </div>
+                <form action="{{ path('employee_salary_add') }}" method="post">
+                    <input type="hidden" name="employeeId" id="employeeId" value="{{ employee.id }}">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="month">
+                                {{ 'sale.index.modal.addSalary.form.month'|trans }}
+                            </label>
+                            <select name="month" id="month"
+                                    class="form-control mr-2 mb-1">
+                                {% for key,month in months %}
+                                    <option value="{{ key }}">
+                                        {{month|trans({},'month')}}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="year">
+                                {{ 'sale.index.modal.addSalary.form.year'|trans }}
+                            </label>
+                            <input type="number" class="form-control" name="year"
+                                   id="year" required value="{{ year }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="amount">
+                                {{ 'sale.index.modal.addSalary.form.amount'|trans }}
+                            </label>
+                            <input type="number" class="form-control" name="amount"
+                                   id="amount" required value="">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                            {{ 'cancel'|trans }}
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fa fa-check-circle"></i>
+                            {{ 'validate'|trans }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

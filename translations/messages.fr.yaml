@@ -1,0 +1,4025 @@
+ADMIN: ADMIN
+MANAGER: GERANT(E)
+CASHIER: CAISSIER(E)
+PRODUCTION MANAGER: PÉTRISSEUR
+Man: Homme
+man: Homme
+Woman: Femme
+woman: Femme
+Corporation: Personne Morale
+Physical person: Personne Physique
+out of date: périmé
+Simple Customer: Simple client
+S: Simple client
+Reseller: Revendeur
+R: Revendeur
+EMPLOYEE: Employé
+Pack: CDT
+other: Autres
+Morning: Matin
+M: Matin
+Evening: Soir
+E: Soir
+AfterMoon: Après-midi
+A: Après-midi
+
+
+login:
+  title: Page de connexion
+  entity: Account
+  page: Page de connexion
+  block_title: Logiciel de gestion de l'entreprise
+  card_title: Entrez vos identifiants de connexion
+  alert_disable: Votre compte utilisateur a été désactivé
+  alert_invalid_credentials: Adresse Email ou mot de passe incorrect
+  form_username: Adresse Email ou Nom d'utilisateur
+  form_password: Mot de passe
+  form_remember_me: Se rappeler de moi
+  form_btn_connexion: Se connecter
+  alert_noPermission: Aucune permission accordée
+  select: Selectionner
+
+password_reset:
+  title: Mettre à jour votre mot de passe
+  block_title: Mettre à jour votre mot de passe
+  btn_modify: Modifier
+  alert_warning: Vous serez redirigé vers la page de connexion après modification de votre mot de passe.
+
+profile:
+  title: Modifier vos informations
+  block_title: Mon profil
+  form_title: Modifier mes informations
+  form_btn_modify: Mettre à jour
+  alert_warning: Vous serez redirigé vers la page de connexion
+    après modification de vos informations.
+
+user:
+  index:
+    title: Liste des utilisateurs
+    block_title: Liste des utilisateurs
+    tr_username: Nom d'utilisateur
+    tr_email: Login(Email)
+    tr_password: Mot de passe
+    tr_state: Etat
+    tr_role: Rôle
+    tr_yes: Oui
+    tr_no: Non
+    tr_customer: Client
+  new:
+    title: Ajout d'un utilisateur
+    block_title: Enregistrer un utilisateur
+    btn_add: Enregistrer
+  attendance:
+    title: Registre de présence
+    block_title: Registre de présence
+    tr_date: Date
+    tr_status: Statut
+    tr_actions: Actions
+  detail:
+    title: Détail sur l'utilisateur
+    block_title: Détail sur l'utilisateur
+    tr_name: Nom
+    tr_info_addcategory: Enregistrer une catégorie de produit
+    tr_category: Catégories de produits gérées
+    tr_nocategory: Aucune catégorie de produit gérée
+    addcategoryModal:
+      title: Enregistrer une catégorie de produit pour
+      form:
+        category: Catégorie
+        btn_add: Enregistrer
+    select_category: Sélectionnez une catégorie
+
+activation:
+  activate:
+    title: Activation de l'application
+    block_title: Validez votre code d'activation
+    btn_activate: Valider
+    form:
+      label: Code d'activation
+    keyactivated: Désormais, vous avez un accès illimité
+    alert_warning: Avant de valider, vérifier votre connexion internet
+  index:
+    title: Liste des codes d'activation
+    block_title: Liste des codes d'activation
+    tr_codeId: CodeID
+    tr_code: Code
+    tr_actions: Actions
+    modal:
+      title: Suppression du code d'activation
+      body: Voulez-vous vraiment supprimer le code d'activation
+      footer:
+        cancel: Annuler
+        delete: Supprimer
+  new:
+    title: Ajout d'un code d'activation
+    block_title: Enregistrer un code d'activation
+    btn_save: Enregistrer
+  edit:
+    title: Editer un code d'activation
+    block_title: Editer un code d'activation
+    btn_save: Modifier
+
+docs:
+  documentation:
+    sidebar:
+      presentation: Présentation
+      installation: Installation
+      thanks: Merci
+    body:
+      presentation:
+        title: Présentation
+        body: est un système de gestion de stock qui comprend des fonctionnalités telles que
+        step1: Gestion des produits
+        step2: Gestion des ventes
+        step3: Gestion des commandes
+        step4: Gestion des pertes
+        step5: Performance sur une période
+        step51: Pour les produits
+        step52: Pour les ventes
+        step53: Pour les marges
+        step6: Gestion des fournisseurs
+        step7: Gestion des utilisateurs
+      installation:
+        title: Installation
+        body: Regardons le contenu de ce processus
+        step1: Partie consacrée à la ligne de commande
+        database_create: Vérifiez si votre serveur de base de données est démarré
+        load_fixtures: permet d'initialiser la base de données avec les valeurs par défaut
+        step2: Partie manuelle dans l'application
+        change_env_1: Dans le fichier
+        change_env_2: modifier la valeur de la propriété APP_ENV(dev) par
+        change_currency: Si vous voulez personnaliser la monnaie utilisée et le formatage des chiffres, vous trouverez les propriétés adéquates dans le fichier
+        change_siteURL: Si votre site est en ligne, veuillez changer les paramètres SITE_BASE_SCHEME et SITE_BASE_HOST dans le fichier
+      thanks:
+        title: Merci!
+        text: Merci beaucoup de votre support en achétant ce produit. Nous souhaitons vous offrir le meilleur de nos connaissances pour satisfaire vos besoins logiciels. Et si vous trouvez des complications lors du processus d'installation ou des erreurs lors votre visite dans l'application, veuillez nous reférer cela pour qu'on puisse les résoudre.
+        salut: Salut à vous
+      footer:
+        title_1: Fait avec
+        title_2: par
+
+productCategory:
+  index:
+    title: Liste des catégories de produits
+    block_title: Liste des catégories de produits
+    tr_name: Nom
+    tr_actions: Actions
+    modal:
+      title: Suppression de la catégorie de produit
+      body: Voulez-vous vraiment supprimer la catégorie
+      footer:
+        cancel: Annuler
+        delete: Supprimer
+  new:
+    title: Ajout d'une catégorie de produit
+    block_title: Enregistrer une catégorie de produit
+    btn_save: Enregistrer
+  edit:
+    title: Editer une catégorie de produit
+    block_title: Editer une catégorie de produit
+    btn_save: Modifier
+
+supplier:
+  index:
+    title: Liste des fournisseurs
+    block_title: Liste des fournisseurs
+    tr_name: Nom complet
+    tr_email: Adresse Email
+    tr_tel: Téléphone(s)
+    tr_type: Type
+    tr_actions: Actions
+    modal:
+      title: Supprimer un fournisseur
+      body: Voulez-vous vraiment supprimer le fournisseur
+      footer:
+        cancel: Fermer
+        delete: Supprimer
+  new:
+    title: Ajout d'un fournisseur
+    block_title: Enregistrer un fournisseur
+    btn_add: Enregistrer
+  edit:
+    title: Editer les informations d'un fournisseur
+    block_title: Editer les informations d'un fournisseur
+    btn_add: Editer
+
+home:
+  demo:
+    denied: Vous ne pouvez pas éxecuter cette action dans le mode DEMO
+  permission:
+    denied: Vous n'êtes pas autorisé à effectuer cette action
+  home:
+    expiration_plan: Veuillez renouveler votre plan de souscription
+    expiration_date: Date d'expiration
+    nb_day_remaining: Nombre de jours restants
+    expired_plan: Plan expiré
+    title: Tableau de bord
+    card_title_1: Produits
+    card_title_2: ventes
+    card_title_3: Commandes
+    card_title_4: Pertes
+    card_areanumber_month: Statistique mensuelle sur le nombre de ventes
+    card_barnumber_year: Statistique annuelle sur le nombre de ventes
+    card_areaamount_month: Statistique mensuelle sur le montant des ventes
+    card_baramount_year: Statistique annuelle sur le montant des ventes
+    card_top5_products: Produits les plus vendus
+    card_top5_products_nodata: Aucun résultat disponible
+    card_account:
+      title: Mon profil
+      tr_name: Nom complet
+      tr_email: Email
+      tr_tel: Téléphone(s)
+      tr_gender: Sexe
+      tr_district: Quartier de résidence
+      tr_creationDate: Date de création
+      edit: Editer
+      tr_appCode: APP CODE
+    stat_title: Vente
+    renew: Renouveler
+  homeCashier:
+    title: Tableau de bord
+    card_title_1: Nbre de ventes enregistrées
+    card_title_2: Montant des ventes enregistrées
+    card_areanumber_month: Statistique mensuelle sur le nombre de ventes enregistrées
+    card_barnumber_year: Statistique annuelle sur le nombre de ventes enregistrées
+    card_areaamount_month: Statistique mensuelle sur le montant des ventes enregistrées
+    card_baramount_year: Statistique annuelle sur le montant des ventes enregistrées
+    card_account:
+      title: Mon profil
+      tr_name: Nom complet
+      tr_email: Email
+      tr_tel: Téléphone(s)
+      tr_gender: Sexe
+      tr_district: Quartier de résidence
+      tr_creationDate: Date de création
+      edit: Editer
+    stat_title: Vente
+  homeProduction:
+    title: Tableau de bord
+    card_title_1: Nbre de productions enregistrées
+    card_title_2: Montant des productions enregistrées
+    card_areanumber_month: Statistique mensuelle sur le nombre de productions enregistrées
+    card_barnumber_year: Statistique annuelle sur le nombre de productions enregistrées
+    card_areaamount_month: Statistique mensuelle sur le montant des productions enregistrées
+    card_baramount_year: Statistique annuelle sur le montant des productions enregistrées
+    stat_title: Production
+  dashboardProduction:
+    title: Tableau de bord de production
+    card_title_1: Matières p.
+    card_title_2: Productions
+    card_areanumber_month: Statistique mensuelle sur le nbre de productions enregistrées
+    card_barnumber_year: Statistique annuelle sur le nbre de productions enregistrées
+    card_areaamount_month: Statistique mensuelle sur le montant des productions enregistrées
+    card_baramount_year: Statistique annuelle sur le montant des productions enregistrées
+    card_top5_rawMaterials: Matières premières utilisées
+    card_top5_rawMaterials_nodata: Aucun résultat disponible
+product:
+  index:
+    title: Liste des produits
+    block_title: Liste des produits
+    tr_name: Nom
+    tr_category: Catégorie
+    tr_sellPrice: Prix de vente
+    tr_buyPrice: Prix d'achat
+    tr_stock: Stock
+    tr_stockAlert: Qté alerte
+    tr_barcode: Barcode
+    tr_actions: Actions
+    modal:
+      title: Suppression du produit
+      body: Voulez-vous vraiment supprimer le produit
+      footer:
+        cancel: Annuler
+        delete: Supprimer
+    form_all: Tous
+    form_stockAlert: Stock alerte
+    form_import: Importer
+    notifyAdd: Un nouveau produit a été ajouté. Veuillez actualiser la page
+    notifyRemove: Un produit a été supprimé. Veuillez actualiser la page
+    notifyStockAlert: Alerte sur le stock des produits
+    notifyStockAlertLink: Consulter
+    tr_noCategory: Sans catégorie
+    tr_cpi: CIP
+    select_category: Sélectionner une catégorie
+    modalSubstitute:
+      title: Liste des remplaçants du produit
+      footer:
+        cancel: Fermer
+      noData: Aucun remplaçant trouvé
+      tr_name: Nom
+      tr_buyPrice: Prix d'achat
+      tr_sellPrice: Prix de vente
+      tr_category: Catégorie
+      tr_stock: Stock
+      tr_price: Prix
+    tr_info_listSubstitute: Liste des remplaçants
+    tr_new: Nouveau
+    select_bank: Selectionnez un compte
+    form_new: Nouveau
+    form_outOfStock: Stock épuisé
+    tr_qtys: Quantités
+    tr_prices: Prix
+    form_import_without_stock: Produit sans stock
+    form_import_with_stock: Produit avec stock
+    tr_qty: Quantité
+    modalByProduct:
+      title: Liste des produits finis
+      tr_name: Désignation
+      tr_qtyProduct: Qté produite
+      tr_qtySold: Qté distribuée
+      tr_qtyLost: Qté perdue
+      tr_qtyRemaining: Qté restante
+      noData: Aucun produit fini trouvé pour cette production
+      tr_qtyReserved: Qté réservée
+      tr_qtyReservedOut: Sortie de réserve
+      tr_production: N° production
+      tr_date: Date
+      tr_qty: Qté réservée
+      tr_period: Période
+    modalDistribution:
+      title: Détail sur la distribution
+      noData: Aucune donnée de distribution trouvée
+      tr_name: Nom
+      tr_totalQty: Qté totale
+      tr_totalAmount: Montant total
+    tr_reference: Référence
+    reserve:
+      noData: Aucune donnée disponible
+    tr_image: Image
+  new:
+    title: Ajout d'un produit
+    block_title: Enregistrer un produit
+    btn_add: Enregistrer
+  edit:
+    title: Editer un produit
+    block_title: Editer un produit
+    btn_add: Modifier
+  detail:
+    title: Détail sur le produit
+    block_title: Détail sur le produit
+    back: Retour à la liste des produits
+    tr_stock: Stock
+    tr_qtyOrdered: Qté commandée
+    tr_qtyRemaining: Qté restante
+    tr_nbTotalSales: Nombre total de ventes par année
+    tr_totalQtySold: Quantité totale vendue par année
+    statNumberSale: Stats sur le nombre de ventes
+    statQtySold: Stats sur la quantité vendue
+    tr_stockDispo: Stock(s) disponible(s)
+    tr_name: Nom
+    statProfit: Stats sur le profit
+    tr_profit: Profit par année
+    tr_supplier: Aucun fournisseur
+    tr_unitPrice: Prix unitaire
+    tr_noStockDispo: Aucun stock Disponible
+    tr_noData: Aucune donnée
+    no_stats: Aucune donnée statistique
+    tr_withDraw: Retirer
+    tr_totalAmountLoss: Montant total perdu
+    tr_outOfDate: Périmé
+    tr_expirationDate: Date de péremption
+    tr_days: jour(s)
+    tr_daynear: jour(s) restant(s)
+    tr_rate_sale: Moyenne (quantité par vente)
+    statRate: Stats sur la moyenne
+    tr_substitute: Liste des remplaçants
+    tr_info_addSubstitute: Ajouter un remplaçant
+    addSubstituteModal:
+      form:
+        product:
+          description: Remplaçant
+        btn_add: Enregistrer
+      title: Ajouter un remplaçant pour le produit
+      footer:
+        cancel: Fermer
+    select_product: Sélectionner un produit
+    tr_noSubstitute: Aucun remplaçant
+    stat_title_number: Nombre de ventes
+    stat_title_qty: Quantité vendue
+    stat_title_profit: Marge
+    stat_title_rate: Quantité par vente
+    card_title_year: Statistique annuelle
+    card_btn_search: Rechercher
+    card_title_month: Statistique mensuelle
+    tr_batchId: Lot ID
+    tr_product_price: Liste des prix de gros
+    tr_info_addPrice: Enregistrer un prix de gros
+    tr_noPrice: Aucun prix de gros
+    addPriceModal:
+      title: Enregistrer un prix de gros pour le produit
+      form:
+        qty: Quantité
+        unitPrice: Prix unitaire
+        btn_add: Enregistrer
+    tr_pricePrefix: A partir de
+    tr_customer_price: Prix spécial revendeur
+    tr_info_addCustomerPrice: Enregistrer un prix spécial revendeur
+    tr_noCustomerPrice: Aucun prix spécial revendeur
+    addCustomerPrice:
+      form:
+        customer:
+          libelle: Revendeur
+        price: Prix
+      title: Enregistrer des prix spécials revendeur pour le produit
+    tr_customer_prices: Prix
+    tr_customers: Revendeur(s)
+    select_customers: Sélectionnez le(s) revendeur(s)
+    tr_packaging: Conditionnement
+    select_category: Selectionnez une catégorie
+  import:
+    block_title: Importer des produits
+    title: Importation des produits
+    tr_name: Nom
+    tr_category: Catégorie
+    tr_buyPrice: Prix d'achat
+    tr_sellPrice: Prix de vente
+    tr_stock: Stock disponible
+    tr_stockAlert: Quantité alerte
+    step1: Sélectionner votre fiche de produits (Excel ou CSV)
+    removeFirstRow: Retirer la première ligne (Entête)
+    setp2: Ordonner les colonnes en fonction de votre fiche
+    column: Colonne
+    empty: Vide
+    display: Afficher
+    step3: Affichage des données du fichier importé
+    validate: Valider l'importation
+    cancel: Annuler
+    select_category: Sélectionner une catégorie
+    tr_cip: CIP
+    tr_barcode: Code-barres
+    tr_qtys: Quantité(s)
+    tr_prices: Prix
+    tr_reference: Reférence
+  expiryDate:
+    title: Liste des stocks proches de la péremption
+    block_title: Liste des stocks proches de la péremption
+    tr_expirationDate: Date de péremption
+    tr_name: Produit
+    tr_buyPrice: Prix d'achat
+    tr_qtyRemaining: Quantité restante
+    tr_noCategory: Sans catégorie
+    tr_supplier: Fournisseur
+    tr_status: Status
+    tr_valueOutOfDate: Périmé
+    dayBeforeExpiration: Nombre de jours avant péremption
+    tr_batchId: Lot ID
+  outOfDate:
+    title: Liste des stocks périmés
+    block_title: Liste des stocks périmés
+    tr_expirationDate: Date de péremption
+    tr_name: Produit
+    tr_buyPrice: Prix d'achat
+    tr_qtyRemaining: Quantité restante
+    tr_supplier: Fournisseur
+    tr_noCategory: Sans catégorie
+    tr_withDraw: Actions
+    form_current: En cours
+    form_withdraw: Retiré
+    modal:
+      title: Retirer du stock
+      body: Cette action est irréversible pour la cohérence des données.
+      footer:
+        cancel: Fermer
+    tr_valueWithDraw: Retirer
+    tr_valueRemove: Retiré
+    tr_status: Status
+    tr_qtyOutOfDate: Quantité périmée
+    tr_batchId: Lot ID
+  add:
+    tr_nodata: Pas de stock
+  printLabel:
+    title: Impression des étiquettes de code-barres
+    select_product: Sélectionnez un produit
+    block_title: Impression des étiquettes de code-barres
+    tr_select_product: Veuillez sélectionner un produit pour voir l'aperçu
+  importPrice:
+    block_title: Importation des prix de gros
+    step1: Sélectionner votre fiche de prix de gros (Excel ou CSV)
+    title: Importation des prix de gros
+  productWithWholePrice:
+    title: Liste des prix de gros
+    block_title: Liste des prix de gros
+  reserve:
+    index:
+      detailProductModal:
+        title: Détail sur la réserve
+
+partials:
+  header:
+    dropdown_account: Mon profil
+    dropdown_resetpassword: Changer votre mot de passe
+    dropdown_store: Entreprise
+    dropdown_logout: Déconnexion
+    dropdown_activation: Activation
+    actualiser: Actualiser
+    dropdown_stockAlert: Stock alerte
+    dropdown_history: Historique de connexion
+    dropdown_stockOutOfDate: Stock périmé
+    dropdown_changeLanguage: Changer la langue
+    dropdown_database: Database backup
+    dropdown_setting: Paramètre
+    dropdown_outOfStock: Stock épuisé
+    dropdown_notice: Préavis
+    dropdown_stockExpiryDate: Stock proche de la péremption
+    dropdown_permission: Permissions
+    dropdown_shortcut: Raccourcis
+  sidebar:
+    mainmenu: Menu principal
+    dashBoard: Tableau de bord
+    performance:
+      title: Statistique
+      sale: Sur les ventes
+      profit: Sur les marges
+      products: Sur les produits vendus
+      paymentMethod: Sur les modes de paiement
+      categories: Sur les catégories
+      stock: Sur les approvisionnements
+      production: Sur les productions
+    products:
+      title: Produit
+      new: Ajouter un produit
+      list: Liste des produits
+      index: Performance sur les ventes de produits
+      import: Import des produits
+      expiration: Voir la péremption
+      printLabel: Impression des étiquettes
+      price: Liste des prix de gros par produit
+    productCategories:
+      title: Catégorie de produit
+      new: Ajouter une catégorie
+      list: Catégories de produit
+    sales:
+      title: Vente
+      new: Enregistrer une vente
+      list: Liste des ventes
+      mine: Mes ventes
+      deletedlist: Liste des ventes supprimées
+      unsettledlist: Liste des ventes non réglées
+      salePayments: Liste des règlements
+      file: Fiche de vente
+    orders:
+      title: Commande
+      new: Prendre une commande
+      list: Liste des commandes
+      stockPayments: Liste des règlements
+    losses:
+      title: Pertes
+      new: Ajouter une perte
+      list: Liste des pertes
+    lossTypes:
+      title: Type de perte
+      new: Ajouter un type de perte
+      list: Types de perte
+    suppliers:
+      title: Fournisseur
+      new: Ajouter un fournisseur
+      list: Liste des fournisseurs
+    users:
+      title: Utilisateur
+      new: Ajouter un utilisateur
+      list: Liste des utilisateurs
+    code_activation:
+      title: Code d'activation
+      new: Enregistrer un code d'activation
+      list: Liste des codes d'activation
+    inventory: Inventaire
+    roles:
+      title: Rôle
+      new: Nouveau rôle
+      list: Liste des rôles
+    search:
+      title: Recherche
+      product: Produit
+      sale: Vente
+      stock: Commande
+    report:
+      title: Rapport
+      sale: Vente
+      stock: Commande
+      loss: Perte
+      product: Produit
+      transaction: Transaction
+      saleByProduct: Vente (produit)
+      expense: Dépense
+      salary: Salaire
+      attendance: Présence
+      production: Production
+      supply: Approvisionnement
+      saleByEmployee: Employé
+      saleByProductCustomer: Vente (client)
+      saleByProductEmployee: Vente (employé)
+      activity: Activité pérodique
+      productCategory: Catégorie de produit
+      supplier: Fournisseur
+      productSaleReturn: Vente (retour de produits)
+      productStockReturn: Commande (renvoi de produits)
+      fileSale: Encaissement
+      adjustment: Ajustement stock
+    banks:
+      title: Compte financier
+      new: Nouveau compte financier
+      list: Liste des comptes financiers
+    transactions:
+      title: Transaction
+      new: Nouvelle transaction
+      list: Liste des transactions
+    expenses:
+      title: Dépense
+      new: Nouvelle dépense
+      list: Liste des dépenses
+    expenseTypes:
+      title: Type de dépense
+      new: Nouveau type
+      list: Types de dépenses
+    stockPayments:
+      title: Règlement
+      list: Liste des règlements
+    customers:
+      title: Client
+      new: Nouveau client
+      list: Liste des clients
+    paymentMethods:
+      title: Mode de paiement
+      new: Nouveau mode
+      list: Liste des modes
+    taxs:
+      title: Taxe
+      new: Nouvelle taxe
+      list: Liste des taxes
+    employees:
+      list: Employés
+    hrm:
+      title: GRH
+      attendance: Registre de présence
+      salary: Salaire
+      fee: Frais
+    production:
+      rawMaterial: Matière première
+      title: GP
+      supply: Approvisionnements
+      production: Productions
+      loss: Pertes
+      inventory: Inventaire
+      lossType: Types de perte
+      gapCoef: Ecart Coef
+      storage: Sous magasin
+      paste: Type de pâte
+      reserve: Réserve
+      dashboard: Tableau de bord
+    store: Ma réserve
+    productPackagings:
+      list: Conditionnements
+    adjustments:
+      list: Liste des ajustements
+      new: Nouvel ajustement
+      title: Adjustement
+
+performance:
+  index:
+    title: Performance statistique sur les ventes de produits
+    block_title: Performance sur les ventes de produits
+    form:
+      select_employee: Tous les employés
+      btn_search: Afficher
+    tr_product: Produit
+    tr_qtySold: Quantité vendue
+    tr_amount: Montant
+    tr_nodata: Aucune donnée trouvée
+    tr_sellPrice: Prix de vente
+    stat_title: Statistique sur les produits les plus vendus
+    title_pie: TOP 10 des produits les plus vendus
+  performancePaymentMethod:
+    title: Performance sur les modes de paiement
+    block_title: Performance sur les modes de paiement
+    tr_paiement: Type de paiement
+    tr_nbSales: Nb. de ventes
+    tr_amount: Montant
+    tr_amountDebt: Montant non collecté
+    tr_amountSettled: Montant collecté
+  performanceEmployee:
+    title: Performance des employés
+    block_title: Performance des employés
+    tr_email: Adresse Email
+    tr_tel: Téléphone
+    tr_gender: Sexe
+    tr_district: Quartier de résidence
+    tr_nbSales: Nombre de ventes par année
+    card_title_month: Statistique mensuelle des ventes
+    card_title_year: Statistique annuelle des ventes
+    card_btn_search: Rechercher
+    stat_title_number: nbre de ventes
+    stat_title_amount: Montant
+    stat_title_qty: Qté vendue
+    stat_title_profit: Marge
+    tr_amount: Montant vendu par année
+    tr_profit: Montant marge par année
+    stat_title_rate: Moyenne
+  performanceProfit:
+    title: Statistique sur les marges
+    block_title: Statistique mensuelle sur les marges
+    card_title_month: Statistique mensuelle sur les marges
+    card_title_year: Statistique annuelle sur les marges
+    card_btn_search: Rechercher
+    stat_title_amount: Montant
+    tr_profit: Profit par année
+    tr_noData: Aucune donnée
+    no_stats: Aucune donnée statistique
+  performanceStore:
+    title: Statistique sur l'activité de l'entreprise
+    block_title: Statistique mensuelle sur les ventes
+    form:
+      btn_search: Rechercher
+    stat_month:
+      tr_title: Tableau mensuel sur l'activité des employés
+      tr_employee: Employé
+      tr_nbSales: Nombre de ventes
+      tr_amount: Montant total
+      tr_nodata: Aucun résultat disponible
+      card_number: Statistique mensuelle sur le nombre de ventes
+      card_amount: Statistique mensuelle sur les revenus
+    stat_year:
+      title: Performance pour l'année
+      tr_title: Tableau annuel sur l'activité des employés
+      tr_employee: Employé
+      tr_nbSales: Nombre de ventes
+      tr_amount: Montant total
+      tr_nodata: Aucun résultat disponible
+      card_number: Statistique annuelle sur le nombre de ventes
+      card_amount: Statistique annuelle sur les revenus
+    stat_title_number: nbre de ventes
+    stat_title_amount: Montant
+  performanceCustomer:
+    tr_email: Email
+    tr_tel: Téléphone
+    tr_gender: Sexe
+    tr_address: Adresse
+    tr_amount: Montant des achats par année
+    card_title_month: Statistique mensuelle sur les achats
+    card_title_year: Statistique annuelle sur les achats
+    title: Fiche du client
+    tr_nbPurchases: Nombre d'achats par année
+    tr_amountDebt: Montant dû
+    tr_history: Historique
+    tr_product_history: Les produits achetés
+    tr_sale_history: Les achats sur une période
+    productHistoric:
+      title: Liste des produits achetés par
+    saleHistoric:
+      title: Historique des achats
+    tr_sale_payment_history: Liste des derniers règlements
+    tr_addSalePayment: Enregistrer un règlement
+    modal:
+      addPayment:
+        title: Enregistrer un règlement pour ce client
+        infoMessage: Le reste à payer est de
+        form:
+          date: Date du règlement
+          amount: Montant
+          paymentMethod: Méthode de paiement
+    salePaymentHistory:
+      title: Liste des 10 derniers règlements
+    stat_title_number: nbre d achats
+    stat_title_amount: Montant
+    select_customer: Sélectionnez un client
+  performanceProductCategory:
+    tr_qtySold: Qté vendue
+    tr_amount: CA net
+    tr_profit: Marge
+    block_title: Statistique sur les catégories de produit
+    title: Statistique sur les catégories de produit
+    searchBy: Rechercher par catégorie
+    tr_totalqtySold: Total Qté vendue
+    tr_totalAmount: Total CA net
+    tr_totalProfit: Marge Totale
+  performanceStock:
+    stat_month:
+      card_number: Statistique mensuelle sur le nombre d'approv.
+      card_amount: Statistique mensuelle sur le montant des approv.
+    stat_year:
+      title: Statistique pour l'année
+      card_number: Statistique annuelle sur le nombre d'approv.
+      card_amount: Statistique annuelle sur le nombre d'approv.
+    stat_title_number: Nbre d`approv.
+    stat_title_amount: Montant
+  performanceProduction:
+    stat_month:
+      tr_title: Statistique périodique sur les productions
+      tr_manager: Pétrisseur
+      tr_nbProductions: Nbre de productions
+      tr_amount: Montant estimé
+      tr_profit: Profit estimé
+      tr_consult: Consulter son inventaire
+      tr_nodata: Aucune donnée disponible
+    modalInventory:
+      title: Inventaire de production de
+      tr_name: Matière première
+      tr_qtyEstimated: Qté évaluée
+      tr_qtyProduct: Qté utilisée
+      tr_qtyGap: Ecart
+      noData: Aucune donnée disponible
+      tr_totalGapAmount: Montant Ecart
+    modalProduction:
+      title: Liste des productions de
+      tr_code: Code
+      tr_date: Date
+      tr_amount: Montant estimé
+      tr_proft: Profit estimé
+      noData: Aucune donnée disponible
+      tr_totalGap: Total Ecart
+  performanceSupplier:
+    modal:
+      addPayment:
+        form:
+          date: Date
+          amount: Montant
+          paymentMethod: Méthode de paiement
+        title: Enregistrer un règlement pour ce fournisseur
+        infoMessage: Le reste à payer est de
+    tr_type: Type
+    tr_amountDebt: Montant dû
+    tr_addStockPayment: Enregistrer un paiement
+    tr_nbOrders: Nbre de commandes
+    tr_amount: Montant des commandes par année
+    tr_history: Historique de commande
+    tr_product_history: Historique de produits commandés
+    tr_stock_history: Commandes sur une période
+    tr_stock_payment_history: Liste des derniers règlements
+    card_title_month: Statistique mensuelle sur les commandes
+    card_title_year:  Statistique annuelle sur les commandes
+    productHistoric:
+      title: Liste de produits commandés à
+    stockHistoric:
+      title: Historique de commandes
+    stockPaymentHistory:
+      title: Liste des derniers règlements
+    title: Performance
+    select_supplier: Sélectionnez un fournisseur
+    stat_title_number: Nbre de commandes
+    stat_title_amount: Montant
+loss:
+  index:
+    title: Liste des pertes
+    block_title: Liste des pertes
+    tr_date: Date
+    tr_product: Produit
+    tr_quantity: Quantité
+    tr_type: Type
+    tr_actions: Actions
+    tr_changeQty: changer la quantité
+    modal:
+      delete:
+        title: Suppression de la perte
+        body: Voulez-vous vraiment supprimer cette perte enregistrée le
+        footer:
+          cancel: Annuler
+          delete: Supprimer
+      changeQty:
+        title: Modifier la Quanité
+        body:
+          form:
+            txt_qty: Quantité
+            btn_edit: Modifier
+        footer:
+          cancel: Annuler
+    tr_recorder: Enregistreur
+  new:
+    title: Enregistrer une perte
+    block_title: Enregistrer une perte
+    select_product: sélectionner un produit
+    select_type: sélectionner un type
+    form:
+      txt_qty: Quantité
+      btn_save: Enregistrer
+      txt_stock: Stock(s) disponible(s)
+      txt_valuable: Cette perte n'a pas de valeur
+      txt_affectOrder: Cette perte affecte le montant de la commande
+    select_rawMaterial: Selectionnez une matière première
+
+store:
+  new:
+    title: Information sur l'entreprise
+    block_title: Enregistrer les informations de l'entreprise
+    btn_save: Valider
+  value:
+    block_title: Estimation de la valeur des produits existant au magasin
+    title: Valeur actuelle du magasin
+    tr_product: Désignation
+    tr_qty: Qté restante
+    tr_salePrice: CA estimé
+    tr_profit: Marge totale estimée
+    tr_sellPrice: Prix de vente
+    tr_unitProfit: Marge unitaire
+    tr_percentProfit: '% marge sur CA'
+stock:
+  index:
+    tr_initial: Initial
+    title: Liste des commandes
+    block_title: Liste des commandes
+    tr_date: Date
+    tr_amount: Montant
+    tr_supplier: Fournisseur
+    tr_status: Status
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    tr_delivered: Livrée
+    tr_waiting: En attente
+    modal:
+      delete:
+        title: Suppression de la commande
+        body1: Le montant de la commande est de
+        body2: enregistré le
+        footer:
+          cancel: Annuler
+          delete: Supprimer
+      detail:
+        title: Détail sur la commande
+        body:
+          tr_date: Date d'enregistrement
+          tr_deliveryDate: Date de livraison
+          tr_productList: Produits commandés
+          tr_supplier: Fournisseur
+          tr_recorder: Enregistreur
+          tr_product: Produit
+          tr_unitPrice: Prix unitaire
+          tr_qty: Qté (reste)
+          tr_subtotal: Sous total
+          tr_expirationDate: Date de péremption
+          no_expirationDate: Aucune date assignée
+          tr_sendByMail: Envoyer au fournisseur
+          tr_numInvoice: N° Facture
+          tr_numBill: Relevé
+          tr_stockPayments: Liste des règlements
+          tr_no_stockPayment: Aucun règlement effectué
+          tr_qtyReturn: Qté renvoyée
+          tr_dateReturn: Date de renvoi
+          tr_product_return: Produit(s) renvoyé(s)
+          tr_rest_to_pay: Reste à payer
+          tr_amountSended: Montant donné
+          tr_feeList: Frais de commande
+        footer:
+          cancel: Fermer
+      setStatus:
+        title: Valider la commande de
+        footer:
+          cancel: Fermer
+          validate: Valider
+        form:
+          numInvoice: N° Facture
+          numBill: Releve
+      infoMessage: Avant de valider, vérifier les dates d'expiration de chaque ligne de commande. Cette action est irréversible pour la cohérence des données
+      addPayment:
+        infoMessage: Le reste à payer pour cette commande est de
+        form:
+          date: Date
+          amount: Montant
+          paymentMethod: Mode de paiement
+        footer:
+          validate: Valider
+        title: Ajout d'un règlement
+      addProductReturn:
+        title: Enregistrer un renvoi de produit
+        form:
+          date: Date du renvoi
+          product: Produit
+          qtyReturn: Qté renvoyée
+          reason: Raison
+          repay: Ce produit renvoyé sera remboursé
+      deletePayment:
+        title: Supprimer ce règlement
+        body: Voulez vous vraiment supprimer ce règlement de
+    tr_validate: Valider
+    sendValid: Email envoyé avec succès
+    sendInvalid: Erreur lors de l'envoi de l'email
+    tr_amount_tooltip: Cette commande n'est pas réglée
+    tr_number: Numéro de commande
+    tr_detail: Détail de la commande
+    tr_amountSended: Montant donné
+  add:
+    title: Enregistrer une commande
+    select_supplier: sélectionner un fournisseur
+    tr_name: Nom
+    tr_price: Prix d'achat
+    tr_stock: Stock
+    tr_actions: Actions
+    card_title: Prendre une commande
+    select_noSupplier: Sans fournisseur
+    btn_cleanBag: Vider le panier
+    btn_valid: Valider
+    bag_nodata: Aucun produit sélectionné.
+    tr_qty: Qté
+    tr_priceC: Prix
+    tr_totalAMount: Montant total
+    import: Importer
+    tr_totalAMountSended: Montant donné
+  detail:
+    title: Détail sur la commande
+    block_title: Détail sur la commande
+    back: Retour
+    tr_withDraw: Retirer
+    modal:
+      add:
+        title: Ajouter une nouvelle ligne de commande
+        form:
+          qty: Quantité
+          product: Produit
+        footer:
+          cancel: Fermer
+          validate: Enregistrer
+      addReserve:
+        title: Enregistrer un produit fini reservé
+      addReserveOut:
+        title: Enregistrer une sortie de réserve
+      addPaste:
+        form:
+          qty: Quantité
+          paste: Pâte
+      addPasteReserve:
+        title: Enregistrer ou changer la réserve de pâte
+      addPasteReserveOut:
+        title: Enregistrer une sortie de réserve de pâte
+      changeSupplier:
+        title: Changer le fournisseur
+        form:
+          supplier: Fournisseur
+          withoutSupplier: Sans fournisseur
+      changeDate:
+        form:
+          date: Date de livraison
+        title: Changer la date de livraison
+      changeNumInvoice:
+        title: Changer le numéro de facture
+        form:
+          numInvoice: N° Facture
+      detail:
+        body:
+          tr_title: Libellé
+          tr_amount: Montant
+          tr_stockFeeCost: Coût des frais
+          noDataFee: Aucun frais assigné
+      addFee:
+        title: Enregistrer un frais pour cette commande
+        form:
+          name: Raison
+          amount: Montant
+    settled: Réglée
+    not-settled: Non réglée
+  import:
+    form:
+      status:
+        pending: En attente
+        delivered: Livrée
+      numInvoice: Numéro facture
+      numBill: Numéro relevé
+    title: Importer une commande
+    block_title: Importer une commande
+    step1: Sélectionner votre fiche de commande (Excel ou CSV)
+    removeFirstRow: Retirer la première ligne (Entête)
+    setp2: Ordonner les colonnes en fonction de votre fiche
+    column: Colonne
+    empty: Vide
+    display: Afficher
+    step3: Affichage des données du fichier importé
+    tr_name: Nom
+    tr_qty: Quantité
+    tr_buyPrice: Prix d'achat
+    validate: Valider l'importation
+    cancel: Annuler
+    select_noSupplier: Aucun fournisseur
+    select_supplier: Sélectionner un fournisseur
+    tr_subtotal: Sous total
+  payment:
+    stocksModal:
+      title: Liste des règlements
+      tr_date: Date
+      tr_amount: Montant
+      tr_recorder: Enregistreur
+lossType:
+  index:
+    title: Liste des types de perte
+    block_title: Liste des types de perte
+    tr_name: Nom
+    tr_actions: Actions
+    modal:
+      title: Suppression du type de perte
+      body: Voulez-vous vraiment supprimer le type
+      footer:
+        cancel: Annuler
+        delete: Supprimer
+  new:
+    title: Ajout d'un type de perte
+    block_title: Enregistrer un type de perte
+    btn_save: Enregistrer
+  edit:
+    title: Editer un type de perte
+    block_title: Editer un type de perte
+    btn_save: Modifier
+
+sale:
+  index:
+    title: Liste des ventes
+    block_title: Liste des ventes
+    tr_date: Date
+    tr_amount: Montant
+    tr_profit: Marge
+    tr_type: Type de paiement
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    modal:
+      delete:
+        title: Suppression de la vente
+        body1: Le montant de la vente est de
+        body2: enregistré le
+        footer:
+          cancel: Annuler
+          delete: Supprimer
+        form:
+          reason: Entrez la raison de cette suppression
+      detail:
+        title: Détail sur la vente
+        body:
+          tr_date: Date de la vente
+          tr_productList: Produits vendus
+          tr_recorder: Enregistreur
+          tr_product: Produit
+          tr_unitPrice: Prix unitaire
+          tr_qty: Quantité
+          tr_subtotal: Sous total
+          tr_customer: Client
+          tr_amountReceived: Montant reçu
+          tr_amountRemaining: Montant restant
+          tr_rest_to_pay: Reste à payer
+          tr_amountToRepay: Montant remboursé
+          tr_sendbymail: Prévisualiser la facture
+          taxedAmount: Montant taxé
+          discount: Réduction
+          tr_product_return: produits retournés
+          tr_qtyReturn: Qté retournée
+          tr_dateReturn: Date de retour
+          tr_numInvoice: N° Facture
+        footer:
+          cancel: Fermer
+      addPayment:
+        title: Enregistrer un règlement pour cette vente
+        infoMessage: Le reste à payer pour cette vente est de
+        form:
+          date: Date
+          amount: Montant
+          paymentMethod: Méthode de paiement
+      deletePayment:
+        title: Supprimer un règlement de vente
+        body: Voulez-vous vraiment supprimer ce paiement de
+      addAttendance:
+        title: Enregistrer un état de présence pour
+        form:
+          date: Date
+          attendanceStatus: Statut
+      addSalary:
+        title: Enregistrer un paiement pour
+        form:
+          month: Mois
+          year: Année
+          amount: Montant
+      invoice:
+        title: Facture de la vente N°
+      discount:
+        title: Liste des ventes avec remise sur la période
+      debt:
+        title: Liste des ventes non réglées sur la période
+      addProductReturn:
+        title: Enregistrer un retour de produit
+        form:
+          date: Date
+          product: Produit
+          qtyReturn: Quantité retournée
+          reason: Raison
+          repay: Ce produit retourné sera remboursé
+          stockable: Ce produit sera restauré en stock
+      addEmployeeFee:
+        title: Enregistrer un frais pour
+        form:
+          amount: Montant
+          date: Date
+          reason: Raison
+    tr_code: ID
+    card_title_1: Nombre de ventes
+    card_title_2: Montant collecté
+    card_title_3: Profit des ventes
+    card_title_4: Montant non collecté
+    tr_name: Mode de paiement
+    tr_nbSales: Nb. ventes
+    tr_amountType: Collecté
+    tr_amountType2: réglé
+    tr_reason: Raison de la suppression
+    stat_hour_title: Montant
+    stat_hourNumber_title: Nombre de ventes
+    tr_number: N° vente
+    tr_detail: Détail
+    card_title_5: Remise totale
+    tr_discount: Remise
+    tr_customer: Client
+  add:
+    stock_insufficient: La quantité en stock est insuffisante
+    title: Enregistrer une vente
+    tr_name: Nom
+    tr_price: Prix
+    tr_stock: Stock
+    tr_actions: Actions
+    tr_nodata: Pas de stock disponible
+    card_title: Panier
+    btn_cleanBag: Vider le panier
+    btn_valid: Valider
+    bag_nodata: Panier vide
+    amountReceived_lower: Montant reçu insuffisant
+    amountReceived: Montant reçu
+    print: Imprimer le reçu
+    tr_barcode: barCode
+    select_customer: Client de passage
+    totalAmount: Montant total
+    addTax: Ajouter une taxe
+    li:
+      walking-customer: Vente pour client de passage
+      wholeSaler: Vente pour revendeur
+      walkingAndEmployee: Vente pour client de passage ou employé
+    select_customer_placeholder: Sélectionner le nom du revendeur
+    customer_invalid: Impossible de valider une vente payée partiellement par une personne non identifiée
+    barcode_invalid: Code-barres invalide
+    discount: Réduction
+    discount_invalid: La réduction ne peut pas être supérieure au montant du panier
+    amountWithReduction: Montant TTC
+    amountRefund: Montant à rembourser
+    tr_reference: Reférence
+    select_storage_placeholder: Sélectionnez le sous magasin
+    qty_lower: quantité insuffisante
+    searchBox: Code-barres, reférence ou nom du produit
+    form:
+      numInvoice: N° Facture
+    num_invoice_invalid: N° Facture déjà utilisé
+  detail:
+    title: Détail sur la vente
+    block_title: Détail sur la vente
+    back: Retour
+    modal:
+      changeNumInvoice:
+        title: Changer le numéro de facture
+        form:
+          numInvoice: N° Facture
+      changeDate:
+        title: Changer la date de la vente
+        form:
+          date: Date
+      changeCustomer:
+        title: Changer le client de cette vente
+        form:
+          customer: Client
+          withoutCustomer: Sans client
+    select_customer: Sélectionnez un client
+  addgui:
+    modal:
+      form:
+        title: Ajouter un produit au panier
+        product: Sélectionner le produit
+        qty: Personnaliser la quantité en fonction des lots disponibles
+        qtyTotal: Quantité totale
+        sellPrice: Prix de vente
+        subTotal: Sous total
+        qtyCustom: Quantité
+  deleted:
+    title: Liste des ventes supprimées
+    block_title: Liste des ventes supprimées
+    tr_date: Date
+    tr_amount: Montant
+    tr_reason: Raison de la suppression
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    modal:
+      delete:
+        title: Suppression de la vente
+        body: Voulez-vous supprimer définitivement cette vente?
+      restore:
+        title: Restauration d'une vente
+        body: Voulez-vous vraiment restaurer cette vente?
+  unsettled:
+    title: Liste des ventes non réglées
+    block_title: Liste des ventes non réglées
+    tr_date: Date
+    tr_amount: Montant
+    tr_restToPay: Reste à payer
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+  addEdit:
+    title: Editer une vente
+    sale_invalid: Vente invalide
+    btn_valid: Editer
+    card_title: Vente
+  employee:
+    title: Sélectionnez un employé
+  payment:
+    salesModal:
+      title: Détail sur les règlements
+      tr_sale: Code vente
+      tr_salePayment: ID
+      tr_date: Date
+      tr_amount: Montant
+      tr_recorder: Enregistreur
+form:
+  paste:
+    pattern:
+      title: Modéle de sortie
+      placeholder: 'Feuille, carré, etc...'
+    name:
+      title: Nom
+      placeholder: ''
+  productionStorage:
+    description:
+      title: Description
+      placeholder: ''
+    name:
+      title: Libellé
+      placeholder: ''
+  productPackaging:
+    name:
+      title: Nom
+      placeholder: Entrez le nom du conditionnement
+  rawMaterial:
+    rateGap:
+      title: Taux d'écart (%)
+    name:
+      title: Nom
+      placeholder: Entrez le nom de la matière
+    unit:
+      title: Unité de mesure
+      placeholder: Kg, g, l
+  noticeBoard:
+    title:
+      title: Titre
+      placeholder: Entrez un titre
+    message:
+      title: Message
+      placeholder: Entrez le message
+    start:
+      title: Date de début
+    end:
+      title: Date de fin
+    status:
+      title: Statut
+      placeholder: Sélectionnez un statut
+  tax:
+    name:
+      title: Nom
+      placeholder: Entrez le nom de taxe
+    rate:
+      title: Pourcentage
+      placeholder: Entrez le pourcentage
+  role:
+    rank:
+      title: Niveau
+    name:
+      title: Libellé
+      placeholder: Entrez le libellé
+  productCategory:
+    name:
+      title: Nom
+      placeholder: Entrez le nom de la catégorie
+  supplier:
+    name:
+      title: Nom
+      placeholder: Entrez le nom du fournisseur
+    firstPhoneNumber:
+      title: Téléphone 1
+      placeholder: ''
+    secondPhoneNumber:
+      title: Téléphone 2
+      placeholder: ''
+    email:
+      title: Adresse Email
+      placeholder: Entrez l'adresse Email
+    type:
+      title: Type
+      placeholder: Sélectionnez le type de fournisseur
+      choices:
+        corporation: Personne Morale
+        physical_person: Personne Physique
+  product:
+    imageFile:
+      title: Photo
+      placeholder: Sélectionner une image
+    reference:
+      title: Reférence
+    packagingQty:
+      title: Quantité conditionnée
+    packaging:
+      title: Conditionnement
+    qrCode:
+      title: Code-barres
+    point:
+      title: Point
+    wholePoint:
+      title: Point pour prix de gros
+    discount:
+      title: Réduction
+    wholeDiscount:
+      title: Réduction pour prix de gros
+    wholePrice:
+      title: Prix du revendeur
+    byProduct:
+      title: Ce produit est un produit dérivé
+    cip:
+      title: CIP
+      placeholder: Entrez le CIP du produit
+    name:
+      title: Nom
+      placeholder: Entrez le nom du produit
+    buyPrice:
+      title: Prix d'achat
+      placeholder: 0
+    sellPrice:
+      title: Prix de vente
+      placeholder: 0
+    stockAlert:
+      title: Quantité à alerter
+      placeholder: 0
+    category:
+      title: La catégorie du produit
+  store:
+    address:
+      title: Adresse (localisation)
+    name:
+      title: Nom de l'entreprise
+      placeholder: Entrez le nom de l'entreprise
+    imageFile:
+      title: Logo
+      placeholder: Choisir une image
+    slogan:
+      title: Slogan
+    year:
+      title: Année de création
+    phoneNumber:
+      title: Numéro de téléphone
+      placeholder: ''
+    email:
+      title: Adresse Email
+      placeholder: Entrez l' adresse Email
+    webSite:
+      title: Site internet
+      placeholder: Adresse URL
+  passwordUpdate:
+    oldpassword:
+      title: Ancien mot de passe
+      placeholder: Entrez votre mot de passe courant
+    newpassword:
+      title: Nouveau mot de passe
+      placeholder: Entrez un nouveau mot de passe
+    confirmpassword:
+      title: Confirmation du nouveau mot de passe
+      placeholder: Confirmez le nouveau mot de passe
+  register:
+    name:
+      title: Nom complet
+      placeholder: Entrez le nom complet
+    email:
+      title: Adresse Email
+      placeholder: Entrez l'adresse Email
+    firstPhoneNumber:
+      title: Téléphone 1
+      placeholder: ''
+    secondPhoneNumber:
+      title: Téléphone 2
+      placeholder: ''
+    imageFile:
+      title: Photo
+      placeholder: Choisir une image
+    gender:
+      title: Sexe
+      placeholder: Sélectionner le sexe
+      choices:
+        man: Homme
+        woman: Femme
+    district:
+      title: Quartier
+      placeholder: Entrez le quartier de résidence
+  lossType:
+    name:
+      title: Nom
+      placeholder: Entrez le nom du type
+  user:
+    salary:
+      title: Salaire
+    name:
+      title: Nom complet
+      placeholder: Entrez le nom complet
+    email:
+      title: Adresse Email
+      placeholder: Entrez l'adresse Email
+    firstPhoneNumber:
+      title: Téléphone 1
+      placeholder: ''
+    secondPhoneNumber:
+      title: Téléphone 2
+      placeholder: ''
+    gender:
+      title: Sexe
+      placeholder: Sélectionner le sexe
+      choices:
+        man: homme
+        woman: femme
+    district:
+      title: Quartier
+      placeholder: Entrez le quartier de résidence
+    imageFile:
+      title: Photo
+      placeholder: Choisir une image
+    role:
+      title: Rôle
+  bank:
+    accountName:
+      title: Nom du compte
+      placeholder: Entrez le nom du compte
+    accountNumber:
+      title: Numéro du compte
+      placeholder: Entrez le numéro de compte
+    initialBalance:
+      title: Solde initial
+      placeholder: 0
+    phoneNumber:
+      title: Téléphone
+      placeholder: ''
+  customer:
+    type:
+      title: Catégorie
+      placeholder: Sélectionnez une catégorie
+    name:
+      title: Nom
+      placeholder: ''
+    email:
+      title: Email
+      placeholder: Entrez l'adresse Email
+    gender:
+      title: Sexe
+      placeholder: Sélectionner le sexe
+    bloodGroup:
+      title: Groupe sanguin
+      placeholder: ''
+    other:
+      title: Autres
+      placeholder: ''
+    address:
+      title: adresse
+      placeholder: ''
+    phoneNumber:
+      title: Téléphone
+      placeholder: ''
+  expense:
+    transactional:
+      title: Cette dépense est aussi une transaction
+    bank:
+      title: Sélectionnez le compte financier de cette transaction
+    expenseType:
+      title: Type de dépense
+    paymentMethod:
+      title: Mode de paiement
+    name:
+      title: Nom
+      placeholder: Entrez le nom de la dépense
+    addDate:
+      title: Date
+    amount:
+      title: Montant
+      placeholder: 0
+    description:
+      title: Description
+      placeholder: Donnez des détails sur la dépense
+  expenseType:
+    name:
+      title: Nom
+      placeholder: ''
+    description:
+      title: Description
+      placeholder: Donnez des détails sur le type de la dépense
+  paymentMethod:
+    name:
+      title: Nom
+      placeholder: ''
+  transaction:
+    bank:
+      title: Compte financier
+    type:
+      title: Type de transaction
+      placeholder: Sélectionner le type de transaction
+    date:
+      title: Date
+    transactionCode:
+      title: Code de la transaction
+      placeholder: ''
+    amount:
+      title: Montant
+      placeholder: ''
+    description:
+      title: Description
+      placeholder: Donnez des détails sur la transaction
+    fee:
+      title: Frais
+      placeholder: 0
+controller:
+  adjustment:
+    delete:
+      flash:
+        success: Ajustement supprimé avec succès
+    new:
+      entity: Ajustement
+      page: Enregistrer un ajustement
+    detail:
+      entity: Ajustement
+      page: Détail sur l'ajustement
+    index:
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+      entity: Ajustement
+      page: Liste des ajustements
+    add:
+      flash:
+        success: Ajustement enregistré avec succès
+  performanceSupplier:
+    file:
+      page: Fiche du fournisseur
+  shortcut:
+    index:
+      entity: Raccourcis
+      page: Liste des raccourcis
+  dashboardRawMaterial:
+    index:
+      entity: Production
+      page: Tableau de bord
+  paste:
+    detail:
+      entity: Type de pâte
+      page: Détail sur un type de pâte
+    new:
+      entity: Type de pâte
+      page: Enregistrer un type de pâte
+    edit:
+      entity: Type de pâte
+      page: Editer un type de pâte
+    index:
+      entity: Type de pâte
+      page: Liste des types de pâte
+  productionStorage:
+    inventory:
+      entity: Sous magasin
+      page: Inventaire
+    detail:
+      entity: Sous magasin
+      page: Détail sur le sous magasin
+    index:
+      entity: Sous magasin
+      page: Liste des sous magasins
+    new:
+      entity: Sous magasin
+      page: Enregistrer un sous magasin
+    edit:
+      entity:  Sous magasin
+      page: Editer un sous magasin
+    add:
+      flash:
+        success: Approv. du sous magasin efféctué
+        empty_qty: Entrez une quantité
+  file:
+    sale:
+      employee:
+        entity: Vente
+        page: Fiche de vente
+      edit:
+        page: Editer la fiche de vente
+        entity: Vente
+      index:
+        page: Fiche de vente
+        entity: Vente
+  productcoef:
+    delete:
+      flash:
+        success: Coefficient supprimé avec succès
+    index:
+      entity: Produit
+      page: liste des coefficients
+  productPackaging:
+    index:
+      entity: Conditionnement
+      page: Liste des conditionnements
+    new:
+      entity: Conditionnement
+      page: Enregistrer un conditionnement
+    edit:
+      entity: Conditionnement
+      page: Editer un conditionnement
+  productStockReturn:
+    add:
+      flash:
+        success: Renvoi de produit enregistré avec succès
+    delete:
+      flash:
+        success: Renvoi de produit supprimé avec succès
+  performanceCustomer:
+    file:
+      page: Fiche du client
+  importPrice:
+    entity: Produit
+    page: Importer les prix de gros
+  addons:
+    edit:
+      flash:
+        success: Module mis à jour avec succèes
+  permission:
+    index:
+      entity: Permission
+      page: Liste des permissions
+  supply:
+    choice:
+      entity: Approvisionnement
+      page: Liste des approvisionnements
+    production:
+      delete:
+        flash:
+          success: Approvisionnement supprimé avec succès
+      new:
+        entity: Approvisionnement
+        page: Enregistrer un approv. pour sous magasin
+      index:
+        entity: Approvisionnement
+        page: Liste des approv. pour sous magasin
+        flash:
+          danger: L'intervalle de jours entre les deux dates doit être de 30
+    import:
+      entity: Importation
+      page: Importation d'un approvisionnement
+    delete:
+      flash:
+        success: Approvisionnement supprimé avec succès
+    add:
+      flash:
+        success: Approvisionnement enregistré avec succès
+    new:
+      entity: Approvisionnement
+      page: Enregistrer un approvisionnement
+    detail:
+      entity: Approvisionnement
+      page: Editer un approvisionnement
+    index:
+      entity: Approvisionnement
+      page: Liste des approvisionnements
+  rawMaterial:
+    outOfDate:
+      entity: Matière première
+      page: Liste des matières p. périmées
+    expiryDate:
+      entity: Matière première
+      page: Matières p. proche de la péremption
+    inventory:
+      entity: Inventaire
+      page: Matière première
+    detail:
+      entity: Matière première
+      page: Détail sur la matière première
+    edit:
+      entity: Matière première
+      page: Editer une matière première
+    new:
+      entity: Matière première
+      page: Nouvelle matière première
+    index:
+      entity: Matière première
+      page: Liste des matières premières
+  noticeBoard:
+    deleteUser:
+      flash:
+        success: Utilisateur délié du préavis avec succès
+    addUser:
+      flash:
+        success: Utilisateurs liés au préavis avec succès
+    delete:
+      flash:
+        success: Préavis supprimé avec succès
+    edit:
+      entity: Préavis
+      page: Editer un préavis
+      flash:
+        success: Préavis édité avec succès
+    new:
+      entity: Préavis
+      page: Enregistrer un préavis
+      flash:
+        danger: La date de début doit être supérieur à la date de fin
+        success: Préavis enregistré avec succès
+    index:
+      entity: Préavis
+      page: Liste des préavis
+  employee:
+    fee:
+      index:
+        entity: Personnel
+        page: Détail de frais
+      entity: Personnel
+      page: Fiche des frais d'employés
+    salary:
+      flash:
+        danger2: Montant du paiement invalide
+        danger: Montant du paiement supérieur au reste à payer du mois
+      entity: Personnel
+      page: Salaire
+      index:
+        entity: Personnel
+        page: Salaire
+    attendance:
+      index:
+        entity: Personnel
+        page: Registre de présences
+    delete:
+      flash:
+        success: Employé supprimé avec succès
+    edit:
+      entity: Personnel
+      page: Editer un employé
+      flash:
+        danger: Impossible d'éditer un admin
+        success: Employé édité avec succès
+    new:
+      entity: Personnel
+      page: Enregistrer un employé
+      flash:
+        success: Employé enregistré avec succès
+    index:
+      entity: Personnel
+      page: Liste du personnel
+  salePayment:
+    index:
+      entity: Vente
+      page: Liste des règlements
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+    delete:
+      flash:
+        success: Règlement supprimé avec succès
+    add:
+      flash:
+        success: Règlement enregistré avec succès
+        danger1: Le montant entré dépasse le reste à payer de la vente
+        danger2: La date entrée est supérieure à celle d'aujourd'hui
+  installation:
+    index:
+      flash:
+        success: Installation réussie avec succès
+        danger:
+          password: Confirmation de mot de passe incorrecte
+  tax:
+    edit:
+      entity: Taxe
+      page: Editer une taxe
+    new:
+      entity: Taxe
+      page: Nouvelle taxe
+    index:
+      entity: Taxe
+      page: Liste des taxes
+  report:
+    adjustmentByProduct:
+      entity: Rapport
+      page: Historique des ajustements
+    fileSale:
+      entity: Rapport
+      page: Fiche de vente
+    productStockReturn:
+      entity: Rapport
+      page: Renvoi de produits commandés
+    productSaleReturn:
+      entity: Rapport
+      page: Retour de produits vendus
+    supplier:
+      entity: Rapport
+      page: Fournisseur
+    stockByProductSupplier:
+      entity: Rapport
+      page: Produits achetés par fournisseur
+    saleByProductCategory:
+      entity: Rapport
+      page: Détail sur une catégorie de produit
+    productCategory:
+      entity: Rapport
+      page: Catégories de produit
+    activity:
+      entity: Rapport
+      page: Activité périodique
+    saleByProductEmployee:
+      entity: Rapport
+      page: Produits vendus par employé
+    saleByProductCustomer:
+      entity: Rapport
+      page: Produits achétés par client
+    saleByEmployee:
+      entity: Rapport
+      page: Vente par employé
+    production:
+      entity: Rapport
+      page: Production
+    attendance:
+      entity: Rapport
+      page: Présence
+    salary:
+      entity: Rapport
+      page: salaire
+    supply:
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+      entity: Rapport
+      page: Approvisionnement
+    expense:
+      entity: Rapport
+      page: Dépense
+    saleByProduct:
+      entity: Rapport
+      page: Vente par produit
+    transaction:
+      entity: Rapport
+      page: Transaction
+    sale:
+      entity: Rapport
+      page: Vente
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+    stock:
+      entity: Rapport
+      page: Commande
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+    loss:
+      entity: Rapport
+      page: Perte
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+    product:
+      entity: Rapport
+      page: Produit
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+  role:
+    removePermission:
+      flash:
+        success: Permission retirée avec succès
+    addPermission:
+      flash:
+        success: Permission(s) ajoutée(s) avec succès
+    index:
+      entity: Rôle
+      page: Liste des rôles
+    edit:
+      entity: Rôle
+      page: Editer un rôle
+      flash:
+        success: Rôle édité avec succès
+    delete:
+      flash:
+        success: Rôle supprimé avec succès
+    new:
+      flash:
+        success: Rôle enregistré avec succès
+      entity: Rôle
+      page: Nouveau rôle
+  account:
+    importLanguage:
+      flash:
+        danger:
+          fileExist: Un ou plusieurs fichier(s) traduit(s) manquant(s)
+          typeFileIncorrect: Type de fichier incorrect.
+    deleteLanguage:
+      success: Langue supprimée avec succès
+    profile:
+      flash:
+        success: Modification des informations effectuée
+        danger: Entrez au moins un numéro de téléphone valide
+      entity: Profil
+      page: Modifier mes informations
+    resetpassword:
+      flash:
+        success: Votre mot de passe a été modifié
+        oldpassword: Votre mot de passe actuel est incorrect
+        newpassword: Donnez un mot de passe différent de l'ancien
+      entity: Profil
+      page: Modifier son mot de passe
+
+    changeLanguage:
+      entity: Profil
+      page: Changer la langue
+  cart:
+    add:
+      flash:
+        error_qty: La quantité demandée dépasse la quantité en stock
+        empty_qty: La quantité invalide
+  user:
+    detail:
+      entity: Employé
+      page: Détail sur l'employé
+    attendance:
+      index:
+        entity: Employé
+        page: Registre de présences
+    index:
+      entity: Employé
+      page: Liste des utilisateurs
+    new:
+      entity: Employé
+      page: Nouveau utilisateur
+      flash:
+        success: Utilisateur enregistré avec succès
+    changeRole:
+      flash:
+        success: le rôle de l'utilisateur a été changé
+  productCategory:
+    index:
+      entity: Produits
+      page: Liste des catégories de produits
+    new:
+      entity: Catégories de produit
+      page: Nouveau
+    edit:
+      entity: Catégories de produit
+      page: Mettre à jour
+  supplier:
+    index:
+      entity: Fournisseurs
+      page: Liste des fournisseurs
+    new:
+      entity: Fournisseurs
+      page: Nouveau
+      flash:
+        success: Fournisseur enregistré avec succès
+    edit:
+      entity: Fournisseurs
+      page: Mettre à jour
+      flash:
+        success: Fournisseur modifié avec succès
+    delete:
+      flash:
+        success: Fournisseur supprimé avec succès
+  home:
+    index:
+      entity: Accueil
+      page: Tableau de bord
+  product:
+    index:
+      entity: Produits
+      page: Liste des produits
+    new:
+      entity: Produits
+      page: Nouveau
+      flash:
+        success: Produit enregistré avec succès
+        danger: Ce produit existe déja
+    edit:
+      entity: Produits
+      page: Mettre à jour
+      flash:
+        success: Produit modifié avec succès
+    delete:
+      flash:
+        success: Produit supprimé avec succès
+    detail:
+      entity: Produits
+      page: Détail
+
+    expiryDate:
+      entity: Produit
+      page: Stock(s) proche(s) de la péremption
+
+    outOfDate:
+      entity: Produit
+      page: Stock(s) périmé(s)
+
+    printLabel:
+      entity: Produit
+      page: Imprimer les étiquettes de code-barres
+  store:
+    value:
+      entity: Entreprise
+      page: Les produits au magasin
+    index:
+      entity: Entreprise
+      page: Information sur l'entreprise
+      flash:
+        success: Informations Enregistrées
+  performance:
+    production:
+      entity: Statistique
+      page: Statistique sur les productions
+    stock:
+      title: Statistique sur les approvisionnements
+      entity: Statistique
+      page: Statistique sur les approvisionnements
+    productCategory:
+      entity: Statistique
+      page: Statistique sur les catégories de produit
+    performance:
+      entity: Statistique
+      page: Medicaments vendus sur la période
+    file:
+      entity: Détail
+      page: Fiche de l'employé
+    index:
+      title: Performance de l'entreprise
+      entity: Statistique
+      page: Statistique sur les ventes
+    profit:
+      title: Statistique sur les marges de l'entreprise
+      entity: Statistique
+      page: Statistique sur les marges de l'entreprise
+    paymentMethod:
+      entity: Statistique
+      page: Statistique sur les modes de paiement
+  loss:
+    index:
+      entity: Pertes
+      page: Liste des pertes
+    new:
+      entity: Pertes
+      page: Nouvelle
+      flash:
+        danger:
+          product: Veuillez sélectionner un produit
+          lossType: Veuillez sélectionner un type de perte
+          qtyEleve: La quantité perdue est plus grande que la quantité en stock
+        success: Perte enregistrée avec succès
+    edit:
+      entity: Pertes
+      page: Mettre à jour
+      flash:
+        success: Perte modifiée avec succès
+    delete:
+      flash:
+        success: Perte supprimée avec succès
+  stock:
+    fee:
+      flash:
+        danger: Montant invalide
+    import:
+      entity: Stock
+    index:
+      entity: Commandes
+      page: Liste des commandes
+    detail:
+      entity: Commande
+      page: Détail sur la commande
+    new:
+      entity: Commandes
+      page: Prendre une commande
+    add:
+      flash:
+        success: Commande enregistrée avec succès
+        danger: Le prix d'achat ne peut pas être supérieur au prix de vente
+    delete:
+      flash:
+        success: Commande supprimée avec succès
+    setStatus:
+      flash:
+        danger: Verifiez les détails de la commande ou le relevé est incorrect
+  lossType:
+    index:
+      entity: Pertes
+      page: Liste des types de perte
+    new:
+      entity: Types de perte
+      page: Nouveau
+    edit:
+      entity: Types de perte
+      page: Mettre à jour
+  sale:
+    changeNumInvoice:
+      flash:
+        danger: Ce numéro de facture est déjà utilisé
+    edit:
+      entity: Vente
+      page: Editer une vente
+    choice:
+      entity: Vente
+      page: Choix du type de vente
+    unsettled:
+      entity: Ventes
+      page: Liste des ventes non réglées
+    restore:
+      flash:
+        danger: Impossible de restaurer cette vente.
+        success: Vente restaurée avec succès
+    deleted:
+      entity: Ventes
+      page: Liste des ventes supprimées
+    index:
+      flash:
+        danger: L'intervalle de jours entre les deux dates doit être de 30
+      entity: Ventes
+      page: Liste des ventes
+    detail:
+      entity: Vente
+      page: Détail sur la vente
+    new:
+      entity: Ventes
+      page: Enregistrer une vente
+    add:
+      flash:
+        success: Vente enregistrée avec succès
+    delete:
+      flash:
+        danger: Veuillez indiquer la raison de la suppression
+        success: Vente supprimée avec succès
+  activation:
+    activate:
+      entity: Profil
+      page: Activation de l'application
+      flash:
+        internet: Vérifiez votre connexion internet
+        codeInvalid: Code d'activation invalide
+        codeValid: Code d'activation accepté
+    index:
+      entity: Activation
+      page: Liste des codes d'activation
+    new:
+      entity: Activation
+      page: Nouveau
+    edit:
+      entity: Activation
+      page: Editer
+  inventory:
+    page: Inventaire
+    entity: Produits
+  historic:
+    entity: Connexion
+    page: Historique
+  import:
+    entity: Produit
+    page: Importation
+    flash:
+      danger:
+        fileNotExist: Veuillez sélectionner un fichier
+        columnNotSelected: Veuillez sélectionner les colonnes nécessaires
+        fieldSelectManyTimes: Un champ a été sélectionné plusieur fois
+        typeFileIncorrect: Type de fichier incorrect
+        errorFile: Impossible de valider ce fichier
+        errorMoveFile: Impossible de manipuler ce fichier
+      success:
+        transfer: L'importation a été effectuée avec succès
+  database:
+    backup:
+      flash:
+        success: Fichier de restauration sauvegardé avec succès
+        danger1: Impossible de créer le fichier de restauration
+        danger2: Impossible de créer le fichier de restauration
+      entity: Database
+      page: Backup
+  search:
+    stock:
+      entity: Recherche
+      page: Commande
+    product:
+      entity: Recherche
+      page: Produit
+    sale:
+      entity: Recherche
+      page: Vente
+  bank:
+    index:
+      entity: Compte
+      page: Liste des comptes financiers
+    new:
+      entity: Compte
+      page: Enregistrer un compte financier
+      flash:
+        success: Compte financier enregistré avec succès
+    edit:
+      entity: Compte
+      page: Editer un compte financier
+      flash:
+        success: Compte financier modifié avec succès
+    delete:
+      flash:
+        success: Compte financier supprimé avec succès
+  customer:
+    index:
+      entity: Client
+      page: Liste des clients
+    new:
+      entity: Client
+      page: Enregistrer un client
+      flash:
+        success: Client enregistré avec succès
+    edit:
+      entity: Client
+      page: Editer un client
+      flash:
+        success: Client modifié avec succès
+    delete:
+      flash:
+        success: Client supprimé avec succès
+  expense:
+    index:
+      entity: Dépense
+      page: Liste des dépenses
+    new:
+      entity: Dépense
+      page: Nouvelle dépense
+      flash:
+        danger4: Le montant de la transaction est plus grand que le solde du compte sélectionné
+        danger2: Type de dépense requis
+        danger3: Méthode de paiement requis
+        success: Dépense enregistrée avec succès
+    edit:
+      entity: Dépense
+      page: Editer une dépense
+      flash:
+        success: Dépense modifiée avec succès
+    delete:
+      flash:
+        success: Dépense supprimée avec succès
+  expenseType:
+    index:
+      entity: Dépense
+      page: Liste des types de dépense
+    new:
+      entity: Dépense
+      page: Editer un type de dépense
+      flash:
+        success: Type de dépense enregistré avec succès
+    edit:
+      entity: Dépense
+      page: Editer un type de dépense
+      flash:
+        success: Type de dépense édité avec succès
+    delete:
+      flash:
+        success: Type de dépense supprimé avec succès
+  paymentMethod:
+    index:
+      entity: Paiement
+      page: Liste des modes de paiement
+    new:
+      entity: Paiement
+      page: Nouveau mode de paiement
+      flash:
+        success: Mode de paiement enregistré avec succès
+    edit:
+      entity: Paiement
+      page: Editer un mode de paiement
+      flash:
+        success: Mode de paiement modifié avec succès
+    delete:
+      flash:
+        success: Mode de paiement supprimé avec succès
+  transaction:
+    index:
+      entity: Transaction
+      page: Liste des transactions
+    new:
+      entity: Transaction
+      page: Nouvelle transaction
+      flash:
+        success: Transaction enregistrée avec succès
+        danger: Veuillez sélectionner un compte financier
+    edit:
+      entity: Transaction
+      page: Editer une transaction
+      flash:
+        success: Transaction éditée avec succès
+    delete:
+      flash:
+        success: Transaction supprimée avec succès
+
+  stockPayment:
+    index:
+      entity: Commande
+      page: Liste des règlements
+    add:
+      flash:
+        danger1: Le montant entré dépasse celle de la commande
+        danger2: La date entrée est supérieure à celle d'aujourd'hui
+        success: Règlement enregistré avec succès
+        danger3: Vérifiez le solde de ce compte financier
+    delete:
+      flash:
+        success: Règlement supprimé avec succès
+  setting:
+    index:
+      flash:
+        success: Paramètre mis à jour avec succès
+      entity: Paramètre
+      page: Liste des paramètres
+  production:
+    reserve:
+      index:
+        entity: Production
+        page: Liste des réserves
+    productReserveOut:
+      delete:
+        flash:
+          danger: Cette sortie de réserve est déja utilisée dans une vente
+      add:
+        flash:
+          danger:  Quantité invalide
+    product:
+      add:
+        flash:
+          danger: Quantité invalide
+    fee:
+      flash:
+        danger: Montant de la charge invalide
+    delete:
+      flash:
+        success: Production supprimée avec succès
+    new:
+      entity: Production
+      page: Nouvelle production
+    detail:
+      entity: Production
+      page: Détail sur la production
+    index:
+      entity: Production
+      page: Liste des productions
+    add:
+      flash:
+        error_qty: La quantité demandée excède la quantité en stock
+        empty_qty: Quantité invalide
+        success: Production enregistrée avec succès
+  productReturn:
+    add:
+      flash:
+        success: Le retour de produit a été enregistré avec succès
+        danger2: La date entrée est supérieure à celle d'aujourd'hui
+        error_qty: Quantité invalide
+inventory:
+  index:
+    block_title: Inventaire
+    form:
+      btn_search: Rechercher
+    tr_product: Produit
+    tr_initialStock: Stock d'ouverture
+    tr_qtyOrdered: Qté commandée
+    tr_qtySold: Qté vendue
+    tr_qtyLoss: Qté perdue
+    tr_stockRemaining: Stock Restant
+    tr_nodata: Aucun produit dans l'inventaire
+    title: Inventaire sur la période du
+    tr_qtySupplied: Qté approvisionnée
+    tr_qtyProduct: Qté utilisée
+    tr_rawMaterial: Matière première
+    tr_qtyOrdered_resend: (renvoyée)
+    tr_qtySold_resend: (retournée)
+    tr_qtyEstimated: Qté évaluée
+    tr_qtyGap: Ecart
+    tr_qtyAdjust: Qté ajustée
+historic:
+  index:
+    block_title: Historique de connexion
+    form:
+      btn_search: Rechercher
+    tr_date: Date de connexion
+    tr_user: Utilisateur
+    tr_nodata: Aucune connexion sur cette période
+    title: Historique de connexion
+pdf:
+  sale:
+    title: Vente
+    tr_product: Produit
+    tr_qty_price: Prix(Qté)
+    tr_cost: Coût
+    tr_amountReceived: Montant reçu
+    tr_rest: Reste à payer
+    footer1: Servi par
+    footer2: le
+    end: Merci et bonne guérison
+    footer3: à
+    tr_sale: Vente N°
+    tr_amount: Montant Total
+    tr_repay: Montant rendu
+  order:
+    title: Commande
+    tr_title: Commande
+    tr_product: Produit
+    tr_unitPrice: Prix unitaire
+    tr_qty: Quantité
+    tr_total: Total
+  supply:
+    title: Approvisionnement
+    tr_title: Approvisionnement
+    tr_rawMaterial: Matière première
+    tr_unitPrice: Prix unitaire
+    tr_qty: Quantité
+    tr_total: Total
+  production:
+    title: Production
+    tr_title: Production
+    tr_rawMaterial: Matière première
+    tr_qty: Quantité
+    tr_finished_product: Produits finis
+    tr_product: Produit
+    tr_estimatedQty: Qté evaluée
+    tr_qtyUsed: Qté utilisée
+    tr_gap: Ecart
+    tr_subtotal: Sous total
+    tr_sellPrice: Prix de vente
+  permission:
+    title: Liste des permissions
+    tr_title: Permission
+  invoice:
+    title: Facture
+    tr_designation: Désignation
+    tr_unitPrice: Prix unitaire
+    tr_qty: Quantité
+    tr_subtotal: Sous total
+    tr_amount: Montant
+    tr_code: N° Vente
+    tr_date: Date de la facture
+    tr_total: Total
+    sendByMail: Envoyer par mail
+    tr_numInvoice: N° Facture
+  adjustment:
+    title: Détail sur l'ajustement
+    tr_title: Liste des produits ajustés
+    tr_product: Produit
+    tr_qtyExpected: Quantité expectée
+    tr_newQty: Quantité comptée
+    tr_difference: Différence
+parametre:
+  index:
+    title: Paramètres de l'application
+    block_title: Paramètres de l'application
+    modal:
+      update:
+        yes: Oui
+        no: Non
+        btn_validate: Modifier
+        btn_cancel: Fermer
+        title: Modifier le paramètre
+role:
+  index:
+    title: Liste des rôles
+    block_title: Liste des rôles
+    tr_name: Libellé
+    tr_permission: Permissions
+    tr_actions: Actions
+    description:
+      modal:
+        title: Liste des permissions
+        permission:
+          tr_name: Code
+          tr_desc: Description
+          tr_action: Actions
+        footer:
+          cancel: Fermer
+    modal:
+      title: Supprimer un rôle
+      body: Voulez-vous supprimer le rôle
+      footer:
+        cancel: Fermer
+        delete: Supprimer
+    permission: Consulter ses permissions
+    addPermission:
+      form:
+        btn_add: Enregistrer
+        permission:
+          libelle: Permission(s)
+      title: Associer des permissions à ce role
+    select_permission: Sélectionner les permissions
+    changeRole:
+      title: Changer le rôle de
+      form:
+        role:
+          libelle: Sélectionnez un autre rôle
+        btn_add: Enregistrer
+    select_suppliers: Sélectionnez le(s) fournisseur(s)
+  edit:
+    title: Editer un rôle
+    block_title: Editer un rôle
+    btn_add: Editer
+  new:
+    title: Enregistrer un rôle
+    block_title: Enregistrer un rôle
+    btn_add: Enregistrer
+account:
+  changeLanguage:
+    title: Langues
+    block_title: Langues disponibles
+    tr_name: Nom
+    tr_actions: Actions
+    btn_activate: Activer
+    tr_abbreviation: Abbréviation
+  importLanguage:
+    title: Enregistrer une langue
+    form:
+      code: Code
+      name: Nom
+      file: Fichier
+      country: Pays
+    footer:
+      cancel: Fermer
+      validate: Valider
+  deleteLanguage:
+    modal:
+      title: Supprimer une langue
+      body: Voulez-vous vraiment supprimer la langue
+      footer:
+        cancel: Fermer
+        delete: Supprimer
+database:
+  backup:
+    title: Database Backup
+    block_title: Point de restauration pour la base de données
+    step1: Sélectionner l'emplacement
+    export: Valider
+    tr_name: Nom du fichier
+    tr_date: Date de création
+    tr_size: Taille
+search:
+  product:
+    title: Recherche de produit
+    block_title: Recherche de produits
+    placeholder: Nom du produit
+    tr_name: Nom
+    tr_category: Catégorie
+    tr_buyPrice: Prix d'achat
+    tr_sellPrice: Prix de vente
+    tr_stock: Stock
+    tr_stockAlert: Stock alerte
+    tr_new: Nouveau
+    label: Rechercher
+    tr_noCategory: Sans catégorie
+    tr_disabled: En sommeil
+  stock:
+    title: Recherche de commande
+    block_title: Recherche de commandes
+    label: Rechercher
+    placeholder: Numéro de la facture
+    tr_date: Date d'enregistrement
+    tr_amount: Montant
+    tr_supplier: Fournisseur
+    tr_status: Status
+    tr_recorder: Enregistreur
+    tr_delivered: Livrée
+    tr_waiting: En attente
+    no_stock: Aucune commande trouvée
+    tr_numInvoice: N° Facture
+    modal:
+      delete:
+        title: Suppression de la commande
+        body1: Le montant de la commande est de
+        body2: enregistré le
+        footer:
+          cancel: Fermer
+          delete: Supprimer
+    tr_actions: Actions
+  sale:
+    title: Recherche de vente
+    block_title: Recherche de ventes
+    label: Rechercher
+    placeholder: Numéro de vente ou facture
+    tr_date: Date de la vente
+    tr_amount: Montant
+    tr_profit: Marge
+    tr_type: Type de paiement
+    tr_actions: Actions
+    modal:
+      delete:
+        body1: Le montant de la vente est de
+        body2: enregistré le
+        footer:
+          cancel: Fermer
+          delete: Supprimer
+        title: Suppression d'une vente
+    no_sale: Aucune vente trouvée
+    tr_code: N° Vente
+    tr_numInvoice: N° Facture
+    tr_customer: Client
+report:
+  print: Imprimer
+  phone: Téléphone
+  doThe: Fait le
+  agent: Agent
+  reportSession: Rapport de session
+  sale:
+    title: Rapport de vente
+    block_title: Rapport de vente
+    tr_date: Date
+    tr_type: Mode de paiement
+    tr_amount: Montant
+    tr_profit: Profit
+    saleList: Liste des ventes
+    tr_profit_percent: '% marge sur CA'
+    tr_nbSales: Nbre de ventes
+    tr_code: N° vente
+    tr_discount: Remise
+    tr_numInvoice: N° Facture
+  stock:
+    title: Rapport de commande
+    block_title: Rapport de commande
+    stockList: Liste des commandes
+    tr_date: Date
+    tr_supplier: Fournisseur
+    tr_amount: Montant
+    tr_numInvoice: Numéro de facture
+  loss:
+    title: Rapport de perte
+    block_title: Rapport de perte
+    lossList: Liste des pertes
+    tr_date: Date
+    tr_product: Produit
+    tr_type: Type
+    tr_qty: Quantité
+    tr_amount: Montant
+  product:
+    title: Rapport du produit
+    block_title: Rapport du produit
+    productDetail: Détail sur le produit
+    saleTab: Ventes
+    stockTab: Commandes
+    lossTab: Pertes
+    tr_date: Date
+    tr_unitPrice: prix unitaire
+    tr_qty: Quantité
+    tr_profit: Marge
+    tr_amount: Montant
+    tr_stockDate: Date de la commande
+    tr_expirationDate: Date de péremption
+    tr_qtyRemaining: Quantité restante
+    tr_product: Produit
+    tr_type: Type de perte
+  transaction:
+    title: Rapport de transaction
+    transactionDetail: Détail sur le compte financier
+    tr_transactionCode: Code de transaction
+    tr_date: Date
+    tr_type: Type
+    tr_debit: Retrait
+    tr_credit: Dépôt
+    select_bank: Sélectionner un compte financier
+    block_title: Rapport de transaction
+    tr_amount: Montant
+    tr_fee: Frais
+    tr_account: Compte financier
+    tr_numCustomer: Téléphone client
+  saleByProduct:
+    title: Rapport de vente par produit
+    block_title:  Rapport de vente par produit
+    saleList: Stats par produit
+    tr_barcode: Reférence
+    tr_name: Désignation
+    tr_qty: Qtés vendues
+    tr_amount: CA Net TTC
+    tr_profit: Marge totale
+    tr_profit_percent: "% mar. sur CA"
+    tr_cmup: CMUP
+    tr_profit_unit: Marge unitaire
+    modal:
+      discount:
+        title: Montant CA net TTC détaillé
+        tr_amount: Montant total sans rémise
+        tr_discount: Remise totale
+        tr_amountWittDiscount: Montant total réel
+        tr_debt: Montant total non collecté
+  expense:
+    title: Rapport de dépenses
+    select_type: Sélectionner le type de dépense
+    block_title: Rapport de dépenses
+    expenseDetail: Liste des dépenses
+    tr_name: Nom
+    tr_date: Date
+    tr_amount: Montant
+    tr_type: Type
+    tr_paymentMethod: Méthode de paiement
+    all_type: Tous les types
+  supply:
+    title: Rapport sur les approvisonnements
+    supplyList: Liste des approvisionnements
+    tr_date: Date
+    tr_numInvoice: Numéro de facture
+    tr_amount: Montant
+    tr_recorder: Enregistreur
+    block_title: Rapport sur les approvisonnements
+  salary:
+    title: Rapport sur les salaires
+    block_title: Rapport sur les salaires
+    salaryList: Fiche de salaire
+    tr_employee: Employé
+    tr_salary: Salaire
+    tr_amountSettled: Montant réglé
+    tr_amountRemaining: Reste à payer
+  attendance:
+    attendanceList: Fiche de présence
+    title: Rapport de présence
+    tr_employee: Employé
+    tr_present: Nombre de présences
+    tr_absent: Nombre d'absences
+    tr_late: Nombre de retards
+    tr_holiday: Nombre de fériés
+    tr_leave: Nombre de congés
+    block_title: Rapport de présence
+  production:
+    title: Rapport de production
+    block_title: Rapport de production
+    productionList: Fiche de production
+    tr_rawMaterial: Matières premières
+    tr_total: Total
+    nodata: Aucune donnée de production pour cette date
+    tr_initialStock: Stock initial
+    tr_qtySupplied: Entrée
+    tr_qtyProduct: Sortie
+    tr_qtyLoss: Perte
+    tr_stockRemaining: Stock restant
+    tr_qtyEstimated: Evaluée
+    tr_qtyGap: Ecart
+    tr_qtyStorageSupplied: Sortie
+    tr_storage: Magasin
+    tr_nbProductions: Nbre de productions
+    tr_amountEstimated: Montant total estimé
+    tr_profitEstimated: Profit total estimé
+    tr_profitReal: Profit total réel
+  saleByEmployee:
+    title: Rapport de vente des employés
+    block_title: Rapport de vente des employés
+    saleList: Liste des ventes
+    tr_name: Employé
+    tr_qty: Nombre de ventes
+    tr_amount: Montant total
+    tr_profit: Marge
+  saleByProductCustomer:
+    title: Rapport de vente par client
+    block_title: Rapport de vente par client
+    productList: Produits achetés par
+    saleList: Liste des ventes de
+    select_customer: Sélectionnez un client
+    tr_qty: Qté achetée
+    bySale: Par vente
+    byProduct: Par produit
+  saleByProductEmployee:
+    title: Rapport de vente par employé
+    saleList: Produits vendus par
+    block_title: Rapport de vente par employé
+    select_employee: Sélectionnez un employé
+    tr_qty: Qté vendue
+  activity:
+    activityList: Activités périodiques
+    block_title: Rapport d'activités périodiques
+    title: Rapport d'activités périodiques
+  productCategory:
+    productCategoryStat: Stats sur les catégories
+    block_title: Rapport périodique sur les catégories de produits
+    title: Rapport périodique sur les catégories de produits
+    tr_name: Catégorie
+    tr_qtySold: Quantité vendue
+    tr_amount: CA net
+    tr_profit: Marge totale
+    tr_percent_profit: "% Marge sur CA"
+  saleByProductCategory:
+    block_title: Rapport de vente par catégorie
+    title: Rapport de vente par catégorie
+    categoryDetail: Catégorie
+  stockByProductSupplier:
+    select_supplier: Sélectionnez un fournisseur
+    title: Rapport d'achat de produits par fournisseur
+    block_title: Rapport d'achat de produits par fournisseur
+    stockList: Produits achetés au fournisseur
+    tr_qty: Quantité achetée
+    tr_amount: Montant total
+    tr_purchasePrice: Prix d'achat moyen
+  supplier:
+    title: Rapport périodique sur les fournisseurs
+    block_title: Rapport périodique sur les fournisseurs
+    supplierStat: Stats sur les fournisseurs
+    tr_name: Nom
+    tr_qtyPurchase: Quantité achetée
+    tr_amount: Montant
+  productSaleReturn:
+    title: Rapport périodique sur les retours de produits vendus
+    block_title: Rapport périodique sur les retours de produits vendus
+    productList: Retour de produits vendus
+    tr_barcode: Reférence
+    tr_name: Désignation
+    tr_qtyReturn: Qté retournée
+    tr_qtyStockable: Qté restituée en stock
+    tr_amount: Montant total
+    tr_amount_repay: Montant remboursé
+  productStockReturn:
+    title: Rapport périodique sur les renvois de produits commandés
+    block_title: Rapport périodique sur les renvois de produits commandés
+    productList: Renvoi de produits commandés
+    tr_barcode: Reférence
+    tr_name: Désignation
+    tr_qtyReturn: Qté renvoyée
+    tr_amount: Montant total
+    tr_amount_repay: Montant remboursé
+  productionDetail:
+    title: Rapport détaillé de production
+    block_title: Rapport détaillé de production
+    productionList: Fiche de production du
+  fileSale:
+    title: Rapport détaillé de caisse
+    select_employee: Sélectionnez un employé
+    block_title: Rapport détaillé de caisse
+    encashmentList: Liste des encaissements de
+    tr_date: Date
+    tr_initialBalance: Balance initial
+    tr_amountSold: Montant vendu
+    tr_credits: Crédit
+    tr_amountReceived: Montant encaissé
+    tr_gap: Ecart
+    tr_totalToDeposit: Total à verser
+    tr_totalPositive: Ecart positif
+    tr_totalNegative: Ecart négatif
+  adjustmentByProduct:
+    block_title: Historique des ajustements
+    adjustmentList: Produits ajustés
+    tr_barcode: Code-barres
+    tr_name: Libellé
+    tr_qtyAdjusted: Quantité ajustée
+    tr_realQty: Stock final
+    title: Historique des ajustements
+
+paymentMethod:
+  index:
+    title: Liste des modes de paiement
+    block_title: Liste des modes de paiement
+    tr_name: Nom
+    tr_nbSales: Nombre de ventes
+    tr_nbExpenses: Nombre de dépenses
+    tr_nbStockPayments: Nombre de paiements
+    tr_actions: Actions
+    modal:
+      title: Suppression d'un mode de paiement
+      body: Voulez vous vraiment supprimer le mode
+    tr_status: Statut
+    tr_active: Activé
+    tr_inactive: Désactivé
+  edit:
+    title: Editer un mode de paiement
+    block_title: Editer un mode de paiement
+    btn_add: Editer
+  new:
+    title: Enregistrer un mode de paiement
+    block_title: Enregistrer un mode de paiement
+    btn_add: Enregistrer
+customer:
+  index:
+    title: Liste des clients
+    block_title: Liste des clients
+    tr_name: Nom
+    tr_tel: Téléphone
+    tr_email: Email
+    tr_gender: Sexe
+    tr_bloodGroup: Groupe sanguain
+    tr_actions: Actions
+    modal:
+      title: Suppression d'un client
+      body: Voulez-vous vraiment supprimer le client
+    tr_amountDebt: Reste à payer
+    salesModal:
+      title: Liste des ventes non réglées
+      tr_sale: N° vente
+      tr_amount_toPay: Reste à payer
+      tr_date: Date
+      tr_paymentMethod: Méthode de paiement
+    tr_seeMore: Consulter
+    tr_type: Type
+  edit:
+    title: Editer un client
+    block_title: Editer un client
+    btn_add: Editer
+  new:
+    title: Enregistrer un client
+    block_title: Enregistrer un client
+    btn_add: Enregistrer
+expense:
+  index:
+    title: Liste des dépenses
+    block_title: Liste des dépenses
+    tr_name: Nom
+    tr_date: Date
+    tr_amount: Montant
+    tr_paymentMethod: Mode de paiement
+    tr_type: Type
+    tr_actions: Actions
+    modal:
+      body: Voulez-vous vraiment supprimer la dépense
+      title: Suppression d'une dépense
+    form:
+      all_type: Tous les types
+  edit:
+    title: Editer une dépense
+    block_title: Editer une dépense
+    btn_add: Editer
+  new:
+    title: Enregistrer une dépense
+    block_title: Enregistrer une dépense
+    btn_add: Enregistrer
+expenseType:
+  index:
+    title: Liste des types de dépenses
+    block_title: Liste des types de dépenses
+    tr_name: Nom
+    tr_status: Status
+    tr_actions: Actions
+    modal:
+      title: Suppression d'un type de dépense
+      body: Voulez-vous vraiment supprimer le type
+    tr_active: Activé
+    tr_inactive: Désactivé
+  edit:
+    title: Editer un type de dépense
+    block_title: Editer un type de dépense
+    btn_add: Editer
+  new:
+    title: Enregistrer un type de dépense
+    block_title: Enregistrer un type de dépense
+    btn_add: Enregistrer
+bank:
+  index:
+    title: Liste des comptes financiers
+    block_title: Liste des comptes financiers
+    tr_name: Compte
+    tr_accountName: Nom du compte
+    tr_address: adresse
+    tr_initialBalance: Solde initial
+    tr_balance: Solde actuel
+    tr_status: Status
+    modal:
+      body: Voulez-vous vraiment supprimer le compte
+      title: Suppression d'un compte financier
+    tr_active: Activé
+    tr_inactive: Désactivé
+    tr_phoneNumber: Téléphone
+  edit:
+    title: Editer un compte financier
+    block_title: Editer un compte financier
+    btn_add: Editer
+  new:
+    title: Enregistrer un compte financier
+    block_title: Enregistrer un compte financier
+    btn_add: Enregistrer
+transaction:
+  index:
+    title: Liste des transactions
+    block_title: Liste des transactions
+    tr_transactionCode: Code
+    tr_date: Date
+    tr_amount: Montant (Frais)
+    tr_type: Type
+    tr_bank: Compte
+    tr_actions: Actions
+    modal:
+      title: Suppression d'un transaction
+      body: Voulez-vous vraiment supprimer la transaction
+    form:
+      all_account: Tous les comptes
+    tr_fee: Frais
+    tr_totalAmount: Montant total
+    tr_numCustomer: Téléphone client
+  edit:
+    title: Editer une transaction
+    block_title: Editer une transaction
+    btn_add: Editer
+  new:
+    title: Enregistrer une transaction
+    block_title: Enregistrer une transaction
+    btn_add: Enregistrer
+credit: Dépôt
+debit: Retrait
+cancel: Annuler
+close: Fermer
+delete: Supprimer
+lb_search: Rechercher
+stockPayment:
+  index:
+    modal:
+      delete:
+        title: Supprimer une règlement
+        body1: Le montant du règlement est de
+        body2: enregistré le
+      addPayment:
+        title: Enregistrer un règlement
+        form:
+          supplier: Fournisseur
+    tr_stock: Commande
+    tr_date: Date
+    tr_amount: Montant
+    tr_paymentMethod: Mode de paiement
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    block_title: Liste des règlements
+    title: Liste des règlements
+    tr_supplier: Fournisseur
+setting:
+  index:
+    tr_name: Nom
+    tr_value: Valeur
+    title: Paramètres
+    block_title: Paramètres
+    update: Mettre à jour
+    currencyName: Nom de la devise
+    currencySide: Côté
+    currencyDecimal: Décimal
+    currencyThousandSeparator: Séparateur
+    shortDate: Date courte
+    mediumDate: Date normale
+    longDate: Date longue
+    dateSeparator: Séparateur
+    productNew: Intervalle de jours pour nouveau produit
+    activationLink: Lien d'activation
+    accessLimit: Durée d'accès valide après authentification (heure)
+    timeValiditySale: Durée de suppression valide après l'enregistrement d'une vente (heure)
+    tab:
+      pdf: Format (PDF)
+      currency: Devise
+      date: Date
+      product: Produit
+      security: Sécurité
+      color: Thème
+      sale: Vente
+      general: Général
+      order: Commande
+      chartcolor: Couleur graphique
+      rawMaterial: Matière première
+      addons: Modules
+      production: Production
+    productWithExpiration: Gérer les produits avec des dates d'expiration
+    productWithBarcode: Gérer des produits avec code-barres
+    productWithGenerateBarcode: Autoriser la génération automatique des code-barres
+    tab2:
+      list: Liste
+      sale: Vente
+      stock: Commande
+      report: Rapport
+      tr_name: Nom
+      tr_size: Taille
+      areaChart: Area graphique
+      barChart: Bar graphique
+      doughnutChart: Doughnut graphique
+    back_color_sidemenu: Couleur de fond du menu de côté
+    back_color_sidemenu_link: Couleur de fond des liens du menu de côté
+    general_color_ligttc: Couleur principale
+    general_color_dark: Couleur secondaire
+    productWithSubstitute: Gérer les produits remplaçants
+    productWithProfit: Autoriser la consultation du profit de l'activité de l'entreprise
+    productWithPurchasePrice: Autoriser la consultation du prix d'achat des produits
+    modal:
+      addFormat:
+        title: Enregistrer un format
+        form:
+          name: Nom
+          width: Largeur
+          heigttc: Hauteur
+      addTheme:
+        title: Ajouter une thème
+        form:
+          generalColorLigttc: couleur des liens, infobulles et hover
+          generalColorDark: Couleur des boutons et bordures
+          colorSideMenuLink: Couleur des liens de menu de gauche
+          backcolorSideMenu: Couleur de fond pour le menu de gauche
+      deleteTheme:
+        title: Supprimer un thème
+        body: Voulez-vous vraiment supprimer ce thème
+    orderWithSettlement: Gérer les règlements des commandes
+    withAccounting: Gérer la comptabilité
+    saleWithPartialPayment: Autoriser le paiement partiel
+    saleWithPrintDirectly: Autoriser l'impression directe
+    withExpense: Gérer les dépenses
+    withHrm: Gérer les registres de présence et les salaires
+    area_background_color: Couleur de fond
+    area_border_color: Couleur de bordure
+    area_point_color: Couleur du point
+    area_point_border_color: Couleur de bordure du point
+    area_max_color: Couleur du point max
+    area_min_color: Couleur du point min
+    area_display_legend: Afficher la légende
+    bar_one_color: Couleur 1
+    bar_two_color: Couleur 2
+    bar_three_color: Couleur 3
+    bar_four_color: Couleur 4
+    bar_five_color: Couleur 5
+    bar_six_color: Couleur 6
+    bar_seven_color: Couleur 7
+    bar_eigttc_color: Couleur 8
+    bar_nine_color: Couleur 9
+    bar_ten_color: Couleur 10
+    bar_eleven_color: Couleur 11
+    bar_twelve_color: Couleur 12
+    bar_border_color: Couleur de bordure
+    bar_display_legend: Afficher la légende
+    doughnut_one_color: Couleur 1
+    doughnut_two_color: Couleur 2
+    doughnut_three_color: Couleur 3
+    doughnut_four_color: Couleur 4
+    doughnut_five_color: Couleur 5
+    doughnut_six_color: Couleur 6
+    doughnut_seven_color: Couleur 7
+    doughnut_eigttc_color: Couleur 8
+    doughnut_nine_color: Couleur 9
+    doughnut_ten_color: Couleur 10
+    doughnut_display_legend: Afficher la légende
+    saleWithGui: Sélectionner vous-même les lots à utiliser pour la vente
+    withSoftDelete: Refuser la suppression directe des ventes
+    daybeforeexpiration: Nombre de jours à prévenir avant la péremption
+    withProduction: Gérer la production
+    rawMaterialWithExpiration: Gérer les matières premières avec date de péremption
+    productWithBatchPrice: Gérer les prix de gros pour produit
+    addons:
+      tr_active: Activé
+      tr_inactive: Désactivé
+      identifier: ID
+      name: Nom
+      version: Version
+      state: Etat
+    withPoint: Gérer la fidélité des clients
+    productWithWholeSale: Autoriser les ventes pour revendeur
+    productWithDiscount: Autoriser les réductions sur les produits
+    saleWithDiscount: Autoriser les réductions sur les ventes
+    saleWithSaleReturn: Autoriser le retour des produits vendus
+    stockWithStockReturn: Autoriser le renvoi des produits commandés
+    productWithPackaging: Gérer le conditionnement du produit
+    withStockGenerateNumInvoice: Générer un numéro de facture pour les commandes non identifiées
+    withGapProduction: Gérer les écarts
+    saleWithUserCategory: Autoriser les catégories de produit par vendeur
+    productWithReference: Autoriser la référence interne du produit
+    productWithImage: Gérer les produits avec image
+    withSaleNumInvoice: Autoriser une vente avec numéro de facture
+space: Espace
+full stop: Point
+comma: Virgule
+right: Droit
+left: Gauche
+day: jour
+month: mois
+year: année
+hour: heure
+minute: minute
+slash: slash
+dash: tiret
+tax:
+  edit:
+    title: Editer la taxe
+    block_title: Editer la taxe
+    btn_save: Editer
+  index:
+    title: Liste des taxes
+    block_title: Liste des taxes
+    tr_name: Nom
+    tr_rate: Pourcentage
+    tr_actions: Actions
+    modal:
+      title: Suppression d'une taxe
+      body: Voulez-vous vraiment supprimer la taxe
+    tr_status: Etat
+  new:
+    title: Enregistrer une taxe
+    block_title: Enregistrer une taxe
+    btn_save: Enregistrer
+installation:
+  index:
+    title: Installation
+    step1:
+      title: Entreprise
+    step2:
+      title: Administrateur
+    step3:
+      title: Paramètre
+    store:
+      form:
+        name:
+          label: Nom
+          placeholder: Entrez le nom de l'entreprise
+        email:
+          label: Email
+        phoneNumber:
+          label: Téléphone
+    user:
+      form:
+        name:
+          label: Nom d'utilisateur
+          placeholder: ''
+        email:
+          label: Email
+        password:
+          label: Mot de passe
+        confirmPassword:
+          label: Confirmation du mot de passe
+    parameter:
+      form:
+        currencyName:
+          label: Nom de la devise (USD,EUR,XAF)
+        currencySide:
+          label: Côté
+        currencyDecimal:
+          label: Décimal (1=>0.0, 2=>0.00)
+        currencyThousandSeparator:
+          label: Séparateur de millier
+next: Suivant
+previous: Précédent
+validate: Valider
+name: Nom
+buyPrice: Prix d'achat
+sellPrice: Prix de vente
+barcode: Code-barres
+qty: Quantité
+stockAlert: Quantité alerte
+rateGap: Taux d'écart
+category: Catégorie
+packaging: CDT
+packagingQty: Qté cdt
+present: présent
+absent: absent
+late: retard
+holiday: férié
+leave: congé
+qtys: Quantité(s)
+prices: Prix
+employee:
+  index:
+    title: Liste du personnel
+    block_title: Liste du personnel
+    tr_employeename: Nom
+    tr_email: Email
+    tr_actions: Actions
+    tr_phone: Téléphone
+    tr_disctrict: Ville de résidence
+    modal:
+      title: Suppression d'un employé
+      body: Voulez-vous supprimer l'employé
+    tr_payment_history: Historique de paiement
+    tr_salary: Salaire
+    block_title2: Gestion des salaires
+    tr_role: Fonction
+    tr_fee: Frais total
+    tr_fee_detail: Détail
+  new:
+    title: Ajout d'un employé
+    block_title: Enregistrer un employé
+    btn_add: Enregistrer
+  edit:
+    title: Edition d'un employé
+    block_title: Editer un employé
+    btn_add: Editer
+  attendance:
+    title: Registre de présence
+    block_title: Registre de présence
+    tr_date: Date
+    tr_status: Statut
+    tr_actions: Actions
+    tr_name: Nom
+    tr_email: Email
+    tr_gender: Sexe
+    block_title2: Gestion du registre de présence
+  salary:
+    title: Liste des paiements
+    block_title: Liste des paiements
+    tr_name: Nom
+    tr_email: Email
+    tr_gender: Sexe
+    tr_date: Date
+    tr_monthYear: mois
+    tr_amount: Montant
+    tr_actions: Actions
+    block_title2: Gestion des salaires
+    form:
+      month: Tous les mois
+    tr_salary: Salaire
+  fee:
+    block_title: Gestion des frais par employé
+    title: Détail sur les frais
+    tr_name: Nom
+    tr_email: Email
+    tr_gender: Sexe
+    tr_fee: Montant
+    block_title2: Détail sur les frais
+    tr_sales: Liste des ventes
+    tr_products: Produits pris
+    tr_fees: Liste des frais
+    sale:
+      code: Code
+      date: Date
+      amount: Montant
+    product:
+      name: Designation
+      qtySold: Qté vendue
+      amount: Montant
+    fee:
+      name: Libellé
+      amount: Montant
+    tr_actions: Actions
+restore: Restaurer
+noticeBoard:
+  new:
+    title: Enregistrer un préavis
+    block_title: Enregistrer un préavis
+    btn_add: Enregistrer
+  edit:
+    title: Editer un préavis
+    block_title: Editer un préavis
+    btn_add: Editer
+  index:
+    title: Liste des préavis
+    modal:
+      title: Supression d'un préavis
+      body: Voulez-vous vraiment supprimer ce préavis
+    tr_title: Titre
+    tr_message: Message
+    tr_start: Date de début
+    tr_end: Date de fin
+    tr_status: Status
+    tr_recorder: Auteur
+    tr_actions: Actions
+    block_title: Liste des préavis
+    addUser:
+      modal:
+        title: Lier un utilisateur à un préavis
+      form:
+        user:
+          libelle: Sélectionner les utilisateurs autorisés à voir ce préavis
+        btn_add: Enregistrer
+        listuser: Liste des utilisateurs autorisés
+danger: Erreur
+warning: Attention
+info: Info
+rawMaterial:
+  edit:
+    title: Editer une matière première
+    block_title: Editer une matière première
+    btn_save: Editer
+  index:
+    title: Liste des matières premières
+    block_title: Liste des matières premières
+    tr_name: Nom
+    tr_unit: Unité de mesure
+    tr_actions: Actions
+    modal:
+      title: Suppression d'une matière première
+      body: Voulez-vous vraiment supprimer la matière première nommée
+    tr_stock: Stock
+    tr_rateGap: Taux d'écart (%)
+  new:
+    title: Enregistrer une matière première
+    block_title: Enregistrer une matière première
+    btn_save: Enregistrer
+  import:
+    title: Importation des matières premières
+    block_title: Importation des matières premières
+    step1: Sélectionner votre fiche d'approvisionnement (Excel ou CSV)
+    removeFirstRow: Retirer la première ligne (Entête)
+    setp2: Ordonner les colonnes en fonction de votre fiche
+    column: Colonne
+    empty: Vide
+    display: Afficher
+    step3: Affichage des données du fichier importé
+    tr_name: Nom
+    tr_unit: Unité de mesure
+    tr_stock: Stock
+    tr_stockAlert: Stock alerte
+  detail:
+    title: Détail sur la matière première
+    block_title: Détail sur la matière première
+    tr_name: Nom
+    tr_supplyDispo: Stock disponible
+    tr_supply: Approvisionnement
+    tr_batchId: Loit ID
+    tr_expirationDate: Date d'expiration
+    tr_unitPrice: Prix unitaire
+    tr_qtyOrdered: Quantité
+    tr_qtyRemaining: Quantité restante
+    tr_outOfDate: Périmé
+    tr_daynear: Jour(s) restant(s)
+    tr_noStockDispo: Aucun stock disponible
+    tr_nbTotalProductions: Nombre total de productions
+    tr_noData: Aucune donnée
+    tr_totalQtyProduct: Quantité totale utilisée
+    statNumberProduction: Statistique sur le nombre de productions
+    statQtyProduct: Statistique sur la quantité totale utilisée
+    card_title_month: Statistique mensuelle
+    card_btn_search: Rechercher
+    card_title_year: Statistique annuelle
+    no_stats: Aucune donnée statistique
+    select_rawMaterial: Sélectionner une matière première
+    stat_title_number: Nombre de productions
+    stat_title_qty: Quantité utilisée
+    tr_totalAmountLoss: Montant total perdu
+  expiryDate:
+    title: Liste des matières p. proche de la péremption
+    block_title: Liste des matières p. proche de la péremption
+    dayBeforeExpiration: Nbre jours avant péremption
+    tr_expirationDate: Date de péremption
+    tr_batchId: Lot Id
+    tr_name: Nom
+    tr_buyPrice: Prix d'achat
+    tr_qtyRemaining: Quantité restante
+  outOfDate:
+    title: Liste des matières p. périmées
+    block_title: Liste des matières p. périmées
+    form_current: En cours
+    form_withdraw: Rétirée
+    tr_expirationDate: Date de péremption
+    tr_name: Nom
+    tr_batchId: Lot ID
+    tr_buyPrice: Prix d'achat
+    tr_qtyOutOfDate: Quantité périmée
+    tr_qtyRemaining: Quantité restante
+    tr_status: Status
+    tr_withDraw: Actions
+    tr_valueWithDraw: Retirer
+    modal:
+      title: Retirer ce lot du stock
+      body: Cette action est irreversible.
+    tr_valueRemove: Retirer
+production:
+  add:
+    title: Enregistrer une production
+    card_title: Enregistrer une production
+    modal:
+      form:
+        title: Ajouter une ligne de production
+        rawMaterial: Matière première
+        qty: Quantité
+        qtyTotal: Quantité totale
+    btn_cleanBag: Vider la liste
+    btn_valid: Valider
+    bag_nodata: Aucune matière première sélectionnée
+    select_productionManager: Sélectionnez le pétrisseur
+    stock_insufficient: Stock insuffisant
+  new:
+    select_rawMaterial: Selectionner une matière première
+    select_storage_placeholder: Sélectionner le sous magasin
+  detail:
+    title: Détail sur la production
+    block_title: Détail sur la production
+    modal:
+      addFee:
+        title: Enregistrer une charge de production
+        form:
+          name: Libellé
+          amount: Montant
+      changeDate:
+        title: Changer la date de production
+        form:
+          date: Date
+      changeManager:
+        title: Associer ou changer le pétrisseur
+        form:
+          manager: Pétrisseur
+      changePaste:
+        form:
+          paste: Type de pâte
+        title: Changer le type de pâte
+      changePeriod:
+        title: Associer ou changer la période
+        form:
+          period: Période
+    select_product: Sélectionnez un produit
+  index:
+    modal:
+      detail:
+        body:
+          tr_date: Date
+          tr_rawMaterialList: Liste des matières premières
+          tr_rawMaterial: Matière première
+          tr_unitPrice: Prix unitaire
+          tr_qty: Qté utilisée
+          tr_subtotal: Sous total
+          tr_recorder: Enregistreur
+          tr_product: Produit
+          tr_productStockList: Liste des produits finis
+          noData: Aucun produit fini sélectionné
+          tr_productionCost: Coût estimé des matières P. de la production
+          tr_sellPrice: Prix de vente
+          tr_productionIncome: Revenu réel
+          tr_feeList: Charge de production
+          tr_title: Libellé
+          tr_amount: Montant
+          noDataFee: Aucune charge assignée à cette production
+          tr_productionFeeCost: Coût estimé des charges de la production
+          tr_productionTotalCost: Coût total de production
+          tr_estimatedQty: Qté évaluée
+          tr_gap: Ecart
+          tr_qtyStock: Quantité
+          tr_estimatedProfit: Profit estimé
+          tr_changeLanguage: Changer la date
+          tr_manager: Pétrisseur
+          tr_changeManager: Associer ou changer le pétrisseur
+          tr_total_gap: Montant Ecart
+          tr_productionIncomeEstimated: Revenu estimé
+          tr_realProfit: Profit réel
+          tr_paste: Type de pâte
+          tr_productStockReserve: Réserves (produit fini)
+          tr_qtyReserve: Qté réservée
+          tr_productStockReserveOut: Sortie de réserve (produit fini)
+          tr_qtyReserveOut: Qté sortie
+          tr_pasteReserveOut: Sortie de réserve (pâte)
+          tr_pasteReserve: Réserves (pâte)
+          tr_period: Période
+      delete:
+        body: Voulez-vous vraiment supprimer la production du
+        title: Suppression d'une production
+    title: Liste des productions
+    stat_title: Période de productions
+    block_title: Liste des productions
+    tr_date: Date
+    tr_amount: Montant
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    tr_estimatedAmount: Total estimé
+    tr_estimatedProfit: Profit estimé
+    tr_manager: Pétrisseur
+    tr_realProfit: Profit réel
+  reserve:
+    index:
+      title: Liste des réserves de productions
+      block_title: Liste des réserves de productions
+      tr_product: Produit
+      tr_category: Catégorie
+      tr_qtyReserved: Réserve
+      tr_actions: Actions
+    detail:
+      title: Détail sur une production
+      block_title: Détail sur une production
+      tr_name: Nom
+      tr_productions: Liste des productions
+      product:
+        tr_production: N° production
+        tr_date: Date
+        tr_qty: Quantité réservée
+        tr_qtyRemaining: Quantité restante
+supply:
+  import:
+    title: Importation d'un approvisionnement
+    block_title: Importation d'un approvisionnement
+    step1: Sélectionner votre fiche d'approvisionnement (Excel ou CSV)
+    removeFirstRow: Retirer la première ligne (Entête)
+    step2: Ordonner les colonnes en fonction de votre fiche
+    column: Colonne
+    empty: Vide
+    display: Afficher
+    form:
+      numInvoice: Numéro de la facture
+      status:
+        pending: En attente
+        delivered: Livré
+    step3: Affichage des données du fichier importé
+    tr_name: Nom
+    tr_qty: Quantité
+    tr_subtotal: Sous total
+    tr_unitPrice: Prix unitaire
+  add:
+    title: Liste des approvionnements
+    card_title: Enregistrer un approvisionnement
+    import: Importer
+    tr_subtotal: Sous total
+    tr_name: Nom
+    tr_qty: Quantité
+    tr_unitPrice: Prix unitaire
+    tr_totalAMount: Montant total
+    btn_cleanBag: Vider la liste
+    btn_valid: Valider
+    bag_nodata: Aucune matière première selectionnée
+    form:
+      addDate: Date de l'approvisionnement
+    li:
+      supply: Approvisionnement général
+      supplyForStorage: Approvisionnement pour sous magasin
+  detail:
+    modal:
+      add:
+        title: Ajouter une ligne d'approvisionnement
+        form:
+          rawMaterial: Matière première
+          qty: Quantité
+          subtotal: Sous total
+      changeDate:
+        title: Changer la date de l'approvisionnement
+        form:
+          date: Date
+    title: Détail sur l'approvisionnement
+    block_title: Détail sur l'approvisionnement
+  index:
+    title: Liste des approvisionnements
+    block_title: Liste des approvisionnements
+    tr_delivered: Livré
+    tr_date: Date
+    tr_amount: Montant
+    tr_status: Status
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    tr_waiting: En attente
+    modal:
+      delete:
+        title: Suppression d'un approvisionnement
+        body1: Voulez-vous vraiment supprimer l'approvisionnement de
+        body2: enregistré le
+      detail:
+        body:
+          tr_numInvoice: N° Facture
+          tr_date: Date
+          tr_rawMaterialList: Liste des matières premières
+          no_expirationDate: Aucune date assignée
+          tr_rawMaterial: Matière première
+          tr_expirationDate: Date d'expiration
+          tr_unitPrice: Prix unitaire
+          tr_qty: Quantité (reste)
+          tr_subtotal: Sous total
+      setStatus:
+        title: Valider l'approvisionnement de
+        form:
+          numInvoice: N° Facture
+      infoMessage: Cette action est irréversible pour la cohérence des données
+    tr_validate: Valider
+  production:
+    add:
+      totalAmount: Montant total
+      btn_cleanBag: Vider le panier
+      btn_valid: Valider
+      bag_nodata: Aucune donnée d'approvisionnement
+      title: Enregistrer un approv. pour un sous magasin
+    index:
+      block_title: Liste des approv. pour sous magasin
+      tr_date: Date
+      tr_rawMaterial: Matière première
+      tr_qty: Quantité
+      tr_estimatedAmount: Montant
+      tr_recorder: Enregistreur
+      tr_actions: Actions
+      modal:
+        delete:
+          title: Supprimer un approvisionnement
+          body: Voulez-vous vraiment supprimer cette approvisionnement en
+      title: Liste des approv. pour sous magasin
+      tr_storage: Sous magasin
+subtotal: Sous total
+materialLoss:
+  new:
+    title: Enregistrer une perte
+    select_rawMaterial: Sélectionner la matière première
+    select_type: Sélectionner le type
+    block_title: Enregistrer une perte
+    form:
+      txt_stock: Stock(s) disponible(s)
+      txt_qty: Quantité
+      btn_save: Enregistrer
+      txt_date: Date
+  index:
+    title: Liste des pertes
+    block_title: Liste des pertes
+    tr_date: Date
+    tr_rawMaterial: Matière première
+    tr_quantity: Quantité
+    tr_type: Type
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+permission:
+  index:
+    title: Liste des permissions
+    block_title: Liste des permissions
+    print: Imprimer
+production management: Gestion de la production
+human resource management: Gestion des ressources humaines
+accounting management: Gestion de la comptabilité
+point of fidelity: Gestion des points de fidélité
+print: Imprimer
+btn_and_tooltip: Boutons et bordures
+sidemenu: Menu de gauche
+link_hover: Liens, infobulles et hover
+productStock:
+  modal:
+    title: Liste des lots utilisés pour les ventes du
+    body:
+      tr_batch: Lot
+      tr_qty: Quantité vendue
+      tr_buyPrice: Prix d'achat
+      tr_sellPrice: Prix de vente moyen
+      tr_profit: Profit
+saleReturn:
+  modal:
+    title: Liste des ventes retournées du produit
+    body:
+      tr_date: Date de vente
+      tr_qty: Qté retournée
+stockReturn:
+  modal:
+    title: Liste des commandes renvoyées du produit
+    body:
+      tr_date: Date de la commande
+      tr_qty: Qté renvoyée
+      tr_supplier: Fournisseur
+productPackaging:
+  new:
+    title: Enregistrer un conditionnement
+    block_title: Enregistrer un conditionnement
+    btn_save: Enregistrer
+  edit:
+    title: Editer un conditionnement
+    block_title: Editer un conditionnement
+    btn_save: Editer
+  index:
+    title: Liste des conditionnements
+    block_title: Liste des conditionnements
+    tr_name: Nom
+    tr_actions: Actions
+    modal:
+      body: Voulez-vous vraiment supprimer le conditionnement
+      title: Supprimer un conditionnement
+productcoef:
+  index:
+    title: Liste des produits finis avec coefficient
+    select_product: Selectionnez un produit
+    select_rawMaterial: Selectionnez une matière première
+productCoef:
+  index:
+    block_title: Liste des produits finis avec coefficient
+    tr_name: Désignation
+    tr_coef: Coefficient par matière P.
+    tr_noData: Aucun coefficient assigné à ce produit
+    add:
+      title: Enregistrer ou éditer un coefficient
+      form:
+        product: Produit
+        rawMaterial: Matière première
+        coef: Coefficient
+        btn_add: Valider
+salePayment:
+  index:
+    title: Liste des règlements de vente
+    block_title: Liste des règlements de vente
+    tr_saleCode: Code de vente
+    tr_date: Date
+    tr_amount: Montant
+    tr_customer: Client
+    tr_recorder: Enregistreur
+    tr_actions: Actions
+    modal:
+      addPayment:
+        title: Enregistrer un règlement de vente
+        form:
+          customer: Client
+file:
+  sale:
+    index:
+      block_title: Fiche de vente de
+      tr_product: Produit
+      tr_initialStock: Stock Initial
+      tr_qtyOrdered: Approv.
+      tr_qtyReturn: Retour
+      tr_qtySold: Qté vendue
+      tr_qtySold_resend: Retour
+      tr_qtyLoss: Qté perdue
+      tr_stockRemaining: Stock Final
+      tr_nodata: Aucune donnée disponible
+      title: Fiche de vente
+      tr_unitPrice: Prix U.
+      tr_amountSold: Sous total
+      tab:
+        credits: Crédits
+      tab2:
+        col1: Total Fiche
+        col2: Total Crédits
+        col3: Total à verser
+        col4: Versement
+        col5: Ecart
+        colSeller: Vendeur(se)
+        col6: Balance initiale
+    edit:
+      block_title: Editer la fiche de vente de
+      title: Editer la fiche de vente
+productionStorage:
+  new:
+    title: Enregistrer un sous magasin
+    block_title: Enregistrer un sous magasin
+    btn_save: Enregistrer
+  edit:
+    title: Editer un sous magasin de production
+    block_title: Editer un sous magasin de production
+    btn_save: Editer
+  index:
+    title: Liste des sous magasins de production
+    block_title: Liste des sous magasins de production
+    tr_description: Description
+    tr_actions: Actions
+    modal:
+      title: Supprimer un sous magasin
+      body: Voulez-vous vraiment supprimer le sous magasin
+    tr_name: Libellé
+    tool_supply: Approvisionnement
+    tool_production: Production
+    tool_inventory: Inventaire
+  add:
+    modal:
+      form:
+        title: Ajouter une ligne d'approvisionnement
+    card_title: Enregistrer un approv. pour un sous magasin
+storage:
+  detail:
+    title: Détail sur un sous magasin
+    block_title: Détail sur le sous magasin
+  index:
+    modal:
+      detail:
+        body:
+          tr_name: Nom
+          tr_rawMaterialDispo: Matières premières dispo.
+          material:
+            tr_name: Libellé
+            tr_qtyRemaining: Quantité restante
+          tr_lastestSupplies: Liste des derniers approv.
+paste:
+  new:
+    title: Enregistrer un type de pâte
+    block_title: Enregistrer un type de pâte
+    btn_save: Enregistrer
+  edit:
+    title: Editer un type de pâte
+    block_title: Editer un type de pâte
+    btn_save: Editer
+  index:
+    title: Liste des types de pâte
+    block_title: Liste des types de pâte
+    tr_name: Nom
+    tr_actions: Actions
+    modal:
+      body: Voulez-vous vraiment supprimer ce type de pâte
+      footer:
+        cancel: Fermer
+        delete: Supprimer
+      title: Supprimer un type de pâte
+    tr_pattern: Modèle de sortie
+  detail:
+    title: Détail sur le type de pâte
+    block_title: Détail sur le type de pâte
+    tr_name: Nom
+    tr_products: Liste des produits finis
+    product:
+      tr_name: Désignation
+      tr_category: Catégorie
+      tr_actions: Actions
+    modal:
+      title: Enregistrer des produits finis pour ce type de pâte
+      form:
+        product:
+          libelle: Produit
+        btn_add: Enregistrer
+    select_product: Sélectionnez des produits
+all: Tous
+tool_edit: Editer
+tool_delete: Supprimer
+select_image: Sélectionnez une image
+shortcut:
+  index:
+    block_title: Liste des raccourcis
+    tr_name: Actions
+    tr_shortcut: Touches de raccourci
+    tr_actions: ''
+    addShortcut:
+      title: Enregistrer un raccourci
+    modal:
+      title: Supprimer un raccourci
+      body: Voulez vous vraiment supprimer le raccourci pour
+    title: Liste des raccourcis
+    addPermission:
+      form:
+        permission:
+          libelle: Action
+        shortcut:
+          libelle: Touche de raccourci
+    select_permission: Sélectionner une action
+adjustment:
+  index:
+    title: Liste des ajustements
+    block_title: Liste des ajustements
+    tr_date: Date
+    tr_amount: montant
+    tr_actions: Actions
+    modal:
+      detail:
+        body:
+          tr_date: Date
+          tr_productList: Liste des produits
+          tr_product: Produit
+          tr_qty: Différence
+          tr_recorder: Enregistreur
+          tr_qtyBeforeAdjust: Stock expecté
+          tr_newQty: Stock compté
+      delete:
+        title: Supprimer un ajustement
+        body1: Voulez-vous supprimer l'ajustement du
+    tr_recorder: Enregistreur
+  add:
+    card_title: Enregistrer un ajustement
+    title: Enregistrer un ajustement
+    qty_lower: Quantité invalide
+    btn_cleanBag: Vider la liste
+    bag_nodata: Aucun produit dans la liste
+    tr_name: Produit
+    tr_qty: Stock compté
+    tr_actions: Actions
+    tr_qtyAdjust: Différence
+    tr_qtyBeforeAdjust: Stock expecté
+  addgui:
+    modal:
+      form:
+        title: Ajouter un produit à l'ajustement
+        product: Produit
+        qty: Stock compté
+  detail:
+    title: Détail sur l'ajustement
+    block_title: Détail sur l'ajustement
+sold: Solde

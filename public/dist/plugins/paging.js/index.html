@@ -1,0 +1,339 @@
+<!doctype html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:og="http://ogp.me/ns#"
+      xmlns:fb="http://www.facebook.com/2008/fbml">
+<head>
+	<meta charset='utf-8' />
+
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+
+    <meta name="description" content="Paging.js : Simple, Stylish, Flexible Pagination!" />
+    <meta property='og:app_id' content='1447120948843906'>
+    <meta property='og:site_name' content='Paging.js'/> 
+    <meta property='og:title' content='Paging.js'/>
+    <meta property='og:type' content='webutils:demo'/> 
+    <meta property='og:url' content='http://bvjebin.github.io/paging.js'/>
+    <meta property='og:image' content='http://bvjebin.github.io/paging.js/images/logo-big.png'/> 
+    <meta property='og:description' content="Simple, Stylish, Flexible Pagination!" />
+
+    <link rel="image_src" type="image/jpeg" href="http://bvjebin.github.io/paging.js/images/logo-big.png"/>
+    <meta itemprop="image" content="http://bvjebin.github.io/paging.js/images/Logo.png"/>
+	<title>paging.js</title>
+	<link rel="stylesheet" type="text/css" href="vendor/css/normalize.css">
+	<link rel="stylesheet" type="text/css" href="css/paging.css">
+	<link rel="stylesheet" type="text/css" href="vendor/css/style.css">
+	<script type="text/javascript" src="vendor/js/jquery-1.10.2.js"></script>
+	<!--<script type="text/javascript" src="js/jquery-1.6.2.js"></script>-->
+	<!--<script type="text/javascript" src="js/paging.js"></script>-->
+	<script type="text/javascript" src="js/paging.min.js"></script>
+</head>
+<body>
+	<div role="header" class="header">
+		<h1>paging.js</h1>
+		<h6>A Stylish yet Simple, flexible Pagination Plugin</h6>
+		<a target="_blank" href="http://bvjebin.github.io/paging.js/" class="git_link">Git link</a>
+		 <div class="social_plugin">
+          <!-- AddThis Button BEGIN -->
+            <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+                    <a class="addthis_button_facebook" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+                    <a class="addthis_button_twitter" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+                    <a class="addthis_button_linkedin" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+                    <a class="addthis_button_google_plusone_share" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+                    <a class="addthis_button_email" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+                    <a class="addthis_button_compact" addthis:url="http://bvjebin.github.io/paging.js/" addthis:title="Paging.js" addthis:description="Simple, stylish, flexible Pagination!"></a>
+            </div>
+            <script type="text/javascript">var addthis_config = {"data_track_addressbar":true};</script>
+            <script type="text/javascript" src="//s7.addthis.com/js/300/addthis_widget.js#pubid=ra-52b1c104324872b6"></script>
+            <script type="text/javascript">
+            var addthis_config = {
+               ui_508_compliant: true
+               
+            };
+            var addthis_share = {
+                    email_template: "paging_js_template"
+            }
+            </script>
+            <!-- AddThis Button END -->
+    	</div>
+	</div>
+
+	<div class="pagination_wrapper left">
+		<!-- visibility:hidden style is added to hide initially the DOM before applying pagination -->
+		<ul class="pagination" style="visibility:hidden;">
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 1</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 2</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 3</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 4</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 5</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 6</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 7</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 8</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 9</div>
+			</li>
+			<li>
+				<img src="img/placeholder.jpg" />
+				<div>Item 10</div>
+			</li>
+		</ul>
+	</div>
+	<div class="pagination_wrapper right">
+		<div class="pagination" style="visibility:hidden;">
+			<div>
+				<img src="img/gift1.png">
+				<div>Item 1</div>
+			</div>
+			<div>
+				<img src="img/gift2.png">
+				<div>Item 2</div>
+			</div>
+			<div>
+				<img src="img/gift3.png">
+				<div>Item 3</div>
+			</div>
+			<div>
+				<img src="img/placeholder.jpg">
+				<div>Item 4</div>
+			</div>
+			<div>
+				<img src="img/gift5.png">
+				<div>Item 5</div>
+			</div>
+			<div>
+				<img src="img/gift6.png">
+				<div>Item 6</div>
+			</div>
+			<div>
+				<img src="img/placeholder.jpg">
+				<div>Item 7</div>
+			</div>
+			<div>
+				<img src="img/gift4.png">
+				<div>Item 8</div>
+			</div>
+			<div>
+				<img src="img/gift7.png">
+				<div>Item 9</div>
+			</div>
+			<div>
+				<img src="img/gift1.png">
+				<div>Item 10</div>
+			</div>
+		</div>
+	</div>
+	<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			$(".pagination_wrapper.left").paging({
+				//Number of items to show per page
+				//================================
+				number_of_items: 3,	//default: 5 | takes: non-zero numeral less than total limit
+
+				//pagination type
+				//===============
+				pagination_type: "full_numbers", // default full_numbers | takes: full_numbers | prev_next | first_prev_next_last
+
+				//Number of buttons to show if in case of "full_numbers" pagination_type
+				//======================================================================
+				number_of_page_buttons: 3, //default 3 | takes: non-zero numeral less than total page size
+
+				//Stealth Mode in case when no pagination should be shown but paginate using custom elements via pagination api
+				//=============================================================================================================
+				stealth_mode: false, //default false | takes: Boolean true | false
+
+				//Color scheme
+				//============
+				theme: "light_connected", //default light_connected | takes: light_connected | light | blue | ""
+
+				//animate
+				//=======
+				animate: true, //default true | takes: true | false
+
+				//Callbacks
+				//=========
+				onBeforeInit: function(instance, $el) {},
+				onAfterInit: function(instance, $el) {},
+				onBeforeEveryDraw: function(instance, $pager) {},
+				onAfterEveryDraw: function(instance, $pager) {},
+				onFirstPage: function(instance, $pager) {},
+				onLastPage: function(instance, $pager) {}
+			});
+			$(".pagination_wrapper.right").paging({
+				//Number of items to show per page
+				//================================
+				number_of_items: 3,	//default: 5 | takes: non-zero numeral less than total limit
+
+				//pagination type
+				//===============
+				pagination_type: "prev_next", // default full_numbers | takes: full_numbers | prev_next | first_prev_next_last
+
+				//Color scheme
+				//============
+				theme: "light_connected" //default light_connected | takes: light_connected | light | blue | ""
+			});
+		});
+	</script>
+	<div class="documentation">
+		<div class="doc left-doc">
+			<h3>Installation</h3>
+			<div>
+				<em>Include CSS: </em>
+				<br>
+				&lt;link rel="stylesheet" type="text/css" href="css/paging.css"&gt;
+			</div>
+			<div>
+				<em>Include JS: </em>
+				<br>
+				jQuery must be included
+				<br>
+				&lt;script type="text/javascript" src="js/jquery-1.10.2.js"&gt;&lt;/script&gt;
+				<br>
+				&lt;script type="text/javascript" src="js/paging.js"&gt;&lt;/script&gt;
+			</div>
+			<div>
+				<code>$("#id_selector, .class_selector").paging();</code>
+				<br>
+				<br>
+				<em>
+					<strong>Expected Html DOM structure:<br></strong>
+					&lt;div#wrappper&gt;<br>
+					<div class="tabindent1">&lt;div&gt;<br></div>
+					<div class="tabindent2">&lt;div&gt;Item1&lt;/div&gt;<br></div>
+					<div class="tabindent2">&lt;div&gt;Item2&lt;/div&gt;<br></div>
+					<div class="tabindent1">&lt;/div&gt;<br></div>
+					&lt;/div&gt;<br>
+					<br>
+					&lt;div#wrappper&gt;<br>
+					<div class="tabindent1">&lt;ul&gt;<br></div>
+					<div class="tabindent2">&lt;li&gt;Item1&lt;/li&gt;<br></div>
+					<div class="tabindent2">&lt;li&gt;Item2&lt;/li&gt;<br></div>
+					<div class="tabindent1">&lt;/ul&gt;<br></div>
+					&lt;/div&gt;<br>
+				</em>
+			</div>
+			<h3>Public APIs</h3>
+			<div>
+				Get the pagination instance: <br>
+				var pagingjsInstance = $("#selector").data("paging_js");
+			</div>
+			<div>
+				pagingjsInstance.<strong>getTotalPages();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>getCurrentPageNumber();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>drawPage();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>goToPage(page_number);</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>goToNextPage();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>goToPrevPage();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>isFirstPage();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>isLastPage();</strong>
+			</div>
+			<div>
+				pagingjsInstance.<strong>destroy();</strong>
+			</div>
+		</div>
+		<div class="doc right-doc">
+			<h3>Options</h3>
+			<div>
+				<em>Number of items to show per page</em>
+				<div><strong>number_of_items: 4</strong> //default: 5 | takes: non-zero numeral less than total limit</div>
+			</div>
+			<div>
+				<em>pagination type</em>
+				<div><strong>pagination_type: "full_numbers"</strong> // default full_numbers | takes: full_numbers | prev_next | first_prev_next_last</div>
+			</div>
+			<div>
+				<em>Number of buttons to show if in case of "full_numbers" pagination_type</em>
+				<div><strong>number_of_page_buttons: 3</strong> //default 3 | takes: non-zero numeral less than total page size</div>
+			</div>
+			<div>
+				<em>Stealth Mode in case when no pagination should be shown but paginate using custom elements via pagination api</em>
+				<div><strong>stealth_mode: false</strong> //default false | takes: Boolean true | false</div>
+			</div>
+			<div>
+				<em>Color scheme</em>
+				<div><strong>theme: "light_connected"</strong> //default light_connected | takes: light_connected | light | blue | ""</div>
+			</div>
+			<div>
+				<em>Animate</em>
+				<div><strong>animate: true</strong> //default true | takes: true | false</div>
+			</div>
+			<div>
+				<em>Callbacks</em>
+				<div>
+					<strong>onBeforeInit</strong>: function(instance, $el) {}
+				</div>
+				<div>
+					<strong>onAfterInit</strong>: function(instance, $el) {}
+				</div>
+				<div>
+					<strong>onBeforeEveryDraw</strong>: function(instance, $pager) {}
+				</div>
+				<div>
+					<strong>onAfterEveryDraw</strong>: function(instance, $pager) {}
+				</div>
+				<div>
+					<strong>onFirstPage</strong>: function(instance, $pager) {}
+				</div>
+				<div>
+					<strong>onLastPage</strong>: function(instance, $pager) {}
+				</div>
+			</div>
+			<br>
+			<br>
+			<br>
+			<div>
+				<em>Can write to me @ <strong>bvjebin@gmail.com</strong> for any new feature request or support. 
+					<br>Always here to help you! :)<em>
+			</div>
+		</div>
+	</div>
+	<a href="http://www.IconDrawer.com" class="icons-courtesy">Icons from IconDrawer</a>
+	<script>
+	  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+	  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+	  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+	  })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+	  ga('create', 'UA-46940091-1', 'bvjebin.github.io');
+	  ga('send', 'pageview');
+
+	</script>
+</body>
+</html>

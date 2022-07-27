@@ -1,0 +1,178 @@
+<!-- Top Bar Start -->
+
+<div class="topbar">
+    <nav class="navbar-custom">
+        <ul class="list-inline float-right mb-0">
+            <li class="list-inline-item notification-list">
+                <a class="btn btn-outline-uyblue border-color text-blackdark"
+                   href="" data-original-title="{{ 'partials.header.actualiser'|trans }}"
+                   data-toggle="tooltip-uyblue" data-placement="top">
+                    <i class="fa fa-refresh">
+                    </i>
+                </a>
+            </li>
+            {% set user = app.user %}
+            {% if is_granted(permission_verify,'PRODUCT_OUT_OF_DATE') and setting.withExpiration %}
+                <li class="list-inline-item notification-list">
+                    <a class="btn btn-outline-uyblue border-color text-blackdark"
+                       href="{{ path('product_out_of_date') }}"
+                       data-original-title="{{ 'partials.header.dropdown_stockOutOfDate'|trans }}"
+                       data-toggle="tooltip-uyblue" data-placement="top">
+                    <span>
+                        <i class="mdi mdi-alert-outline">
+                        </i>
+                        <span id="stockOutOfDateCount" class="lds-dual-ring"></span>
+                    </span>
+                    </a>
+                </li>
+            {% endif %}
+
+            {% if is_granted(permission_verify,'PRODUCT_EXPIRY_DATE') and setting.withExpiration %}
+                <li class="list-inline-item notification-list">
+                    <a class="btn btn-outline-uyblue border-color text-blackdark"
+                       href="{{ path('product_expiry_date') }}"
+                       data-original-title="{{ 'partials.header.dropdown_stockExpiryDate'|trans }}"
+                       data-toggle="tooltip-uyblue" data-placement="top">
+                    <span>
+                        <i class="mdi mdi-alert-circle-outline">
+                        </i>
+                        <span id="stockExpiryDateCount" class="lds-dual-ring"></span>
+                    </span>
+                    </a>
+                </li>
+            {% endif %}
+            {% if is_granted(permission_verify,'PRODUCT_INDEX') %}
+                <li class="list-inline-item notification-list">
+                    <a class="btn btn-outline-uyblue border-color text-blackdark"
+                       href="{{ path('product_index') }}?status=byOutOfStock"
+                       data-original-title="{{ 'partials.header.dropdown_outOfStock'|trans }}"
+                       data-toggle="tooltip-uyblue" data-placement="top">
+                        <span id="outOfStockCountBlock">
+                            <i class="mdi mdi-bell-ring-outline">
+                            </i>
+                            <span id="outOfStockCount" class="lds-dual-ring"></span>
+                        </span>
+                    </a>
+                </li>
+                <li class="list-inline-item notification-list">
+                    <a class="btn btn-outline-uyblue border-color text-blackdark"
+                       href="{{ path('product_index') }}?status=byStockAlert"
+                       data-original-title="{{ 'partials.header.dropdown_stockAlert'|trans }}"
+                       data-toggle="tooltip-uyblue" data-placement="top">
+                        <span id="stockAlertCountBlock">
+                            <i class="mdi mdi-block-helper">
+                            </i>
+                            <span id="stockAlertCount" class="lds-dual-ring"></span>
+                        </span>
+                    </a>
+                </li>
+            {% endif %}
+            <li class="list-inline-item dropdown notification-list">
+                <a class="nav-link dropdown-toggle arrow-none waves-effect nav-user"
+                   data-toggle="dropdown" href="#" role="button"
+                   aria-haspopup="false" aria-expanded="false">
+                    {% if user.imageName %}
+                        <img src="{{ asset(userPhoto)~user.imageName }}"
+                             alt="{{user.allName}}" class="avatar-img rounded-circle">
+                    {% else %}
+                    <div class="avatar mt-4">
+                        <span class="avatar-text avatar-text-indigo rounded-circle">
+                            <span class="initial-wrap">
+                                <span>{{user.initials}}</span>
+                            </span>
+                        </span>
+                    </div>
+                    {% endif %}
+                </a>
+                <div class="dropdown-menu dropdown-menu-right profile-dropdown">
+                    {% if is_granted(permission_verify,'ACCOUNT_PROFILE') %}
+                        <a class="dropdown-item" href="{{path('account_profile')}}">
+                            <i class="mdi mdi-account-circle m-r-5 text-muted"></i> {{ 'partials.header.dropdown_account'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'ACCOUNT_CHANGE_LANGUAGE') %}
+                        <a class="dropdown-item" href="{{path('account_change_language')}}">
+                            <i class="fa fa-language m-r-5 text-muted"></i>
+                            {{ 'partials.header.dropdown_changeLanguage'|trans }}
+                            {% if user.language is not null %}
+                            <img style="width: 20px;height: 20px;border: #0a0c0d solid 1px" class="pull-right"
+                                 src="{{ asset('dist/images/lang/')~user.language~'.png' }}"
+                                 alt="">
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'ACCOUNT_RESET_PASSWORD') %}
+                        <a class="dropdown-item" href="{{path('account_reset_password')}}">
+                            <i class="mdi mdi-security m-r-5 text-muted"></i> {{ 'partials.header.dropdown_resetpassword'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'STORE_INDEX') %}
+                        <a class="dropdown-item" href="{{path('store_index')}}">
+                            <i class="mdi mdi-store m-r-5 text-muted"></i> {{ 'partials.header.dropdown_store'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'HISTORIC_INDEX') %}
+                        <a class="dropdown-item" href="{{path('historic_index')}}">
+                            <i class="mdi mdi-history m-r-5 text-muted"></i> {{ 'partials.header.dropdown_history'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'ACTIVATION') %}
+                        <a class="dropdown-item" href="{{path('activation')}}">
+                            <i class="mdi mdi-key m-r-5 text-muted"></i> {{ 'partials.header.dropdown_activation'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'NOTICE_BOARD_INDEX') %}
+                        <a class="dropdown-item" href="{{path('notice_board_index')}}">
+                            <i class="mdi mdi-bullhorn m-r-5 text-muted"></i> {{ 'partials.header.dropdown_notice'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'PERMISSION_INDEX') %}
+                        <a class="dropdown-item" href="{{path('permission_index')}}">
+                            <i class="mdi mdi-lock m-r-5 text-muted"></i> {{ 'partials.header.dropdown_permission'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'SHORTCUT_INDEX') %}
+                        <a class="dropdown-item" href="{{path('shortcut_index')}}">
+                            <i class="mdi mdi-desktop-mac m-r-5 text-muted"></i> {{ 'partials.header.dropdown_shortcut'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'SETTING_INDEX') %}
+                        <a class="dropdown-item" href="{{path('setting_index')}}">
+                            <i class="mdi mdi-settings m-r-5 text-muted"></i> {{ 'partials.header.dropdown_setting'|trans }}
+                        </a>
+                    {% endif %}
+                    {% if is_granted(permission_verify,'DATABASE_BACKUP') %}
+                        <a class="dropdown-item" href="{{path('database_backup')}}">
+                            <i class="mdi mdi-database m-r-5 text-muted"></i> {{ 'partials.header.dropdown_database'|trans }}
+                        </a>
+                    {% endif %}
+                    <a class="dropdown-item" href="{{ path('account_logout') }}">
+                        <i class="mdi mdi-logout m-r-5 text-muted"></i> {{ 'partials.header.dropdown_logout'|trans }}
+                    </a>
+
+                </div>
+            </li>
+        </ul>
+        <ul class="list-inline menu-left mb-0">
+            <li class="list-inline-item">
+                <button type="button" class="button-menu-mobile open-left waves-effect">
+                    <i class="ion-navicon"></i>
+                </button>
+            </li>
+            <li class="hide-phone list-inline-item app-search">
+                <h6 class="page-title">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item">
+                            {{ entity|trans }}
+                        </li>
+                        <li class="breadcrumb-item" style="text-decoration: underline">
+                            {{ page|trans }}
+                        </li>
+                    </ol>
+                </h6>
+            </li>
+        </ul>
+        <div class="clearfix"></div>
+    </nav>
+</div>
+<!-- Top Bar End -->

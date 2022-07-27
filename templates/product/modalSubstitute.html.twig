@@ -1,0 +1,64 @@
+<!-- Substitute Modal -->
+{% set setting = app.session.get('setting') %}
+<div class="modal fade" id="substituteModal{{product.id}}" tabindex="-1" role="dialog"
+     aria-labelledby="substituteModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                    {{ 'product.index.modalSubstitute.title'|trans({},'messages',app.session.get('_locale')) }}
+                    <span class="text-info text-capitalize">
+                        {{ product.name }}
+                    </span>
+                    ({{ substitutes|length|formatedInt }})
+                </h5>
+                <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">×</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <table class="table">
+                    <tr>
+                        <td>{{ 'product.index.modalSubstitute.tr_name'|trans({},'messages',app.session.get('_locale')) }}</td>
+                        {% if setting.withPurchasePrice  %}
+                            <td>{{ 'product.index.modalSubstitute.tr_buyPrice'|trans({},'messages',app.session.get('_locale')) }}</td>
+                        {% endif %}
+                        <td>{{ 'product.index.modalSubstitute.tr_sellPrice'|trans({},'messages',app.session.get('_locale')) }}</td>
+                        <td>{{ 'product.index.modalSubstitute.tr_stock'|trans({},'messages',app.session.get('_locale')) }}</td>
+                    </tr>
+                    {% for substitute in substitutes  %}
+                    <tr>
+                        <td>
+                            <a class="text-capitalize"
+                               href="{{ path('product_detail',{id:substitute.id}) }}">
+                                {{ substitute.name }}
+                            </a>
+                        </td>
+                        {% if setting.withPurchasePrice  %}
+                            <td>{{ substitute.buyPrice|formated }}</td>
+                        {% endif %}
+                        <td>{{ substitute.sellPrice|formated }}</td>
+                        <td>
+                            <span class="{% if substitute.stockAlert >= substitute.stock %}bg-danger text-white p-2{% endif %}">
+                                {{ substitute.stock|formatedInt }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% else %}
+                        <tr>
+                            <td class="text-center text-info" colspan="4">
+                                <i class="fa fa-info-circle"></i>
+                                {{ 'product.index.modalSubstitute.noData'|trans({},'messages',app.session.get('_locale')) }}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" type="button" data-dismiss="modal">
+                    {{ 'product.index.modalSubstitute.footer.cancel'|trans({},'messages',app.session.get('_locale')) }}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
